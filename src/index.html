@@ -396,6 +396,7 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
           <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;">💬</div><div class="training-label">AI 对话</div></div>
           <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;">💎</div><div class="training-label">消消乐</div></div>
           <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;">📖</div><div class="training-label">语法</div></div>
+          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;">❌</div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
         </div>
       </div>
     </div>
@@ -460,11 +461,15 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
           </div>
           <div id="masteryBadgeWrap" style="margin-top:10px;"></div>
         </div>
-        <div style="display:flex;gap:10px;padding:8px 0 16px;justify-content:center;">
+        <div id="normalFeedback" style="display:flex;gap:10px;padding:8px 0 16px;justify-content:center;">
           <button onclick="speakCurrent()" style="width:48px;height:48px;border-radius:50%;border:none;background:var(--surface);font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='var(--sky-light)'" onmouseout="this.style.background='var(--surface)'">🔊</button>
-          <button onclick="recordFeedback('easy')" style="width:48px;height:48px;border-radius:50%;border:none;background:#f0fdf4;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#bbf7d0'" onmouseout="this.style.background='#f0fdf4'">😊</button>
-          <button onclick="recordFeedback('hard')" style="width:48px;height:48px;border-radius:50%;border:none;background:#fffbeb;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#fde68a'" onmouseout="this.style.background='#fffbeb'">🤔</button>
-          <button onclick="recordFeedback('forgot')" style="width:48px;height:48px;border-radius:50%;border:none;background:#fef2f2;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fef2f2'">🔁</button>
+          <button onclick="recordFeedback('easy')" id="fbEasy" style="width:48px;height:48px;border-radius:50%;border:none;background:#f0fdf4;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#bbf7d0'" onmouseout="this.style.background='#f0fdf4'">😊</button>
+          <button onclick="recordFeedback('hard')" id="fbHard" style="width:48px;height:48px;border-radius:50%;border:none;background:#fffbeb;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#fde68a'" onmouseout="this.style.background='#fffbeb'">🤔</button>
+          <button onclick="recordFeedback('forgot')" id="fbForgot" style="width:48px;height:48px;border-radius:50%;border:none;background:#fef2f2;font-size:20px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fef2f2'">🔁</button>
+        </div>
+        <div id="wrongWordFeedback" style="display:none;gap:10px;padding:8px 0 16px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="wrongWordFeedback(false)" style="flex:1;max-width:160px;border:none;border-radius:16px;padding:14px 6px;font-family:inherit;font-size:14px;font-weight:700;background:#fef2f2;color:#ef4444;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fef2f2'">✕ 还不会</button>
+          <button onclick="wrongWordFeedback(true)" style="flex:1;max-width:160px;border:none;border-radius:16px;padding:14px 6px;font-family:inherit;font-size:14px;font-weight:700;background:#f0fdf4;color:#16a34a;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#bbf7d0'" onmouseout="this.style.background='#f0fdf4'">✓ 掌握了</button>
         </div>
       </div><!-- cardMode -->
     </div>
@@ -588,13 +593,14 @@ const D = {
   reciteProgress:{},  // key: "UnitId_sentenceIndex" → 0=new,1=practiced,2=mastered
   session:{},
   readArticles:{},
-  readScores:{}
+  readScores:{},
+  wrongWords:[]  // [{unitId, wordIndex}]
 };
 
 // IndexedDB wrapper
 const DB = (() => {
-  const DB_NAME = 'zimu_v2', DB_VERSION = 1;
-  const STORES = ['user', 'mastery', 'recite_progress', 'reading', 'word_collection', 'mission'];
+  const DB_NAME = 'zimu_v2', DB_VERSION = 2;
+  const STORES = ['user', 'mastery', 'recite_progress', 'reading', 'word_collection', 'mission', 'wrong_words'];
   let db = null;
   function open(){
     return new Promise((rs,rj)=>{
@@ -653,6 +659,7 @@ async function save(){
     await DB.set('reading', 'articles', D.readArticles);
     await DB.set('reading', 'scores', D.readScores);
     await DB.set('mission', 'daily', D.mission);
+    await DB.set('wrong_words', 'list', D.wrongWords);
   } catch(e) { console.warn('save error', e); }
 }
 async function load(){
@@ -682,6 +689,8 @@ async function load(){
       if (scores) Object.assign(D.readScores, scores);
       const mission = await DB.get('mission', 'daily');
       if (mission) Object.assign(D.mission, mission);
+      const wrongWords = await DB.get('wrong_words', 'list');
+      if (wrongWords) D.wrongWords = wrongWords;
     }
   } catch(e) { console.warn('load error', e); }
   // migrate old checkedDays → checkInDates
@@ -755,7 +764,7 @@ function recordFeedback(type){
   // update mastery: easy→+1 (max 2), hard→stays, forgot→max(0,cur-1)
   if(type==='easy'){D.mastery[key]=Math.min(2,cur+1);D.user.points+=5;D.user.learnedWords++;D.mission.newDone=Math.min(D.mission.newDone+1,5);floatScore('+5 ✨');if(D.mission.newDone>=5&&D.mission.newDone-1<5)showToast('🎉 新学任务完成！');}
   else if(type==='hard'){D.mastery[key]=Math.max(0,Math.min(1,cur));D.mission.reviewDone=Math.min(D.mission.reviewDone+1,3);}
-  else{D.mastery[key]=Math.max(0,cur-1);}
+  else{D.mastery[key]=Math.max(0,cur-1);if(!D.wrongWords.some(w=>w.unitId===unit.id&&w.wordIndex===D.currentWordIndex)){D.wrongWords.push({unitId:unit.id,wordIndex:D.currentWordIndex});}}
   D.session.wordsStudied++;
   if(unit){D.currentWordIndex++;unit.progress=Math.min(100,Math.round(D.currentWordIndex/unit.words.length*100));}
   save();updateStats();showWord();
@@ -813,6 +822,7 @@ function setupCardSwipe(){
 // ════ LESSON TEXT (课文合集) ════
 let reciteState={unitId:null,sentenceIndex:-1,isRecording:false,recognition:null,isPlaying:false};
 function onLearningBack(){
+  if(D.session.wrongWordsMode){exitWrongWordsMode();return;}
   if(!document.getElementById('cardMode').classList.contains('hidden')){exitCardMode();return;}
   if(reciteState.unitId!==null){backToTextList();return;}
   if(!document.getElementById('textPageView').classList.contains('hidden')){backToUnits();return;}
@@ -1307,6 +1317,7 @@ function updateStats(){
   if(g('userName'))g('userName').textContent=D.user.name;
   const ha=document.querySelector('.avatar');
   if(ha){ha.textContent=D.user.avatarIcon||'👤';ha.style.background=D.user.avatarColor||'linear-gradient(135deg,#fcd34d,#f97316)';}
+  updateWrongWordBadge();
   updateMission();
 }
 
@@ -2132,6 +2143,85 @@ async function confirmImport(){
     closeModal();
     showToast('数据导入成功 ✅');
   }catch(err){showToast('导入失败，请重试');}
+}
+
+// ════ WRONG WORDS MODE ════
+function updateWrongWordBadge(){
+  const badge=document.getElementById('wrongWordBadge');
+  if(!badge)return;
+  const n=D.wrongWords.length;
+  if(n>0){badge.style.display='inline';badge.textContent=n;}
+  else badge.style.display='none';
+}
+function enterWrongWordsMode(){
+  const list=D.wrongWords;
+  if(list.length===0){showToast('🎉 没有错词！');return;}
+  D.session.wrongWordsMode=true;
+  D.session.wrongWordIndex=0;
+  D.session.cardFlipped=false;
+  switchPage('learning');
+  document.getElementById('learningScrollArea').classList.add('hidden');
+  document.getElementById('textPageView').classList.add('hidden');
+  document.getElementById('cardMode').classList.remove('hidden');
+  document.getElementById('cardMode').scrollIntoView({behavior:'instant'});
+  // Hide normal feedback, show wrong-word feedback
+  document.getElementById('normalFeedback').style.display='none';
+  const wwfb=document.getElementById('wrongWordFeedback');
+  if(wwfb){wwfb.style.display='flex';}
+  document.getElementById('cardBackBtn').onclick=exitWrongWordsMode;
+  document.getElementById('cardUnitTitle').textContent='❌ 错词复习';
+  showWrongWord();
+}
+function exitWrongWordsMode(){
+  D.session.wrongWordsMode=false;
+  D.session.wrongWordIndex=0;
+  document.getElementById('cardMode').classList.add('hidden');
+  document.getElementById('learningScrollArea').classList.remove('hidden');
+  document.getElementById('learningTitle').textContent='单元学习';
+  document.getElementById('cardBackBtn').onclick=exitCardMode;
+  document.getElementById('normalFeedback').style.display='flex';
+  const wwfb=document.getElementById('wrongWordFeedback');
+  if(wwfb)wwfb.style.display='none';
+  renderUnits();
+}
+function showWrongWord(){
+  const list=D.wrongWords;
+  if(!list||list.length===0){exitWrongWordsMode();showToast('🎉 错词已清空！');return;}
+  const idx=D.session.wrongWordIndex||0;
+  if(idx>=list.length){exitWrongWordsMode();showToast('🎉 错词复习完成！');return;}
+  const entry=list[idx];
+  const unit=CONTENT.units.find(u=>u.id===entry.unitId);
+  if(!unit||!unit.words[entry.wordIndex]){list.splice(idx,1);showWrongWord();return;}
+  const w=unit.words[entry.wordIndex];
+  document.getElementById('cardText').textContent=w.en;
+  document.getElementById('cardPhonetic').textContent=w.ph||'';
+  document.getElementById('cardTranslation').textContent=w.zh;
+  document.getElementById('cardExample').textContent=w.ex||'';
+  document.getElementById('flipCardInner').classList.remove('flipped');
+  document.getElementById('wordCounter').innerHTML='<span id="wrongWordCount">'+(idx+1)+'</span>/<span>'+list.length+'</span>';
+  updateWrongWordBadge();
+}
+function wrongWordFeedback(mastered){
+  const list=D.wrongWords;
+  const idx=D.session.wrongWordIndex;
+  if(!list||idx>=list.length)return;
+  if(mastered){
+    // Remove from wrong words list
+    list.splice(idx,1);
+    D.session.wrongWordIndex=idx; // stay at same index (next word shifts down)
+    save();
+    showToast('已掌握 ✅');
+  } else {
+    // Move to next without removing
+    D.session.wrongWordIndex=idx+1;
+    showToast('继续练习 💪');
+  }
+  // Check if done
+  if(list.length===0||D.session.wrongWordIndex>=list.length){
+    exitWrongWordsMode();showToast('🎉 错词复习完成！');
+  } else {
+    showWrongWord();
+  }
 }
 
 async function init(){
