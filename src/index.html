@@ -294,6 +294,17 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
 .recite-score-detail{font-size:12px;color:var(--ink-mid);margin-top:6px;}
 .recite-score-transcript{font-size:13px;color:var(--ink-soft);margin-top:8px;padding:8px;background:var(--surface);border-radius:10px;}
 
+.avatar-picker-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
+.avatar-picker-item{aspect-ratio:1;border-radius:14px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .15s;}
+.avatar-picker-item:active{transform:scale(.9);}
+.avatar-picker-item.selected{border-color:var(--sky-deep);box-shadow:0 0 0 2px var(--sky-light);}
+.avatar-color-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.avatar-color-item{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .15s;}
+.avatar-color-item:active{transform:scale(.85);}
+.avatar-color-item.selected{border-color:var(--sky-deep);box-shadow:0 0 0 2px var(--sky-light);}
+.name-edit-input{width:100%;padding:11px 14px;border:2px solid var(--sky-deep);border-radius:14px;font-size:16px;font-family:inherit;outline:none;color:var(--ink);background:var(--white);margin-bottom:16px;}
+.import-warning{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:14px;font-size:13px;color:#92400e;margin-bottom:16px;line-height:1.6;}
+.import-preview{background:var(--surface);border-radius:12px;padding:12px;font-size:13px;color:var(--ink-mid);margin-bottom:16px;max-height:120px;overflow-y:auto;}
 </style>
 </head>
 <body>
@@ -513,8 +524,8 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
     <div class="profile-hero">
       <div class="profile-top">
         <div style="display:flex;align-items:center;gap:14px;">
-          <div class="profile-avatar">👤</div>
-          <div><div class="profile-name" id="profileName">自牧</div><div class="profile-id"><span id="profileId">ID: ZM123456</span><button class="copy-btn" onclick="copyUserId()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div>
+          <div class="profile-avatar" id="profileAvatar" onclick="editAvatar()" style="cursor:pointer;">👤</div>
+          <div><div class="profile-name" id="profileName" onclick="editName()" style="cursor:pointer;">自牧</div><div class="profile-id"><span id="profileId">ID: ZM123456</span><button class="copy-btn" onclick="copyUserId()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div>
         </div>
         <button class="scanner-btn" onclick="openScanner()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></button>
       </div>
@@ -539,6 +550,9 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
         <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;">⚙️</div>设置</div><span class="menu-chev">›</span></button>
         <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">ℹ️</div>关于我们</div><span class="menu-chev">›</span></button>
         <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;">💬</div>意见反馈</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📤</div>导出数据</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据</div><span class="menu-chev">›</span></button>
+        <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       </div>
       <button class="btn btn-danger" style="width:100%;border-radius:16px;" onclick="logout()">退出登录</button>
       <div style="height:8px;"></div>
@@ -561,7 +575,7 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
 <script src="content.js"></script>
 <script>
 const D = {
-  user:{name:'自牧',id:'ZM123456',level:5,points:2480,reading:42,consecutiveDays:12,learnedWords:0,totalWords:493,checkedDays:[1,2,3,5,6,8,9,10,12,15,18,20,22,25,28],notifications:true,darkMode:false,autoPlay:true,checkInDates:[],wordCollection:[]},
+  user:{name:'自牧',id:'ZM123456',level:5,points:2480,reading:42,consecutiveDays:12,learnedWords:0,totalWords:493,checkedDays:[1,2,3,5,6,8,9,10,12,15,18,20,22,25,28],notifications:true,darkMode:false,autoPlay:true,checkInDates:[],wordCollection:[],avatarColor:'#0ea5e9',avatarIcon:'👤'},
   achievements:[],  // computed dynamically
   currentUnit:1,currentWordIndex:0,cardFlipped:false,
   mission:{newDone:0,reviewDone:0,quizDone:false},
@@ -1274,6 +1288,8 @@ function updateProfileStats(){
   document.getElementById('profileName').textContent=D.user.name;document.getElementById('profileId').textContent='ID: '+D.user.id;
   document.getElementById('userLevel').textContent=D.user.level;document.getElementById('userPoints').textContent=D.user.points;
   document.getElementById('userReading').textContent=D.user.reading;document.getElementById('userDays').textContent=D.user.consecutiveDays;
+  const pa=document.getElementById('profileAvatar');
+  if(pa){pa.textContent=D.user.avatarIcon||'👤';pa.style.background=D.user.avatarColor||'rgba(255,255,255,.25)';}
 }
 function updateStats(){
   const g=id=>{const el=document.getElementById(id);return el;};
@@ -1285,6 +1301,8 @@ function updateStats(){
   if(g('memoryCurve'))g('memoryCurve').style.width=Math.round(D.user.learnedWords/D.user.totalWords*100)+'%';
   if(g('totalWordsSpan'))g('totalWordsSpan').textContent=D.user.totalWords;
   if(g('userName'))g('userName').textContent=D.user.name;
+  const ha=document.querySelector('.avatar');
+  if(ha){ha.textContent=D.user.avatarIcon||'👤';ha.style.background=D.user.avatarColor||'linear-gradient(135deg,#fcd34d,#f97316)';}
   updateMission();
 }
 
@@ -1979,6 +1997,137 @@ function showGrammarResult(){
     </div>
     <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="openGrammar()">再来一轮</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal()">返回</button>`);
+}
+
+// ════ PROFILE: EDIT NAME ════
+function editName(){
+  showModal(`<div class="modal-title">✏️ 修改昵称</div>
+    <input type="text" class="name-edit-input" id="nameEditInput" value="${escapeHtml(D.user.name)}" maxlength="20" placeholder="输入新昵称" autofocus>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveName()">保存</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">取消</button>`);
+  setTimeout(()=>document.getElementById('nameEditInput')?.focus(), 100);
+}
+function saveName(){
+  const el=document.getElementById('nameEditInput');
+  if(!el)return;
+  const name=el.value.trim()||'自牧';
+  D.user.name=name;
+  DB.set('user','self',D.user);
+  updateProfileStats();updateStats();
+  closeModal();
+  showToast('昵称已更新');
+}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ════ PROFILE: EDIT AVATAR ════
+const AVATAR_ICONS=['👤','😃','😎','🤓','🧐','😊','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🦄','🐲','🌟','⭐','🌈','🎯','🎨','🍀','🌺','🌸','💎','🔥'];
+const AVATAR_COLORS=['#0ea5e9','#2563eb','#8b5cf6','#d946ef','#ec4899','#ef4444','#f97316','#f59e0b','#10b981','#059669','#14b8a6','#64748b'];
+function editAvatar(){
+  const curIcon=D.user.avatarIcon||'👤',curColor=D.user.avatarColor||'#0ea5e9';
+  const iconsHtml=AVATAR_ICONS.map(ic=>`<div class="avatar-picker-item ${ic===curIcon?'selected':''}" style="background:${curColor}22;" onclick="selectAvatarIcon('${ic}')">${ic}</div>`).join('');
+  const colorsHtml=AVATAR_COLORS.map(c=>`<div class="avatar-color-item ${c===curColor?'selected':''}" style="background:${c};" onclick="selectAvatarColor('${c}')"></div>`).join('');
+  showModal(`<div class="modal-title">🎨 选择头像</div>
+    <div style="text-align:center;margin-bottom:16px;"><div style="width:64px;height:64px;border-radius:18px;background:${curColor};display:inline-flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 4px 12px ${curColor}44;" id="avatarPreview">${curIcon}</div></div>
+    <div style="font-size:13px;font-weight:600;color:var(--ink-mid);margin-bottom:8px;">图标</div>
+    <div class="avatar-picker-grid">${iconsHtml}</div>
+    <div style="font-size:13px;font-weight:600;color:var(--ink-mid);margin-bottom:8px;">颜色</div>
+    <div class="avatar-color-row">${colorsHtml}</div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveAvatar()">保存</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">取消</button>`);
+}
+let _pendingAvatar=null;
+function selectAvatarIcon(icon){
+  _pendingAvatar=_pendingAvatar||{icon:D.user.avatarIcon||'👤',color:D.user.avatarColor||'#0ea5e9'};
+  _pendingAvatar.icon=icon;
+  document.querySelectorAll('.avatar-picker-item').forEach(el=>el.classList.toggle('selected',el.textContent===icon));
+  const pre=document.getElementById('avatarPreview');
+  if(pre)pre.textContent=icon;
+}
+function selectAvatarColor(color){
+  _pendingAvatar=_pendingAvatar||{icon:D.user.avatarIcon||'👤',color:D.user.avatarColor||'#0ea5e9'};
+  _pendingAvatar.color=color;
+  document.querySelectorAll('.avatar-color-item').forEach(el=>el.classList.toggle('selected',el.style.background===color||el.style.background===rgbFromHex(color)));
+  const pre=document.getElementById('avatarPreview');
+  if(pre)pre.style.background=color;
+  document.querySelectorAll('.avatar-picker-item').forEach(el=>{el.style.background=color+'22';});
+}
+function rgbFromHex(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${r}, ${g}, ${b})`;}
+function saveAvatar(){
+  const pa=_pendingAvatar;
+  if(pa){D.user.avatarIcon=pa.icon;D.user.avatarColor=pa.color;}
+  else{D.user.avatarIcon=D.user.avatarIcon||'👤';D.user.avatarColor=D.user.avatarColor||'#0ea5e9';}
+  _pendingAvatar=null;
+  DB.set('user','self',D.user);
+  updateProfileStats();updateStats();
+  closeModal();
+  showToast('头像已更新');
+}
+
+// ════ DATA: EXPORT ════
+function exportData(){
+  const data={
+    version:'1.0',
+    exportedAt:new Date().toISOString(),
+    user:{name:D.user.name,id:D.user.id,level:D.user.level,points:D.user.points,reading:D.user.reading,consecutiveDays:D.user.consecutiveDays,learnedWords:D.user.learnedWords,checkedDays:D.user.checkedDays,checkInDates:D.user.checkInDates,wordCollection:D.user.wordCollection,avatarColor:D.user.avatarColor,avatarIcon:D.user.avatarIcon},
+    mastery:D.mastery,
+    reciteProgress:D.reciteProgress,
+    readArticles:D.readArticles,
+    readScores:D.readScores,
+    mission:D.mission
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`zimu-${D.user.name}-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('数据已导出 📤');
+}
+
+// ════ DATA: IMPORT ════
+function importData(event){
+  const file=event.target.files[0];
+  event.target.value='';
+  if(!file){showToast('请选择文件');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.version){showToast('无效的数据文件');return;}
+      // preview
+      const info=[];
+      if(data.user)info.push(`👤 用户: ${data.user.name||'未知'} (${data.user.points||0}分, ${data.user.level||1}级)`);
+      if(data.mastery)info.push(`📝 掌握度: ${Object.keys(data.mastery).length} 个词条`);
+      if(data.reciteProgress)info.push(`🗣️ 跟读进度: ${Object.keys(data.reciteProgress).length} 条记录`);
+      if(data.mission)info.push(`🎯 当前任务: 新学${data.mission.newDone||0}/5 · 复习${data.mission.reviewDone||0}/3`);
+
+      let html=`<div class="modal-title">📥 导入数据</div>`;
+      html+=`<div class="import-warning">⚠️ 导入将合并数据到当前账户，同名数据会被覆盖。此操作不可撤销。</div>`;
+      html+=`<div class="import-preview">${info.join('<br>')}</div>`;
+      html+=`<div style="display:flex;gap:8px;"><button class="btn btn-primary" style="flex:1;" onclick="confirmImport()">确认导入</button>`;
+      html+=`<button class="btn btn-ghost" style="flex:1;" onclick="closeModal()">取消</button></div>`;
+      window._importData=data;
+      showModal(html);
+    }catch(err){showToast('文件解析失败，请检查文件格式');}
+  };
+  reader.readAsText(file);
+}
+async function confirmImport(){
+  const data=window._importData;
+  if(!data){closeModal();return;}
+  window._importData=null;
+  try{
+    if(data.user)Object.assign(D.user,data.user);
+    if(data.mastery)Object.assign(D.mastery,data.mastery);
+    if(data.reciteProgress)Object.assign(D.reciteProgress,data.reciteProgress);
+    if(data.readArticles)Object.assign(D.readArticles,data.readArticles);
+    if(data.readScores)Object.assign(D.readScores,data.readScores);
+    if(data.mission)Object.assign(D.mission,data.mission);
+    await save();
+    updateProfileStats();updateStats();updateMission();
+    closeModal();
+    showToast('数据导入成功 ✅');
+  }catch(err){showToast('导入失败，请重试');}
 }
 
 async function init(){
