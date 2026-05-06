@@ -584,7 +584,7 @@ body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:linear-gradi
 <script src="content.js"></script>
 <script>
 const D = {
-  user:{name:'自牧',id:'ZM123456',level:5,points:2480,reading:42,consecutiveDays:12,learnedWords:0,totalWords:493,checkedDays:[1,2,3,5,6,8,9,10,12,15,18,20,22,25,28],notifications:true,darkMode:false,autoPlay:true,checkInDates:[],wordCollection:[],avatarColor:'#0ea5e9',avatarIcon:'👤'},
+  user:{name:'自牧',id:'ZM123456',level:5,points:2480,reading:42,consecutiveDays:12,learnedWords:0,totalWords:493,checkedDays:[1,2,3,5,6,8,9,10,12,15,18,20,22,25,28],notifications:true,darkMode:false,autoPlay:true,checkInDates:[],wordCollection:[],avatarColor:'#0ea5e9',avatarIcon:'👤',reminderEnabled:false,reminderTime:'09:00'},
   achievements:[],  // computed dynamically
   currentUnit:1,currentWordIndex:0,cardFlipped:false,
   mission:{newDone:0,reviewDone:0,quizDone:false},
@@ -1879,7 +1879,7 @@ function showAchievements(){
   showModal(`<div class="modal-title">🏆 成就勋章</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;opacity:${a.unlocked?1:.5};"><div style="font-size:28px;margin-bottom:6px;">${a.icon}</div><div style="font-size:12px;font-weight:600;">${a.name}</div><div style="font-size:10px;color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:3px;">${a.unlocked?'已解锁':'未解锁'}</div></div>`).join('')}</div><div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">已解锁 ${list.filter(a=>a.unlocked).length}/${list.length}</div>`);
 }
 function showPlans(){showModal(`<div class="modal-title">📅 学习计划</div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['📖','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
-function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay']].map(([i,l,k])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`).join('')}<button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
+function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay']].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">设置 ›</span></div>`).join('')}<button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
 function toggleSetting(key,el){D.user[key]=!D.user[key];el.classList.toggle('on');if(key==='darkMode')document.querySelector('.phone').classList.toggle('dark',D.user.darkMode);save();}
 function showAbout(){showModal(`<div style="text-align:center;padding:16px 0;"><div style="font-size:52px;margin-bottom:14px;">📚</div><div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;">自牧英语</div><div style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">Version 2.0.0</div><p style="font-size:14px;line-height:1.8;color:var(--ink-mid);">自牧英语致力于提供高质量、沉浸式英语学习体验。</p></div>`);}
 function showFeedback(){showModal(`<div class="modal-title">💬 意见反馈</div><textarea style="width:100%;height:110px;padding:12px;border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:inherit;resize:none;outline:none;background:var(--white);color:var(--ink);" placeholder="请输入您的建议或意见..."></textarea><button style="margin-top:12px;width:100%;" class="btn btn-primary" onclick="closeModal();showToast('反馈已提交，感谢您 🙏')">提交反馈</button>`);}
@@ -2224,6 +2224,55 @@ function wrongWordFeedback(mastered){
   }
 }
 
+// ════ LEARNING REMINDER ════
+const REMINDER_TIMES=[['08:00','🌅 早上 8:00'],['09:00','☀️ 早上 9:00'],['12:00','🌤️ 中午 12:00'],['14:00','🌤️ 下午 2:00'],['15:00','🌤️ 下午 3:00'],['19:00','🌆 晚上 7:00'],['20:00','🌙 晚上 8:00'],['21:00','🌙 晚上 9:00']];
+let _lastReminderDate=null;
+function openReminderSettings(){
+  const enabled=D.user.reminderEnabled;
+  const curTime=D.user.reminderTime||'09:00';
+  const timesHtml=REMINDER_TIMES.map(([t,label])=>`<div style="display:flex;align-items:center;padding:12px 14px;border-radius:12px;margin-bottom:6px;cursor:pointer;background:${t===curTime?'var(--sky-light)':'var(--surface)'};border:${t===curTime?'2px solid var(--sky-deep)':'2px solid transparent'};transition:all .15s;" onclick="setReminderTime('${t}')"><span style="font-size:15px;font-weight:${t===curTime?700:500};color:var(--ink);">${label}</span>${t===curTime?'<span style="margin-left:auto;color:var(--sky-deep);font-size:18px;">✓</span>':''}</div>`).join('');
+  showModal(`<div class="modal-title">⏰ 学习提醒</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--surface);border-radius:14px;margin-bottom:16px;">
+      <span style="font-size:15px;font-weight:600;">开启提醒</span>
+      <div class="toggle ${enabled?'on':''}" id="reminderToggle" onclick="toggleReminder(this)"></div>
+    </div>
+    ${enabled?`<div style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">选择提醒时间</div>
+    ${timesHtml}`:''}
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">完成</button>`);
+}
+function toggleReminder(el){
+  const nowEnabled=!D.user.reminderEnabled;
+  D.user.reminderEnabled=nowEnabled;
+  el.classList.toggle('on',nowEnabled);
+  if(nowEnabled){
+    if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission();}
+    _lastReminderDate=null;
+  }
+  DB.set('user','self',D.user);
+  // Re-render reminder settings
+  openReminderSettings();
+}
+function setReminderTime(t){
+  D.user.reminderTime=t;
+  DB.set('user','self',D.user);
+  _lastReminderDate=null;
+  openReminderSettings();
+  showToast('提醒时间已设置');
+}
+function checkReminder(){
+  if(!D.user.reminderEnabled)return;
+  if(!('Notification'in window))return;
+  if(Notification.permission!=='granted')return;
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  if(_lastReminderDate===today)return;
+  const curMin=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  if(curMin===D.user.reminderTime){
+    _lastReminderDate=today;
+    try{new Notification('📚 该学英语啦！',{body:'每天坚持10分钟，进步看得见 💪',icon:'icon-192.svg'});}catch(e){}
+  }
+}
+
 async function init(){
   await load();if(D.user.darkMode)document.querySelector('.phone').classList.add('dark');
   D.user.consecutiveDays=calcStreak();updateStats();setGreeting();
@@ -2233,6 +2282,7 @@ async function init(){
   document.getElementById('time').textContent=now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
   setInterval(()=>{const n=new Date();document.getElementById('time').textContent=n.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});},30000);
   setTimeout(()=>updateMission(),500);
+  setInterval(()=>checkReminder(),30000);
 }
   window.onerror=function(m,u,l,c){var e=document.createElement('div');e.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:13px;z-index:99999;font-family:sans-serif;';e.textContent='❌ '+m+' (line '+l+')';document.body.appendChild(e);};
   DB.open().then(()=>init()).catch(e=>{setTimeout(function(){throw e;},0);});
