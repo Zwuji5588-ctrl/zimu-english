@@ -1,0 +1,45 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          # Inline content.js and inject version
+          VERSION=$(git describe --tags --always 2>/dev/null || echo "dev")
+          CONTENT=$(cat src/content.js)
+          perl -0777 -pe 's|<script src="content\.js"></script>|<script>\n// content.js - '"$(date +%F)"'\n'"$CONTENT"'\n</script>|' src/index.html > dist/index.html
+          # Inject version
+          sed -i "s|<html|<!-- zimu-english v$VERSION -->\n<html|" dist/index.html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
