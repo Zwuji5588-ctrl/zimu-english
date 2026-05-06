@@ -39,6 +39,12 @@ $outPath = Join-Path $distDir "index.html"
 # Also copy content.js to dist (for non-inlined usage)
 Copy-Item $contentSrc $distDir
 
+# Copy PWA assets
+Copy-Item (Join-Path $srcDir "manifest.json") $distDir
+Copy-Item (Join-Path $srcDir "sw.js") $distDir
+Copy-Item (Join-Path $srcDir "icon-192.svg") $distDir
+Copy-Item (Join-Path $srcDir "icon-512.svg") $distDir
+
 Write-Host "Build complete: $($(Get-Item $outPath).Length) bytes"
 Write-Host "  $outPath"
 Write-Host "  $(Join-Path $distDir 'content.js')"

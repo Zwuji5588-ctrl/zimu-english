@@ -27,6 +27,11 @@ jobs:
           perl -0777 -pe 's|<script src="content\.js"></script>|<script>\n// content.js - '"$(date +%F)"'\n'"$CONTENT"'\n</script>|' src/index.html > dist/index.html
           # Inject version
           sed -i "s|<html|<!-- zimu-english v$VERSION -->\n<html|" dist/index.html
+          # Copy PWA assets
+          cp src/manifest.json dist/
+          cp src/sw.js dist/
+          cp src/icon-192.svg dist/
+          cp src/icon-512.svg dist/
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
