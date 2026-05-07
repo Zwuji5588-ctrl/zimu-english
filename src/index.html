@@ -869,10 +869,10 @@ function showProUpgrade(source){
       <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">稍后再说</button>
     </div>`);
 }
-async function activatePro(){
+async function activatePro(type){
   if(API.token){
     try {
-      const r = await API.request('POST', '/payment/create-checkout');
+      const r = await API.request('POST', '/payment/create-checkout', type ? { type } : {});
       if(r.simulated){
         // Dev mode: instant activation
         D.user.tier='pro'; D.user.proExpiry=0;
@@ -881,7 +881,12 @@ async function activatePro(){
         updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
         return;
       }
-      if(r.url){ closeModal(); window.location.href=r.url; return; }
+      if(r.qrcode){
+        // PayJS mode: show QR code for scanning
+        closeModal();
+        showQRPayment(r.qrcode, r.orderId);
+        return;
+      }
     } catch(e) { showToast('支付失败：'+e.message); return; }
   }
   // Fallback: local activation (offline / no backend)
@@ -889,6 +894,33 @@ async function activatePro(){
   if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
   save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
   updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
+}
+function showQRPayment(qrcode, orderId){
+  showModal(`<div class="modal-title">📱 扫码支付</div>
+    <div style="text-align:center;padding:8px 0;">
+      <img src="${qrcode}" style="width:220px;height:220px;border-radius:12px;background:#fff;padding:8px;" alt="支付二维码"/>
+      <div style="font-size:13px;color:var(--ink-soft);margin-top:12px;">请使用微信/支付宝扫码支付</div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">金额：¥19.99</div>
+      <div id="paymentStatus" style="font-size:13px;color:var(--ink-soft);margin-top:8px;">等待支付中...</div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:12px;" onclick="closeModal()">取消</button>
+    </div>`);
+  const pollTimer = setInterval(async () => {
+    if(!API.token || !document.getElementById('modal').classList.contains('active')){
+      clearInterval(pollTimer);
+      return;
+    }
+    try {
+      const r = await API.request('GET', '/payment/order/'+orderId);
+      if(r.status === 'paid'){
+        clearInterval(pollTimer);
+        D.user.tier='pro'; D.user.proExpiry=0;
+        if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
+        save(); updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
+        closeModal();
+        showToast('🎉 已成功升级 Pro 会员！');
+      }
+    } catch(e) {}
+  }, 3000);
 }
 function updateVIPCard(){
   const card=document.getElementById('vipCard');if(!card)return;
