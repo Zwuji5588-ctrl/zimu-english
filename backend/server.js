@@ -8,6 +8,7 @@ import authRouter from './routes/auth.js';
 import syncRouter from './routes/sync.js';
 import ttsRouter from './routes/tts.js';
 import paymentRouter from './routes/payment.js';
+import dictRouter from './routes/dict.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/sync', syncRouter);
 app.use('/api/tts', ttsRouter);
 app.use('/api/payment', paymentRouter);
+app.use('/api/dict', dictRouter);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });

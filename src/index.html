@@ -1652,36 +1652,20 @@ function searchWords(q){
   // online section placeholder
   html+=`<div id="onlineLookup" style="margin-top:8px;"><div style="text-align:center;padding:16px;"><div style="font-size:14px;color:var(--ink-soft);">🌐 查询网络释义中...</div></div></div>`;
   document.getElementById('searchResults').innerHTML=html;
-  // debounce API call
+  // debounce API call via backend
   clearTimeout(_searchTimer);
   _searchTimer=setTimeout(()=>{
-    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(q)}`).then(r=>r.json()).then(data=>{
+    fetch(API.base+'/dict/lookup?q='+encodeURIComponent(q)).then(r=>r.json()).then(data=>{
       const el=document.getElementById('onlineLookup');
       if(!el)return;
-      if(data.title||!data||!data.length){
-        el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">未找到网络释义</div>`;return;
+      if(data.error||!data.word){
+        el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">${data.fallback?'🌐 联网查词暂不可用':'未找到网络释义'}</div>`;return;
       }
-      el.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div>`+
-        data.map(entry=>{
-          const ph=entry.phonetics?.find(p=>p.text)||entry.phonetics?.[0];
-          const audio=entry.phonetics?.find(p=>p.audio)?.audio||'';
-          return `<div style="padding:14px;background:var(--white);border-radius:14px;box-shadow:var(--cs);margin-bottom:8px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:22px;font-weight:900;color:var(--ink);">${entry.word}</span>
-              ${ph?`<span style="font-size:13px;color:var(--ink-soft);">${ph.text}</span>`:''}
-              ${audio?`<button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();new Audio('${audio}').play()">🔊</button>`:''}
-            </div>
-            ${entry.meanings.map(m=>`
-              <div style="margin-top:10px;">
-                <span style="font-size:11px;font-weight:700;color:var(--sky-deep);background:var(--sky-light);padding:2px 8px;border-radius:100px;">${({noun:'名词',verb:'动词',adjective:'形容词',adverb:'副词',preposition:'介词',conjunction:'连词',pronoun:'代词',interjection:'感叹词',determiner:'限定词',numeral:'数词',article:'冠词'})[m.partOfSpeech.toLowerCase()]||m.partOfSpeech}</span>
-                ${m.definitions.slice(0,3).map(d=>`
-                  <div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>
-                  ${d.example?`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`:''}
-                `).join('')}
-              </div>
-            `).join('')}
-          </div>`;
-      }).join('');
+      let r=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div><div style="padding:14px;background:var(--white);border-radius:14px;box-shadow:var(--cs);margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--ink);">${data.word}</span>${data.ukPhonetic||data.usPhonetic?`<span style="font-size:13px;color:var(--ink-soft);">${data.ukPhonetic||data.usPhonetic}</span>`:''}${data.audio?`<button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();new Audio('${data.audio}').play()">🔊</button>`:''}</div>`;
+      data.meanings.forEach(m=>{r+=`<div style="margin-top:10px;">`;m.definitions.slice(0,5).forEach(d=>{r+=`<div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>`;if(d.example)r+=`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`;});r+=`</div>`;});
+      if(data.web){r+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-soft);">参考</div>`;data.web.slice(0,3).forEach(w=>{r+=`<div style="margin-top:4px;font-size:13px;color:var(--ink-mid);"><span style="color:var(--sky-deep);">${w.key}</span> ${w.values.join('、')}</div>`;});}
+      r+=`</div>`;
+      el.innerHTML=r;
     }).catch(()=>{
       const el=document.getElementById('onlineLookup');
       if(el)el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">网络请求失败</div>`;
