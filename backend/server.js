@@ -22,6 +22,19 @@ app.use('/api/sync', syncRouter);
 app.use('/api/tts', ttsRouter);
 app.use('/api/payment', paymentRouter);
 
+// ── Temporary: cleanup test data (remove after use) ──
+import { run } from './db.js';
+app.get('/api/admin/cleanup', async (req, res) => {
+  try {
+    await run("DELETE FROM progress WHERE user_id = (SELECT id FROM users WHERE email = 'test@test.com')");
+    await run("DELETE FROM payment_orders WHERE user_id = (SELECT id FROM users WHERE email = 'test@test.com')");
+    await run("DELETE FROM users WHERE email = 'test@test.com'");
+    res.json({ ok: true, message: '测试账号已删除' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── Youdao Dictionary (inline) ──
 const YOUDAO_APP_KEY = process.env.YOUDAO_APP_KEY || process.env.YOUDAO_APPKEY || process.env.YOUDAO_KEY || '';
 const YOUDAO_APP_SECRET = process.env.YOUDAO_APP_SECRET || process.env.YOUDAO_APPSECRET || process.env.YOUDAO_SECRET || '';
