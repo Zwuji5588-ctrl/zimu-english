@@ -6,4 +6,3 @@ restartPolicyType = "always"
 [volumes]
   [volumes.data]
     mountPath = "/app/backend/data"
-    volumeName = "zimu-db-data"

@@ -12,6 +12,8 @@ COPY . .
 # Build frontend (generates dist/index.html)
 RUN cd backend && node build.js
 
+VOLUME /app/backend/data
+
 EXPOSE 3001
 
 CMD ["node", "backend/server.js"]
