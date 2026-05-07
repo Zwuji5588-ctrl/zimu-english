@@ -42,6 +42,8 @@ Copy-Item $contentSrc $distDir
 # Copy PWA assets
 Copy-Item (Join-Path $srcDir "manifest.json") $distDir
 Copy-Item (Join-Path $srcDir "sw.js") $distDir
+Copy-Item (Join-Path $srcDir "icon-192.png") $distDir
+Copy-Item (Join-Path $srcDir "icon-512.png") $distDir
 Copy-Item (Join-Path $srcDir "icon-192.svg") $distDir
 Copy-Item (Join-Path $srcDir "icon-512.svg") $distDir
 

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自牧英语</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 <meta name="theme-color" content="#0ea5e9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,11 +14,9 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--sky:#38bdf8;--sky-deep:#0ea5e9;--sky-light:#e0f4fd;--ink:#0f172a;--ink-mid:#475569;--ink-soft:#94a3b8;--cream:#f8fafc;--white:#fff;--surface:#f1f5f9;--gold:#f59e0b;--green:#10b981;--rose:#f43f5e;--lavender:#8b5cf6;--orange:#f97316;--cs:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);--bg-muted:#f1f5f9;--border:#e2e8f0;}
 .dark{--ink:#f1f5f9;--ink-mid:#cbd5e1;--ink-soft:#64748b;--cream:#0f172a;--white:#1e293b;--surface:#334155;--sky-light:#0c4a6e;--cs:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);--bg-muted:#1e293b;--border:#334155;}
-body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;}
-.phone{width:375px;height:812px;background:var(--cream);border-radius:44px;border:10px solid #1e293b;box-shadow:0 0 0 1px #334155,0 32px 80px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.1);display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.status-bar{height:48px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--ink);flex-shrink:0;background:var(--white);}
-.status-icons{display:flex;gap:5px;align-items:center;}
-.screen{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--cream);}
+body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 100%);min-height:100vh;display:flex;flex-direction:column;}
+.phone{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--cream);}
+.screen{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--cream);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
 .page{display:none;flex-direction:column;flex:1;overflow:hidden;}
 .page.active{display:flex;animation:pageIn .35s cubic-bezier(.4,0,.2,1);}
 @keyframes pageIn{from{opacity:.5;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
@@ -30,7 +30,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .btn-ghost{background:var(--sky-light);color:var(--sky-deep);padding:9px 18px;font-size:13px;}
 .btn-sm{padding:6px 14px;font-size:12px;}
 .btn-danger{background:#fef2f2;color:#ef4444;padding:11px 20px;font-size:14px;}
-.tab-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 0 24px;display:flex;flex-shrink:0;}
+.tab-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-shrink:0;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--ink-soft);font-family:inherit;padding:4px 0;transition:color .2s;}
 .tab-item.active{color:var(--sky-deep);}
 .tab-icon{font-size:22px;line-height:1;}
@@ -312,19 +312,13 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .completion-stat-label{font-size:12px;color:var(--ink-soft);margin-top:4px;}
 .completion-actions{display:flex;flex-direction:column;gap:10px;padding:0 16px 24px;}
 .review-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;padding:10px 14px;margin:0 0 10px;font-size:13px;font-weight:600;color:#92400e;display:flex;align-items:center;gap:8px;}
+.auth-input:focus{outline:none;border-color:var(--sky-deep)!important;}
+.dark .auth-input{background:var(--surface);border-color:var(--border);color:var(--ink);}
 
 </style>
 </head>
 <body>
 <div class="phone">
-  <div class="status-bar">
-    <span id="time">19:07</span>
-    <div class="status-icons">
-      <svg id="signalIcon" width="16" height="11" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="7" rx="1"/><rect x="8" y="2" width="3" height="10" rx="1"/><rect x="12" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
-      <svg id="wifiIcon" width="16" height="12" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 7a15 15 0 0 1 22 0"/><path d="M5 11a10 10 0 0 1 14 0"/><path d="M9 15a5 5 0 0 1 6 0"/><circle cx="12" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-      <svg id="batteryIcon" width="24" height="12" viewBox="0 0 26 14" fill="none"><rect x=".5" y=".5" width="21" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><rect x="22" y="4" width="3" height="6" rx="1.5" fill="currentColor" opacity=".5"/><rect x="2" y="2" width="16" height="10" rx="2" fill="currentColor"/></svg>
-    </div>
-  </div>
   <div class="screen">
 
   <!-- HOME -->
@@ -586,7 +580,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
         <button class="menu-row" onclick="if(!isPro()){showProUpgrade('import');return;}document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
         <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       </div>
-      <button class="btn btn-danger" style="width:100%;border-radius:16px;" onclick="logout()">退出登录</button>
+      <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
       <div style="height:8px;"></div>
     </div>
   </div>
@@ -648,6 +642,43 @@ const DB = (() => {
   function getAll(store) { return new Promise((rs,rj) => { const r = tx(store,'readonly').objectStore(store).getAll(); r.onsuccess = () => rs(r.result); r.onerror = () => rj(r.error); }); }
   return { open, get, set, delete: del, getAll };
 })();
+
+// API client — cloud sync backend
+const API = {
+  base: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001/api'
+    : '/api',
+  get token() { return localStorage.getItem('zimu_token') || D.user._token || ''; },
+  set token(v) { if(v){localStorage.setItem('zimu_token', v);D.user._token=v;}else{localStorage.removeItem('zimu_token');D.user._token='';} },
+  async request(method, path, body) {
+    const t = this.token; if (!t) throw new Error('未登录');
+    const opts = { method, headers: { 'Authorization': 'Bearer '+t } };
+    if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+    const r = await fetch(this.base+path, opts);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || '请求失败');
+    return j;
+  },
+  async register(email, password, name) {
+    const r = await fetch(this.base+'/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password,name}) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || '注册失败');
+    this.token = j.token; D.user._token = j.token;
+    if (j.user) Object.assign(D.user, j.user);
+    return j;
+  },
+  async login(email, password) {
+    const r = await fetch(this.base+'/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password}) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || '登录失败');
+    this.token = j.token; D.user._token = j.token;
+    if (j.user) Object.assign(D.user, j.user);
+    return j;
+  },
+  logout() { this.token = ''; },
+  async syncUpload(data) { return this.request('POST', '/sync/upload', { data }); },
+  async syncDownload() { return this.request('GET', '/sync/download'); }
+};
 
 // DataService — unified data access layer
 function getMasteryKey(unitId, wordIndex) { return unitId+'_'+wordIndex; }
@@ -729,6 +760,7 @@ function getDueWords(){
 function getDueCount(){return getDueWords().length;}
 
 let _saveTimer=null;
+let _syncTimer=null;
 function save(){
   if(_saveTimer)clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async ()=>{
@@ -741,6 +773,15 @@ function save(){
       await DB.set('mission', 'daily', D.mission);
       await DB.set('wrong_words', 'list', D.wrongWords);
       await DB.set('grammar', 'progress', D.grammarProgress);
+      // Cloud sync (throttled to every 30s)
+      if(API.token){
+        if(_syncTimer)return; // already queued
+        _syncTimer=setTimeout(()=>{
+          _syncTimer=null;
+          const payload = {user:D.user,mastery:D.mastery,reciteProgress:D.reciteProgress,readArticles:D.readArticles,readScores:D.readScores,mission:D.mission,wrongWords:D.wrongWords,grammarProgress:D.grammarProgress};
+          API.syncUpload(payload).catch(()=>{});
+        }, 30000);
+      }
     } catch(e) { console.warn('save error', e); }
   }, 200);
 }
@@ -779,6 +820,20 @@ async function load(){
       if (grammarP) Object.assign(D.grammarProgress, grammarP);
     }
   } catch(e) { console.warn('load error', e); }
+  // Cloud sync — pull remote data if logged in
+  if(API.token){
+    try {
+      const remote = await API.syncDownload();
+      if(remote.data && remote.data.user) Object.assign(D.user, remote.data.user);
+      if(remote.data && remote.data.mastery) Object.assign(D.mastery, remote.data.mastery);
+      if(remote.data && remote.data.reciteProgress) Object.assign(D.reciteProgress, remote.data.reciteProgress);
+      if(remote.data && remote.data.readArticles) Object.assign(D.readArticles, remote.data.readArticles);
+      if(remote.data && remote.data.readScores) Object.assign(D.readScores, remote.data.readScores);
+      if(remote.data && remote.data.mission) Object.assign(D.mission, remote.data.mission);
+      if(remote.data && remote.data.wrongWords) D.wrongWords = remote.data.wrongWords;
+      if(remote.data && remote.data.grammarProgress) Object.assign(D.grammarProgress, remote.data.grammarProgress);
+    } catch(e) { console.warn('cloud sync load error', e); }
+  }
   // migrate old checkedDays → checkInDates
   if(D.user.checkedDays&&D.user.checkedDays.length>0&&(!D.user.checkInDates||D.user.checkInDates.length===0)){
     const now=new Date();
@@ -814,11 +869,26 @@ function showProUpgrade(source){
       <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">稍后再说</button>
     </div>`);
 }
-function activatePro(){
-  D.user.tier='pro';D.user.proExpiry=0;
+async function activatePro(){
+  if(API.token){
+    try {
+      const r = await API.request('POST', '/payment/create-checkout');
+      if(r.simulated){
+        // Dev mode: instant activation
+        D.user.tier='pro'; D.user.proExpiry=0;
+        if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
+        save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
+        updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
+        return;
+      }
+      if(r.url){ closeModal(); window.location.href=r.url; return; }
+    } catch(e) { showToast('支付失败：'+e.message); return; }
+  }
+  // Fallback: local activation (offline / no backend)
+  D.user.tier='pro'; D.user.proExpiry=0;
   if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
-  save();closeModal();showToast('🎉 已成功升级 Pro 会员！');
-  updateProfileStats();if(document.getElementById('vipCard'))updateVIPCard();
+  save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
+  updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
 }
 function updateVIPCard(){
   const card=document.getElementById('vipCard');if(!card)return;
@@ -885,7 +955,42 @@ function showWord(){
 }
 function flipCard(){D.cardFlipped=!D.cardFlipped;document.getElementById('flipCardInner').classList.toggle('flipped',D.cardFlipped);}
 function speakCurrent(){const w=currentWord();if(w)speak(w.en);}
-function speak(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=0.85;u.pitch=1.1;window.speechSynthesis.speak(u);}
+// Audio cache for AI TTS (in-memory Map keyed by text)
+const _ttsCache = new Map();
+function speak(text){
+  if(!text) return;
+  window.speechSynthesis.cancel();
+  // If we have cached audio, play it
+  if(_ttsCache.has(text)){
+    const blob = _ttsCache.get(text);
+    const url = URL.createObjectURL(blob);
+    const a = new Audio(url);
+    a.onended = () => { URL.revokeObjectURL(url); };
+    a.play().catch(() => fallbackSpeak(text));
+    return;
+  }
+  // Try backend AI TTS
+  fetch(API.base+'/tts', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text, lang:D.user.accent||'en'}) })
+    .then(r => {
+      if(!r.ok) throw new Error('TTS unavailable');
+      return r.blob();
+    })
+    .then(blob => {
+      _ttsCache.set(text, blob);
+      const url = URL.createObjectURL(blob);
+      const a = new Audio(url);
+      a.onended = () => { URL.revokeObjectURL(url); };
+      a.play().catch(() => fallbackSpeak(text));
+    })
+    .catch(() => fallbackSpeak(text));
+}
+function fallbackSpeak(text){
+  if(!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = D.user.accent === 'uk' ? 'en-GB' : 'en-US';
+  u.rate = 0.85; u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+}
 function recordFeedback(type){
   if(D.session.reviewActive){reviewFeedback(type);return;}
   const unit=CONTENT.units.find(u=>u.id===D.currentUnit);
@@ -2073,11 +2178,85 @@ function showAchievements(){
 function showPlans(){showModal(`<div class="modal-title">📅 学习计划</div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['📖','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
 function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
 function toggleSetting(key,el){D.user[key]=!D.user[key];el.classList.toggle('on');if(key==='darkMode')document.querySelector('.phone').classList.toggle('dark',D.user.darkMode);save();}
-function showAbout(){showModal(`<div style="text-align:center;padding:16px 0;"><div style="font-size:52px;margin-bottom:14px;">📚</div><div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;">自牧英语</div><div style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">Version 2.0.0</div><p style="font-size:14px;line-height:1.8;color:var(--ink-mid);">自牧英语致力于提供高质量、沉浸式英语学习体验。</p></div>`);}
+function showAbout(){showModal(`<div style="text-align:center;padding:16px 0;"><div style="font-size:52px;margin-bottom:14px;">📚</div><div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;">自牧英语</div><div style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">Version 2.0.0</div><p style="font-size:14px;line-height:1.8;color:var(--ink-mid);">自牧英语致力于提供高质量、沉浸式英语学习体验。</p><div style="margin-top:16px;display:flex;justify-content:center;gap:16px;font-size:13px;"><a href="#" onclick="showPrivacy();return false;" style="color:var(--sky-deep);text-decoration:none;">隐私政策</a><a href="#" onclick="showTerms();return false;" style="color:var(--sky-deep);text-decoration:none;">用户协议</a></div></div>`);}
+function showPrivacy(){showModal(`<div class="modal-title">🔒 隐私政策</div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>自牧英语尊重并保护您的隐私。本应用仅在本地存储您的学习数据（IndexedDB）。当您注册账号后，您的学习数据将被加密传输至服务器用于云同步。我们不会将您的个人信息分享给第三方。</p><br><p><strong>数据收集</strong>：邮箱地址（仅用于账号识别）、学习进度数据。</p><br><p><strong>数据存储</strong>：本地数据存储在您的设备上；云端数据存储在我们的服务器（SQLite），采用行业标准加密。</p><br><p><strong>第三方服务</strong>：本应用可能使用 ElevenLabs 或 Azure 语音服务处理语音合成请求。</p></div>`);}
+function showTerms(){showModal(`<div class="modal-title">📋 用户协议</div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>使用自牧英语即表示您同意以下条款。</p><br><p><strong>使用许可</strong>：本应用仅供个人学习使用，禁止商业用途或再分发。</p><br><p><strong>Pro 会员</strong>：付费会员为订阅制，可随时取消。取消后不会退款，但会员权益将持续到当前计费周期结束。</p><br><p><strong>免责声明</strong>：本应用按"现状"提供，不保证完全无错误或持续可用。</p></div>`);}
 function showFeedback(){showModal(`<div class="modal-title">💬 意见反馈</div><textarea style="width:100%;height:110px;padding:12px;border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:inherit;resize:none;outline:none;background:var(--white);color:var(--ink);" placeholder="请输入您的建议或意见..."></textarea><button style="margin-top:12px;width:100%;" class="btn btn-primary" onclick="closeModal();showToast('反馈已提交，感谢您 🙏')">提交反馈</button>`);}
 function filterLevel(l){showToast('筛选：'+l);}
 function filterSort(s){showToast('排序：'+s);}
-function logout(){if(confirm('确定要退出登录吗？')){localStorage.removeItem('zimu3');showToast('已退出登录');setTimeout(()=>location.reload(),1000);}}
+function logout(){
+  if(confirm('确定要退出登录吗？')){
+    if(API.token) API.logout();
+    localStorage.removeItem('zimu3');
+    showToast('已退出登录');
+    setTimeout(()=>location.reload(), 1000);
+  }
+}
+function showAuthModal(){
+  showModal(`<div class="modal-title">📚 自牧英语账号</div>
+    <div style="padding:8px 0;">
+      <div id="authTabLogin" style="display:flex;gap:0;margin-bottom:18px;background:var(--surface);border-radius:10px;overflow:hidden;">
+        <button class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;background:var(--sky-deep);color:#fff;">登录</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')" style="flex:1;padding:10px;border:none;font-weight:600;font-size:14px;cursor:pointer;background:transparent;color:var(--ink-mid);">注册</button>
+      </div>
+      <div id="authFormLogin">
+        <input id="authEmail" class="auth-input" type="email" placeholder="邮箱" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;margin-bottom:10px;background:var(--white);color:var(--ink);">
+        <input id="authPassword" class="auth-input" type="password" placeholder="密码（至少6位）" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;margin-bottom:6px;background:var(--white);color:var(--ink);">
+        <div id="authError" style="color:#ef4444;font-size:13px;margin-bottom:10px;display:none;"></div>
+        <button class="btn btn-primary" style="width:100%;padding:13px;" onclick="doAuth()">登录</button>
+      </div>
+      <div id="authFormRegister" style="display:none;">
+        <input id="authName" class="auth-input" type="text" placeholder="昵称（选填）" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;margin-bottom:10px;background:var(--white);color:var(--ink);">
+        <input id="authEmail2" class="auth-input" type="email" placeholder="邮箱" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;margin-bottom:10px;background:var(--white);color:var(--ink);">
+        <input id="authPassword2" class="auth-input" type="password" placeholder="密码（至少6位）" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;margin-bottom:6px;background:var(--white);color:var(--ink);">
+        <div id="authError2" style="color:#ef4444;font-size:13px;margin-bottom:10px;display:none;"></div>
+        <button class="btn btn-primary" style="width:100%;padding:13px;" onclick="doAuth('register')">注册</button>
+      </div>
+    </div>`);
+}
+let _authMode='login';
+function switchAuthTab(mode){
+  _authMode=mode;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+    t.style.background = (i===0&&mode==='login')||(i===1&&mode==='register') ? 'var(--sky-deep)' : 'transparent';
+    t.style.color = (i===0&&mode==='login')||(i===1&&mode==='register') ? '#fff' : 'var(--ink-mid)';
+  });
+  document.getElementById('authFormLogin').style.display = mode==='login' ? '' : 'none';
+  document.getElementById('authFormRegister').style.display = mode==='register' ? '' : 'none';
+  document.getElementById('authError').style.display='none';
+  document.getElementById('authError2').style.display='none';
+}
+async function doAuth(mode){
+  mode = mode || _authMode;
+  const errEl = document.getElementById(mode==='login'?'authError':'authError2');
+  const email = document.getElementById(mode==='login'?'authEmail':'authEmail2').value.trim();
+  const password = document.getElementById(mode==='login'?'authPassword':'authPassword2').value;
+  const name = mode==='register' ? document.getElementById('authName').value.trim() : '';
+  if(!email){errEl.textContent='请输入邮箱';errEl.style.display='';return;}
+  if(password.length<6){errEl.textContent='密码至少6位';errEl.style.display='';return;}
+  errEl.style.display='none';
+  try {
+    if(mode==='register') await API.register(email, password, name);
+    else await API.login(email, password);
+    // Sync local data to cloud after auth
+    const payload = {user:D.user,mastery:D.mastery,reciteProgress:D.reciteProgress,readArticles:D.readArticles,readScores:D.readScores,mission:D.mission,wrongWords:D.wrongWords,grammarProgress:D.grammarProgress};
+    API.syncUpload(payload).catch(()=>{});
+    closeModal();
+    showToast(mode==='register'?'注册成功，已自动登录':'登录成功');
+    updateUserUI();
+  } catch(e) {
+    errEl.textContent=e.message;
+    errEl.style.display='';
+  }
+}
+function updateUserUI(){
+  // Update profile section login state
+  const btn = document.getElementById('logoutBtn');
+  if(btn){
+    btn.textContent = API.token ? '退出登录' : '登录 / 注册';
+    btn.className = API.token ? 'btn btn-danger' : 'btn btn-primary';
+  }
+}
 
 function showToast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 
@@ -2852,39 +3031,16 @@ function nextPronWord(){
   s.index++;showPronWord();
 }
 
-function initStatusBar(){
-  const conn=navigator.connection;
-  if(conn){
-    const et=conn.effectiveType||'4g';
-    const bars=et.includes('2g')?1:et.includes('3g')?2:3;
-    const si=document.getElementById('signalIcon');
-    if(si)si.innerHTML=[0,1,2,3].map(i=>`<rect x="${i*4}" y="${12-(i+1)*3+1}" width="3" height="${(i+1)*3}" rx="1" fill="currentColor"${i>=bars?' opacity=".3"':''}/>`).join('');
-    conn.addEventListener('change',function(){setTimeout(initStatusBar,100);});
-  }
-  if(navigator.getBattery){
-    navigator.getBattery().then(b=>{
-      const pct=Math.round(b.level*100);
-      const bi=document.getElementById('batteryIcon');
-      if(bi){
-        const c=pct>20?'currentColor':'#ef4444';
-        bi.innerHTML=`<rect x=".5" y=".5" width="21" height="13" rx="3" stroke="${c}" stroke-width="1.2" fill="none"/><rect x="2" y="2" width="${Math.max(3,pct/100*16)}" height="10" rx="2" fill="${c}"/><rect x="22" y="4" width="3" height="6" rx="1.5" fill="${c}" opacity=".5"/>`;
-      }
-    });
-  }
-}
 async function init(){
   await load();if(D.user.darkMode)document.querySelector('.phone').classList.add('dark');
   D.user.consecutiveDays=calcStreak();D.user.totalWords=getCurrentBankTotalWords();updateBookCard();updateStats();setGreeting();
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
-  const now=new Date();
-  document.getElementById('time').textContent=now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-  setInterval(()=>{const n=new Date();document.getElementById('time').textContent=n.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});},30000);
   setTimeout(()=>updateMission(),500);
   setInterval(()=>checkReminder(),30000);
-  setTimeout(initStatusBar,100);
+  updateUserUI();
 }
-  window.onerror=function(m,u,l,c){var e=document.createElement('div');e.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:13px;z-index:99999;font-family:sans-serif;';e.textContent='❌ '+m+' (line '+l+')';document.body.appendChild(e);};
+  window.onerror=function(m){showToast('出错：'+m);};
   DB.open().then(()=>init()).catch(e=>{setTimeout(function(){throw e;},0);});
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}</script>

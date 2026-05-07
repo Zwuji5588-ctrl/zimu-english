@@ -1,15 +1,16 @@
-const CACHE = 'zimu-v1';
-const PRECACHE = [
+const CACHE = 'zimu-v2';
+const PRECACHE_URLS = [
   '.',
   'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
   'icon-192.svg',
   'icon-512.svg'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE)
-      .then(cache => cache.addAll(PRECACHE))
+    caches.open(CACHE).then(cache => cache.addAll(PRECACHE_URLS))
       .then(() => self.skipWaiting())
   );
 });
@@ -25,14 +26,32 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Same-origin only
+  if (url.origin !== self.location.origin) return;
+
+  // For HTML navigation requests, try network first, fall back to cache
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).then(response => {
+        const clone = response.clone();
+        caches.open(CACHE).then(cache => cache.put(request, clone));
+        return response;
+      }).catch(() => caches.match(request).then(cached => cached || caches.match('.')))
+    );
+    return;
+  }
+
+  // Static assets: stale-while-revalidate
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        return caches.open(CACHE).then(cache => {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      });
+    caches.match(request).then(cached => {
+      const fetchPromise = fetch(request).then(response => {
+        caches.open(CACHE).then(cache => cache.put(request, response.clone()));
+        return response;
+      }).catch(() => {});
+      return cached || fetchPromise;
     })
   );
 });

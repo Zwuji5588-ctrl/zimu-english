@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd backend && npm install"
+
+[deploy]
+startCommand = "cd backend && node server.js"
+healthcheckPath = "/api/health"
+restartPolicyType = "always"
+
+[volumes]
+  [volumes.data]
+    mountPath = "/app/backend/data"
+    volumeName = "zimu-db-data"
