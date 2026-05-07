@@ -1,16 +1,22 @@
 import pg from 'pg';
 
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/zimu',
-  max: 10,
-});
+let pool;
 
-pool.on('error', err => {
-  console.error('Database pool error:', err.message);
-});
+function getPool() {
+  if (!pool) {
+    pool = new pg.Pool({
+      connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/zimu',
+      max: 10,
+    });
+    pool.on('error', err => {
+      console.error('Database pool error:', err.message);
+    });
+  }
+  return pool;
+}
 
 async function createTables() {
-  const client = await pool.connect();
+  const client = await getPool().connect();
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -54,7 +60,7 @@ export async function initDb() {
 
 // Backward-compatible wrapper: exec() returns {columns, values} like sql.js
 export async function exec(sql, params = []) {
-  const result = await pool.query(sql, params);
+  const result = await getPool().query(sql, params);
   return {
     columns: result.fields.map(f => f.name),
     values: result.rows.map(r => Object.values(r)),
@@ -63,15 +69,10 @@ export async function exec(sql, params = []) {
 
 // run() for INSERT/UPDATE (returns nothing)
 export async function run(sql, params = []) {
-  await pool.query(sql, params);
-}
-
-// Get a connection for transactions if needed
-export function getPool() {
-  return pool;
+  await getPool().query(sql, params);
 }
 
 // No-op save — PostgreSQL auto-commits
 export function save() {}
 
-export default { initDb, exec, run, getPool, save };
+export default { initDb, exec, run, save };
