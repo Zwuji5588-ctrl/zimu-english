@@ -74,7 +74,7 @@ app.get('/api/dict/lookup', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString() });
+  res.json({ status: 'ok', time: new Date().toISOString(), version: 'v2-with-youdao' });
 });
 
 // In production, serve the built frontend as static files
