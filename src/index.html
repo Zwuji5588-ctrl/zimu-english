@@ -595,7 +595,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
   </div><!-- /screen -->
 </div>
 
-<div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)" style="position:absolute;border-radius:44px;">
+<div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)">
   <div class="modal-sheet"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div>
 </div>
 
@@ -1640,11 +1640,11 @@ function updateStats(){
   updateMission();
 }
 
-function showModal(html){document.getElementById('modalBody').innerHTML=html;document.getElementById('modal').classList.add('active');}
+function showModal(html,align='bottom'){const m=document.getElementById('modal');m.style.alignItems=align==='top'?'flex-start':'flex-end';m.style.paddingTop=align==='top'?'60px':'';document.getElementById('modalBody').innerHTML=html;m.classList.add('active');}
 function closeModal(){stopScanner();if(readingAloud){window.speechSynthesis.cancel();readingAloud=false;}const m=document.getElementById('modal');m.style.alignItems='';m.style.paddingTop='';m.classList.remove('active');}
 function closeModalOnBg(e){if(e.target===document.getElementById('modal'))closeModal();}
 function openSearch(word){
-  showModal(`<div class="modal-title" style="margin-bottom:14px;">🔍 查单词</div>
+  showModal(`<div class="modal-title" style="margin-bottom:14px;">🔍 查单词</div>`, 'top');
     <input type="text" placeholder="输入英文单词..." value="${word||''}" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;background:var(--white);color:var(--ink);" oninput="searchWords(this.value)" id="searchInput" autocomplete="off">
     <div id="searchResults" style="margin-top:12px;min-height:40px;"></div>`);
   const inp=document.getElementById('searchInput');
