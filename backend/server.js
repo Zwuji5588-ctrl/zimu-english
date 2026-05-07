@@ -23,8 +23,8 @@ app.use('/api/tts', ttsRouter);
 app.use('/api/payment', paymentRouter);
 
 // ── Youdao Dictionary (inline) ──
-const YOUDAO_APP_KEY = process.env.YOUDAO_APP_KEY || '';
-const YOUDAO_APP_SECRET = process.env.YOUDAO_APP_SECRET || '';
+const YOUDAO_APP_KEY = process.env.YOUDAO_APP_KEY || process.env.YOUDAO_APPKEY || process.env.YOUDAO_KEY || '';
+const YOUDAO_APP_SECRET = process.env.YOUDAO_APP_SECRET || process.env.YOUDAO_APPSECRET || process.env.YOUDAO_SECRET || '';
 
 function youdaoSign(q, salt, curtime) {
   const input = q.length <= 20 ? q : q.slice(0, 10) + q.length + q.slice(-10);
