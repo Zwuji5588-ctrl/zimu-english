@@ -88,11 +88,10 @@ if (existsSync(distDir)) {
   console.log(`Serving static files from ${distDir}`);
 }
 
-initDb().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`自牧英语运行在 http://localhost:${PORT}`);
+// Start server immediately, init DB in background
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`自牧英语运行在 http://localhost:${PORT}`);
+  initDb().catch(err => {
+    console.error('数据库初始化失败（服务仍可运行）:', err.message);
   });
-}).catch(err => {
-  console.error('数据库初始化失败:', err);
-  process.exit(1);
 });
