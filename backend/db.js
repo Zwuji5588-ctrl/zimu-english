@@ -1,68 +1,77 @@
-import initSqlJs from 'sql.js';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import pg from 'pg';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const dbDir = join(__dirname, 'data');
-if (!existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/zimu',
+  max: 10,
+});
 
-const DB_PATH = join(dbDir, 'zimu.db');
+pool.on('error', err => {
+  console.error('Database pool error:', err.message);
+});
 
-let db;
+async function createTables() {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        name TEXT NOT NULL DEFAULT '',
+        tier TEXT NOT NULL DEFAULT 'free',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS progress (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        data TEXT NOT NULL DEFAULT '{}',
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS payment_orders (
+        id SERIAL PRIMARY KEY,
+        order_id TEXT UNIQUE NOT NULL,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        amount INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        provider TEXT NOT NULL DEFAULT 'dev',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+  } finally {
+    client.release();
+  }
+}
 
 export async function initDb() {
-  const SQL = await initSqlJs();
-  if (existsSync(DB_PATH)) {
-    db = new SQL.Database(readFileSync(DB_PATH));
-  } else {
-    db = new SQL.Database();
-  }
-  db.run('PRAGMA journal_mode=WAL');
-  db.run('PRAGMA foreign_keys=ON');
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      name TEXT NOT NULL DEFAULT '',
-      tier TEXT NOT NULL DEFAULT 'free',
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS progress (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      data TEXT NOT NULL DEFAULT '{}',
-      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS payment_orders (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT UNIQUE NOT NULL,
-      user_id INTEGER NOT NULL,
-      amount INTEGER NOT NULL,
-      status TEXT NOT NULL DEFAULT 'pending',
-      provider TEXT NOT NULL DEFAULT 'dev',
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-  `);
-  save();
-  return db;
+  await createTables();
+  console.log('PostgreSQL connected, tables ready');
 }
 
-export function save() {
-  writeFileSync(DB_PATH, Buffer.from(db.export()));
+// Backward-compatible wrapper: exec() returns {columns, values} like sql.js
+export async function exec(sql, params = []) {
+  const result = await pool.query(sql, params);
+  return {
+    columns: result.fields.map(f => f.name),
+    values: result.rows.map(r => Object.values(r)),
+  };
 }
 
-export function getDb() {
-  if (!db) throw new Error('Database not initialized. Call initDb() first.');
-  return db;
+// run() for INSERT/UPDATE (returns nothing)
+export async function run(sql, params = []) {
+  await pool.query(sql, params);
 }
 
-export default { initDb, save, getDb };
+// Get a connection for transactions if needed
+export function getPool() {
+  return pool;
+}
+
+// No-op save — PostgreSQL auto-commits
+export function save() {}
+
+export default { initDb, exec, run, getPool, save };

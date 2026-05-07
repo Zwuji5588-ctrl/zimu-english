@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { getDb, save } from '../db.js';
+import { exec, run } from '../db.js';
 import { authenticate } from './auth.js';
 import crypto from 'crypto';
 import QRCode from 'qrcode';
@@ -12,10 +12,8 @@ const PAYJS_KEY = process.env.PAYJS_KEY || '';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8771';
 
-function activatePro(userId) {
-  const db = getDb();
-  db.run("UPDATE users SET tier = 'pro', updated_at = datetime('now') WHERE id = ?", [userId]);
-  save();
+async function activatePro(userId) {
+  await run("UPDATE users SET tier = 'pro', updated_at = NOW() WHERE id = $1", [userId]);
 }
 
 // ── PayJS ──────────────────────────────────────────
@@ -57,12 +55,10 @@ async function createPayJSOrder(userId, type = 'wechat') {
   }
 
   // Store order
-  const db = getDb();
-  db.run(
-    "INSERT INTO payment_orders (order_id, user_id, amount, status, provider) VALUES (?, ?, ?, 'pending', 'payjs')",
+  await run(
+    "INSERT INTO payment_orders (order_id, user_id, amount, status, provider) VALUES ($1, $2, $3, 'pending', 'payjs')",
     [data.payjs_order_id, userId, totalFee]
   );
-  save();
 
   // Convert weixin:// URL to QR code data URL
   const qrDataUrl = await QRCode.toDataURL(data.qrcode, { width: 280, margin: 1 });
@@ -82,7 +78,7 @@ router.post('/create-checkout', authenticate, async (req, res) => {
     }
 
     // Dev mode — instant activation
-    activatePro(req.userId);
+    await activatePro(req.userId);
     res.json({ ok: true, simulated: true });
   } catch (err) {
     console.error('Payment error:', err.message);
@@ -91,7 +87,7 @@ router.post('/create-checkout', authenticate, async (req, res) => {
 });
 
 // PayJS webhook (notified when user pays)
-router.post('/webhook', express.urlencoded({ extended: true }), (req, res) => {
+router.post('/webhook', express.urlencoded({ extended: true }), async (req, res) => {
   if (PROVIDER !== 'payjs') return res.status(200).json({ received: true });
 
   const { payjs_order_id, total_fee, return_code, sign } = req.body;
@@ -103,30 +99,27 @@ router.post('/webhook', express.urlencoded({ extended: true }), (req, res) => {
   ));
   if (sign !== verify) return res.status(400).send('sign error');
 
-  const db = getDb();
-  const rows = db.exec(
-    "SELECT user_id FROM payment_orders WHERE order_id = ? AND status = 'pending'",
+  const rows = await exec(
+    "SELECT user_id FROM payment_orders WHERE order_id = $1 AND status = 'pending'",
     [payjs_order_id]
   );
 
-  if (rows.length && rows[0].values.length) {
-    const userId = rows[0].values[0][0];
-    activatePro(userId);
-    db.run("UPDATE payment_orders SET status = 'paid' WHERE order_id = ?", [payjs_order_id]);
-    save();
+  if (rows.values.length) {
+    const userId = rows.values[0][0];
+    await activatePro(userId);
+    await run("UPDATE payment_orders SET status = 'paid' WHERE order_id = $1", [payjs_order_id]);
   }
 
   res.status(200).send('success');
 });
 
 // Poll order status (frontend uses this after showing QR code)
-router.get('/order/:orderId', authenticate, (req, res) => {
-  const db = getDb();
-  const rows = db.exec(
-    "SELECT status FROM payment_orders WHERE order_id = ? AND user_id = ?",
+router.get('/order/:orderId', authenticate, async (req, res) => {
+  const rows = await exec(
+    "SELECT status FROM payment_orders WHERE order_id = $1 AND user_id = $2",
     [req.params.orderId, req.userId]
   );
-  const status = rows.length && rows[0].values.length ? rows[0].values[0][0] : 'not_found';
+  const status = rows.values.length ? rows.values[0][0] : 'not_found';
   res.json({ status });
 });
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { getDb, save } from '../db.js';
+import { exec, run } from '../db.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'zimu-dev-secret-change-in-production';
@@ -32,18 +32,15 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: '邮箱格式不正确' });
   }
   try {
-    const db = getDb();
     const hash = await bcrypt.hash(password, 10);
-    const existing = db.exec(`SELECT id FROM users WHERE email = ?`, [email]);
-    if (existing.length && existing[0].values.length) {
+    const existing = await exec(`SELECT id FROM users WHERE email = $1`, [email]);
+    if (existing.values.length) {
       return res.status(409).json({ error: '该邮箱已注册' });
     }
-    db.run(`INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)`, [email, hash, name || '']);
-    const row = db.exec(`SELECT id, email, name, tier FROM users WHERE email = ?`, [email]);
-    const user = row[0].values[0];
-    // Create empty progress
-    db.run(`INSERT INTO progress (user_id, data) VALUES (?, '{}')`, [user[0]]);
-    save();
+    await run(`INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3)`, [email, hash, name || '']);
+    const row = await exec(`SELECT id, email, name, tier FROM users WHERE email = $1`, [email]);
+    const user = row.values[0];
+    await run(`INSERT INTO progress (user_id, data) VALUES ($1, '{}')`, [user[0]]);
     const token = jwt.sign({ userId: user[0] }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ token, user: { id: user[0], email: user[1], name: user[2] || '', tier: user[3] } });
   } catch (err) {
@@ -60,14 +57,12 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: '邮箱格式不正确' });
   }
   try {
-    const db = getDb();
-    const rows = db.exec(`SELECT * FROM users WHERE email = ?`, [email]);
-    if (!rows.length || !rows[0].values.length) {
+    const rows = await exec(`SELECT * FROM users WHERE email = $1`, [email]);
+    if (!rows.values.length) {
       return res.status(401).json({ error: '邮箱或密码错误' });
     }
-    const row = rows[0];
-    const cols = row.columns;
-    const vals = row.values[0];
+    const cols = rows.columns;
+    const vals = rows.values[0];
     const userId = vals[cols.indexOf('id')];
     const hash = vals[cols.indexOf('password_hash')];
     const userName = vals[cols.indexOf('name')];
@@ -85,15 +80,14 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/me', authenticate, (req, res) => {
+router.get('/me', authenticate, async (req, res) => {
   try {
-    const db = getDb();
-    const rows = db.exec(`SELECT id, email, name, tier, created_at FROM users WHERE id = ?`, [req.userId]);
-    if (!rows.length || !rows[0].values.length) {
+    const rows = await exec(`SELECT id, email, name, tier, created_at FROM users WHERE id = $1`, [req.userId]);
+    if (!rows.values.length) {
       return res.status(404).json({ error: '用户不存在' });
     }
-    const cols = rows[0].columns;
-    const vals = rows[0].values[0];
+    const cols = rows.columns;
+    const vals = rows.values[0];
     res.json({
       user: {
         id: vals[cols.indexOf('id')],
