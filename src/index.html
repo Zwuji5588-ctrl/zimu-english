@@ -702,19 +702,19 @@ const DataService = {
   getAllWords() { return CONTENT.units.flatMap(u => u.words.map(w => ({...w, unitId:u.id, unitName:u.name}))); },
   // User (async)
   async getUser() { return D.user; },
-  async updateUser(partial) { Object.assign(D.user, partial); await DB.set('user', 'self', D.user); },
-  async addPoints(delta) { D.user.points += delta; await DB.set('user', 'self', D.user); },
+  async updateUser(partial) { Object.assign(D.user, partial); save(); },
+  async addPoints(delta) { D.user.points += delta; save(); },
   // Mastery (async) — stores {l:level, t:timestamp} for spaced repetition
   async getMastery(unitId, wordIndex) { const v = D.mastery[getMasteryKey(unitId, wordIndex)]; return v && typeof v==='object' ? v.l : (v||0); },
-  async setMastery(unitId, wordIndex, level) { const k = getMasteryKey(unitId, wordIndex); D.mastery[k] = {l:level, t:Date.now()}; await DB.set('mastery', k, D.mastery[k]); },
+  async setMastery(unitId, wordIndex, level) { const k = getMasteryKey(unitId, wordIndex); D.mastery[k] = {l:level, t:Date.now()}; save(); },
   // Recite progress (async)
   async getReciteProgress(unitId, sentIdx) { return D.reciteProgress[getReciteKey(unitId, sentIdx)] || 0; },
-  async setReciteProgress(unitId, sentIdx, level) { const k = getReciteKey(unitId, sentIdx); D.reciteProgress[k] = level; await DB.set('recite_progress', k, level); },
+  async setReciteProgress(unitId, sentIdx, level) { const k = getReciteKey(unitId, sentIdx); D.reciteProgress[k] = level; save(); },
   // Reading (async)
   async getReadArticles() { return D.readArticles; },
-  async setReadArticle(id, status) { D.readArticles[id] = status; await DB.set('reading', id, status); },
+  async setReadArticle(id, status) { D.readArticles[id] = status; save(); },
   async getReadScores() { return D.readScores; },
-  async setReadScore(articleId, score) { D.readScores[articleId] = score; await DB.set('reading', 'score_'+articleId, score); },
+  async setReadScore(articleId, score) { D.readScores[articleId] = score; save(); },
   // Word collection (async)
   async getWordCollection() { return D.user.wordCollection || []; },
   async addWordToCollection(word) { D.user.wordCollection = D.user.wordCollection || []; D.user.wordCollection.push(word); await DB.set('user', 'self', D.user); },

@@ -75,4 +75,16 @@ export async function run(sql, params = []) {
 // No-op save — PostgreSQL auto-commits
 export function save() {}
 
-export default { initDb, exec, run, save };
+// Get a single row as a plain object (or null)
+export async function getOne(sql, params = []) {
+  const result = await getPool().query(sql, params);
+  return result.rows.length ? result.rows[0] : null;
+}
+
+// Get multiple rows as plain objects
+export async function getMany(sql, params = []) {
+  const result = await getPool().query(sql, params);
+  return result.rows;
+}
+
+export default { initDb, exec, run, save, getOne, getMany };

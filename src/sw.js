@@ -1,4 +1,4 @@
-const CACHE = 'zimu-v2';
+const CACHE = 'zimu-__CACHE_VERSION__';
 const PRECACHE_URLS = [
   '.',
   'manifest.json',

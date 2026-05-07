@@ -29,7 +29,16 @@ html = html.replace(
 
 // Version injection
 const version = process.env.npm_package_version || '1.0.0';
+const buildTime = Date.now().toString(36);
 html = html.replace(/(<!--.*?-->)?\s*<html/i, `<!-- zimu-english v${version} -->\n<html`);
+
+// Inject cache version into sw.js
+const swPath = join(distDir, 'sw.js');
+if (existsSync(swPath)) {
+  let sw = readFileSync(swPath, 'utf-8');
+  sw = sw.replace(/__CACHE_VERSION__/g, `v${version.replace(/\./g,'-')}-${buildTime}`);
+  writeFileSync(swPath, sw, 'utf-8');
+}
 
 // Minify (optional)
 if (minify) {
