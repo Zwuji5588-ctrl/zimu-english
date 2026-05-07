@@ -1,9 +1,5 @@
-[build]
-builder = "nixpacks"
-buildCommand = "cd backend && npm install"
-
 [deploy]
-startCommand = "cd backend && node server.js"
+startCommand = "node backend/server.js"
 healthcheckPath = "/api/health"
 restartPolicyType = "always"
 
