@@ -42,6 +42,30 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .filter-item{padding:4px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:all .2s;background:transparent;white-space:nowrap;}
 .filter-item.active{color:var(--sky-deep);background:var(--sky-light);}
 .mode-item{padding:8px 22px;font-size:14px;font-weight:700;}
+/* Phonics detail view */
+.pho-nav{display:flex;gap:15px;overflow-x:auto;padding:16px 0 12px;color:var(--ink-soft);font-weight:500;font-size:14px;border-bottom:1px solid var(--border);margin-bottom:20px;scrollbar-width:none;}
+.pho-nav::-webkit-scrollbar{display:none;}
+.pho-word{text-align:center;font-size:48px;font-weight:700;letter-spacing:2px;margin:16px 0 8px;}
+.pho-word .pho-syl{display:inline;}
+.pho-syl-red{color:#FF6B6B;}
+.pho-syl-blue{color:#4D96FF;}
+.pho-syl-gray{color:#CCC;}
+.pho-syls{display:flex;justify-content:center;gap:8px;margin:8px 0 12px;flex-wrap:wrap;}
+.pho-syl-box{background:#F0F7FF;color:#4D96FF;padding:4px 15px;border-radius:12px;font-size:14px;font-weight:600;}
+.pho-phonetic{text-align:center;color:#4D96FF;margin:8px 0;font-size:16px;}
+.pho-accent{background:#E1F0FF;font-size:12px;padding:2px 6px;border-radius:4px;color:#4D96FF;}
+.pho-trans{color:var(--ink-mid);font-size:15px;line-height:1.7;text-align:center;margin-bottom:20px;}
+.pho-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:24px;}
+.pho-grid-item{text-align:center;}
+.pho-grid-letter{background:#F5F5F5;padding:8px 0;border-radius:8px 8px 0 0;font-weight:700;font-size:15px;}
+.pho-grid-ipa{background:#EDF2F9;padding:5px 0;border-radius:0 0 8px 8px;font-size:12px;color:var(--ink-soft);}
+.pho-example h3{color:#4D96FF;font-size:16px;margin-bottom:10px;}
+.pho-example .en{font-weight:700;color:var(--ink);margin-bottom:4px;}
+.pho-example .zh{color:var(--ink-soft);font-size:14px;line-height:1.5;}
+.pho-actions{display:flex;gap:10px;margin-top:24px;padding-bottom:16px;}
+.pho-actions .pho-btn{flex:1;padding:12px;border-radius:25px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;text-align:center;}
+.pho-ghost{background:#F0F7FF;color:#4D96FF;}
+.pho-primary{background:linear-gradient(135deg,var(--sky-deep),#2563eb);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.35);}
 .word-list-empty{text-align:center;padding:40px 0;font-size:14px;color:var(--ink-soft);}
 .read-tabs{transition:background .3s ease;}
 .curve-box{transition:background .3s ease;}
@@ -462,6 +486,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
         <span class="filter-item mode-item" data-mode="practice" onclick="setWordMode('practice')">✍️ 学+练</span>
         <span class="filter-item mode-item" data-mode="dictation" onclick="setWordMode('dictation')">🎧 听写</span>
       </div>
+    </div>
+    <div id="phonicsView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 90px;background:var(--cream);">
+      <div id="phonicsContent"></div>
     </div>
     <div id="textPageView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 24px;background:var(--cream);">
       <div id="textListMode">
@@ -1205,8 +1232,92 @@ function setWordFilter(f){
 function setWordMode(m){
   _wordMode=m;
   document.querySelectorAll('.filter-item,.mode-item').forEach(el=>el.classList.toggle('active',el.dataset.mode===m));
-  if(m==='practice'){if(_currentUnitId)selectUnit(_currentUnitId);}
+  if(m==='browse'){showPhonicsView();}
+  else if(m==='practice'){if(_currentUnitId)selectUnit(_currentUnitId);}
   else if(m==='dictation')showToast('🎧 听写模式开发中');
+}
+// ════ Phonics detail view ════
+function showPhonicsView(){
+  const unit=CONTENT.units.find(u=>u.id===_currentUnitId);
+  if(!unit||!unit.words.length){showToast('没有单词');return;}
+  const wIdx=D.currentWordIndex||0;
+  const word=unit.words[wIdx%unit.words.length];
+  if(!word){showToast('没有单词');return;}
+  document.getElementById('learningScrollArea').style.display='none';
+  document.getElementById('phonicsView').classList.remove('hidden');
+  document.getElementById('phonicsView').classList.add('active');
+  renderPhonicsWord(word,unit.words,wIdx,unit.words.length);
+}
+function renderPhonicsWord(word,words,idx,total){
+  // Simple syllable split: break on vowel sounds
+  function splitSyl(w){
+    const vowels='aeiouy';
+    const parts=[];let cur='';
+    for(let i=0;i<w.length;i++){
+      cur+=w[i];
+      const isLast=i===w.length-1;
+      const nextV=!isLast&&vowels.includes(w[i+1]);
+      const curV=vowels.includes(w[i]);
+      // break after a vowel if next char is consonant (except last)
+      if(curV&&!isLast&&!nextV&&w[i+1]!==undefined&&i<w.length-2){parts.push(cur);cur='';}
+    }
+    if(cur)parts.push(cur);
+    return parts.length?parts:[w];
+  }
+  const syls=splitSyl(word.en);
+  const colors=syls.map((_,i)=>{
+    if(i===0&&syls.length>1)return 'blue';
+    if(i===syls.length-1&&syls.length>2)return 'gray';
+    return 'red';
+  });
+  // Build simple phonics grid: letter → approximate IPA
+  const phGrid=[];
+  const phClean=(word.ph||'').replace(/[\/ˈˌ]/g,'');
+  for(let i=0;i<Math.min(word.en.length,6);i++){
+    phGrid.push({letter:word.en[i],ipa:phClean[i]||'?'});
+  }
+  const ex=word.ex||'';
+  const enSafe=word.en.replace(/'/g,"\\'");
+  const html=`
+    <div class="pho-nav">
+      <span>${word.en}</span>
+      <span style="color:var(--sky-deep);">${word.ph||''}</span>
+      <span>${word.zh}</span>
+    </div>
+    <div class="pho-word">${syls.map((s,i)=>`<span class="pho-syl pho-syl-${colors[i]}">${s}</span>`).join('')}</div>
+    <div class="pho-syls">${syls.map((s,i)=>`<span class="pho-syl-box">${s}</span>`).join('')}</div>
+    <div class="pho-phonetic">${word.ph||''} <span class="pho-accent">${D.user.accent==='uk'?'英':'美'}</span></div>
+    <div class="pho-trans">${word.zh}</div>
+    <div class="pho-grid">${phGrid.map(g=>`<div class="pho-grid-item"><div class="pho-grid-letter">${g.letter}</div><div class="pho-grid-ipa">${g.ipa}</div></div>`).join('')}</div>
+    <div class="pho-example">${ex?`<h3>📖 例句</h3><div class="en">${ex}</div><div class="zh">${word.zh&&ex?ex.replace(word.en,'...'):'参考上方释义'}</div>`:''}</div>
+    <div class="pho-actions">
+      <button class="pho-btn pho-ghost" onclick="prevPhonicsWord()">← 上一个</button>
+      <button class="pho-btn pho-primary" onclick="speak('${enSafe}')">🔊 朗读</button>
+      <button class="pho-btn pho-ghost" onclick="nextPhonicsWord()">下一个 →</button>
+    </div>`;
+  document.getElementById('phonicsContent').innerHTML=html;
+  document.getElementById('learningTitle').textContent=word.en;
+}
+function prevPhonicsWord(){
+  const unit=CONTENT.units.find(u=>u.id===_currentUnitId);
+  if(!unit)return;
+  D.currentWordIndex=Math.max(0,(D.currentWordIndex||0)-1);
+  const w=unit.words[D.currentWordIndex];
+  if(w)renderPhonicsWord(w,unit.words,D.currentWordIndex,unit.words.length);
+}
+function nextPhonicsWord(){
+  const unit=CONTENT.units.find(u=>u.id===_currentUnitId);
+  if(!unit)return;
+  D.currentWordIndex=Math.min(unit.words.length-1,(D.currentWordIndex||0)+1);
+  const w=unit.words[D.currentWordIndex];
+  if(w)renderPhonicsWord(w,unit.words,D.currentWordIndex,unit.words.length);
+}
+function exitPhonicsView(){
+  document.getElementById('phonicsView').classList.add('hidden');
+  document.getElementById('phonicsView').classList.remove('active');
+  document.getElementById('learningScrollArea').style.display='';
+  document.getElementById('learningTitle').textContent='单元学习';
+  renderUnits();
 }
 function selectUnitTab(id){
   _currentUnitId=id;
@@ -1391,6 +1502,7 @@ function onLearningBack(){
   if(D.session.wrongWordsMode){exitWrongWordsMode();return;}
   if(D.session.reviewActive){exitReviewMode();return;}
   if(!document.getElementById('cardMode').classList.contains('hidden')){exitCardMode();return;}
+  if(!document.getElementById('phonicsView').classList.contains('hidden')){exitPhonicsView();return;}
   if(reciteState.unitId!==null){backToTextList();return;}
   if(!document.getElementById('textPageView').classList.contains('hidden')){backToUnits();return;}
   switchPage('home');
