@@ -1896,8 +1896,7 @@ function closeModalOnBg(e){if(e.target===document.getElementById('modal'))closeM
 function openSearch(word){
   showModal(`<div class="modal-title" style="margin-bottom:14px;">查单词</div>
     <input type="text" placeholder="输入英文单词..." value="${word||''}" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;background:var(--white);color:var(--ink);" oninput="searchWords(this.value)" id="searchInput" autocomplete="off">
-    <div id="searchResults" style="margin-top:12px;min-height:40px;"></div>`);
-  const s=document.querySelector('.modal-sheet');s.style.maxHeight='100vh';s.style.height='100vh';s.style.borderRadius='28px 28px 0 0';s.style.justifyContent='flex-start';
+    <div id="searchResults" style="margin-top:12px;min-height:40px;"></div>`, 'top');
   const inp=document.getElementById('searchInput');
   inp.focus();
   if(word) searchWords(word);
