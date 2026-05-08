@@ -14,6 +14,10 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--sky:#38bdf8;--sky-deep:#0ea5e9;--sky-light:#e0f4fd;--ink:#0f172a;--ink-mid:#475569;--ink-soft:#94a3b8;--cream:#f8fafc;--white:#fff;--surface:#f1f5f9;--gold:#f59e0b;--green:#10b981;--rose:#f43f5e;--lavender:#8b5cf6;--orange:#f97316;--cs:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);--bg-muted:#f1f5f9;--border:#e2e8f0;}
 .dark{--ink:#f1f5f9;--ink-mid:#cbd5e1;--ink-soft:#64748b;--cream:#0f172a;--white:#1e293b;--surface:#334155;--sky-light:#0c4a6e;--cs:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);--bg-muted:#1e293b;--border:#334155;}
+[data-lucide]{width:1em;height:1em;stroke-width:2;}
+.lucide-icon{animation:iconElasticIn .4s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes iconElasticIn{0%{opacity:0;transform:scale(0);}60%{transform:scale(1.15);}100%{opacity:1;transform:scale(1);}}
+@keyframes chartEntrance{0%{opacity:0;transform:translateY(12px);}100%{opacity:1;transform:translateY(0);}}
 html,body{height:100%;overflow:hidden;-webkit-overflow-scrolling:touch;}
 body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);min-height:100dvh;display:flex;flex-direction:column;}
 .phone{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1;background:var(--cream);transform-origin:center center;transition:transform .45s cubic-bezier(.32,.72,0,1),border-radius .45s ease,filter .45s ease,background .3s ease;}
@@ -43,26 +47,26 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 @keyframes slideOutRight{from{transform:translateX(0);opacity:1;}to{transform:translateX(40px);opacity:0;}}
 .scroll-area{flex:1;overflow-y:auto;padding:0 16px 80px;scrollbar-width:none;}
 .scroll-area::-webkit-scrollbar{display:none;}
-.card{background:var(--white);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--cs);}
+.card{background:rgba(255,255,255,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--cs);}
 /* Universal press feedback for all interactive elements */
-.unit-card:active,.article-card:active,.menu-row:active,.tab-item:active,.icon-btn:active,.filter-pill:active,.training-item:active,.cat-item:active,.fav-btn:active,.recite-sentence:active,.quiz-entry:active{transform:scale(.97);}
+.unit-card:active,.article-card:active,.menu-row:active,.tab-item:active,.icon-btn:active,.filter-pill:active,.training-item:active,.cat-item:active,.fav-btn:active,.recite-sentence:active,.quiz-entry:active{transform:scale(.9);}
 /* Disable text selection & callout on UI */
 .btn,.card,.tab-item,.menu-row,.icon-btn,.filter-pill,.modal-handle,.training-item,.unit-card,.article-card{-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
 .btn{border:none;border-radius:100px;font-family:inherit;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;transition:all .2s cubic-bezier(.32,.72,0,1);}
-.btn:active{transform:scale(.96);}
+.btn:active{transform:scale(.9);}
 .btn-primary{background:linear-gradient(135deg,var(--sky-deep),#2563eb);color:#fff;padding:11px 20px;font-size:14px;box-shadow:0 4px 12px rgba(14,165,233,.35);}
 .btn-primary:hover{box-shadow:0 6px 20px rgba(14,165,233,.45);}
-.btn-ghost:active{transform:scale(.95);}
+.btn-ghost:active{transform:scale(.9);}
 .btn-ghost{background:var(--sky-light);color:var(--sky-deep);padding:9px 18px;font-size:13px;}
 .btn-sm{padding:6px 14px;font-size:12px;}
 .btn-danger{background:#fef2f2;color:#ef4444;padding:11px 20px;font-size:14px;}
 .pricing-tab{flex:1;padding:12px;border:2px solid var(--border);border-radius:12px;background:var(--white);color:var(--ink-mid);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s cubic-bezier(.32,.72,0,1);}
 .pricing-tab.active{border-color:var(--sky-deep);background:var(--sky-light);color:var(--sky-deep);}
-.pricing-tab:active{transform:scale(.97);}
+.pricing-tab:active{transform:scale(.9);}
 .tab-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10;max-width:430px;margin:auto;border-radius:0 0 44px 44px;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--ink-soft);font-family:inherit;padding:4px 0;transition:color .2s;}
 .tab-item.active{color:var(--sky-deep);}
-.tab-icon{font-size:22px;line-height:1;}
+.tab-icon{display:flex;align-items:center;justify-content:center;line-height:1;}
 .tab-label{font-size:10px;font-weight:600;}
 .tab-dot{width:4px;height:4px;border-radius:2px;background:var(--sky-deep);opacity:0;transition:opacity .2s;}
 .tab-item.active .tab-dot{opacity:1;}
@@ -77,9 +81,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .icon-btn:active{background:var(--bg-muted);}
 .mission-card{background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:24px;padding:18px;color:#fff;box-shadow:0 8px 24px rgba(14,165,233,.35);display:flex;align-items:center;gap:16px;}
 .ring-wrap{flex-shrink:0;position:relative;width:76px;height:76px;}
-.ring-svg{width:76px;height:76px;transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:rgba(255,255,255,.2);stroke-width:8;}
-.ring-fill{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-dasharray:201;stroke-dashoffset:201;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);}
+#ringChart{width:76px;height:76px;display:block;animation:chartEntrance .6s cubic-bezier(.34,1.56,.64,1) both;}
 .ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .ring-pct{font-size:17px;font-weight:900;color:#fff;line-height:1;}
 .ring-sub{font-size:10px;color:rgba(255,255,255,.8);}
@@ -127,6 +129,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .curve-edit{font-size:12px;color:var(--sky-deep);cursor:pointer;}
 .curve-meta{font-size:12px;color:var(--ink-soft);}
 .curve-meta span{color:var(--sky-deep);font-weight:600;}
+#memoryCurveChart{width:100%;height:80px;animation:chartEntrance .8s cubic-bezier(.34,1.56,.64,1) both;}
 .page-nav{background:var(--white);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;position:relative;}
 .nav-back{width:36px;height:36px;border:none;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
 .page-nav-title{font-size:17px;font-weight:700;color:var(--ink);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;}
@@ -209,7 +212,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .profile-id{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px;display:flex;align-items:center;gap:6px;}
 .copy-btn{background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,.7);display:flex;align-items:center;padding:0;}
 .scanner-btn{width:40px;height:40px;border:none;border-radius:14px;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.stats-strip{background:var(--white);border-radius:22px;margin:-20px 16px 0;padding:20px;display:flex;box-shadow:0 4px 24px rgba(0,0,0,.1);position:relative;z-index:2;}
+.stats-strip{background:rgba(255,255,255,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:22px;margin:-20px 16px 0;padding:20px;display:flex;box-shadow:0 4px 24px rgba(0,0,0,.1);position:relative;z-index:2;}
 .stat-block{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .stat-block+.stat-block{border-left:1px solid var(--border);}
 .stat-val{font-size:22px;font-weight:700;color:var(--sky-deep);}
@@ -229,7 +232,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .menu-chev{color:#cbd5e1;font-size:18px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .35s ease;}
 .modal-overlay.active{display:flex;opacity:1;}
-.modal-sheet{background:var(--white);border-radius:28px 28px 0 0;padding:16px 24px 40px;width:100%;max-width:430px;max-height:85vh;overflow-y:auto;position:relative;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;animation:sheetUp .5s cubic-bezier(.32,.72,0,1);}
+.modal-sheet{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:28px 28px 0 0;padding:16px 24px 40px;width:100%;max-width:430px;max-height:85vh;overflow-y:auto;position:relative;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;animation:sheetUp .5s cubic-bezier(.32,.72,0,1);}
 .modal-sheet.top-sheet{border-radius:28px;width:375px;max-height:80vh;margin:0 auto;animation:sheetFade .4s cubic-bezier(.32,.72,0,1);}
 @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
 @keyframes sheetFade{from{opacity:0;transform:translateY(12px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
@@ -349,6 +352,8 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .review-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;padding:10px 14px;margin:0 0 10px;font-size:13px;font-weight:600;color:#92400e;display:flex;align-items:center;gap:8px;}
 .auth-input:focus{outline:none;border-color:var(--sky-deep)!important;}
 .dark .auth-input{background:var(--surface);border-color:var(--border);color:var(--ink);}
+.dark .card{background:rgba(30,41,59,.75);}
+.dark .modal-sheet{background:rgba(30,41,59,.82);}
 
 </style>
 </head>
@@ -365,21 +370,18 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
           <div><div class="user-greeting" id="greeting">早上好 ☀️</div><div class="user-name" id="userName">自牧</div></div>
         </div>
         <div class="header-actions">
-          <button class="icon-btn" onclick="openSearch()" style="display:flex;align-items:center;gap:4px;padding:0 12px;width:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span style="font-size:12px;font-weight:600;color:var(--ink-mid);">查单词</span></button>
-          <button class="icon-btn" onclick="openSettings()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+          <button class="icon-btn" onclick="openSearch()" style="display:flex;align-items:center;gap:4px;padding:0 12px;width:auto;"><i data-lucide="search" style="width:16px;height:16px;"></i><span style="font-size:12px;font-weight:600;color:var(--ink-mid);">查单词</span></button>
+          <button class="icon-btn" onclick="openSettings()"><i data-lucide="settings" style="width:18px;height:18px;"></i></button>
         </div>
       </div>
       <!-- Mission Ring -->
       <div class="mission-card">
         <div class="ring-wrap">
-          <svg class="ring-svg" viewBox="0 0 80 80">
-            <circle class="ring-bg" cx="40" cy="40" r="32"/>
-            <circle class="ring-fill" id="ringFill" cx="40" cy="40" r="32"/>
-          </svg>
+          <canvas id="ringChart" width="76" height="76"></canvas>
           <div class="ring-label"><div class="ring-pct" id="missionPct">0%</div><div class="ring-sub">完成</div></div>
         </div>
         <div class="mission-info">
-          <div class="mission-title">📋 今日任务</div>
+          <div class="mission-title"><i data-lucide="clipboard-list" style="width:18px;height:18px;vertical-align:middle;"></i> 今日任务</div>
           <div class="mission-tasks">
             <div class="mission-task"><div class="mission-task-dot" id="dot1"></div><span id="task1">新学 0/5 个单词</span></div>
             <div class="mission-task"><div class="mission-task-dot" id="dot2"></div><span id="task2">复习 0/3 个单词</span></div>
@@ -397,8 +399,8 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
           <div style="flex:1;"><div class="book-title" id="bookTitle">新概念英语第一册</div><div class="book-switch" onclick="openBankSelector()">切换教材 ›</div><button class="btn btn-primary btn-sm" onclick="switchPage('learning')">进入学习</button></div>
         </div>
         <div class="curve-box">
-          <div class="curve-top"><span class="curve-title">📈 记忆进度</span><span class="curve-edit" onclick="showToast('编辑功能开发中')">编辑 ›</span></div>
-          <div class="progress-track"><div class="progress-fill" id="memoryCurve" style="width:65%;"></div></div>
+          <div class="curve-top"><span class="curve-title"><i data-lucide="trending-up" style="width:16px;height:16px;vertical-align:middle;"></i> 记忆进度</span><span class="curve-edit" onclick="showToast('编辑功能开发中')">编辑 ›</span></div>
+          <canvas id="memoryCurveChart" width="320" height="80"></canvas>
           <div class="curve-meta">已学 <span id="learnedWords">0</span>/<span id="totalWordsSpan">493</span> · 连续 <span id="consecutiveDays">12</span> 天</div>
         </div>
       </div>
@@ -420,12 +422,12 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       <div class="card">
         <div class="plan-header"><div class="section-title">专项训练</div></div>
         <div class="training-grid">
-          <div class="training-item" onclick="startTraining('listening')"><div class="training-icon" style="background:#fdf2f8;">👂</div><div class="training-label">随身听</div></div>
-          <div class="training-item" onclick="startTraining('spelling')"><div class="training-icon" style="background:#eff6ff;">✏️</div><div class="training-label">拼写</div></div>
-          <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;">💬</div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">AI 对话 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;">💎</div><div class="training-label">消消乐</div></div>
-          <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;">📖</div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">语法 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;">❌</div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
+          <div class="training-item" onclick="startTraining('listening')"><div class="training-icon" style="background:#fdf2f8;"><i data-lucide="ear" style="width:22px;height:22px;"></i></div><div class="training-label">随身听</div></div>
+          <div class="training-item" onclick="startTraining('spelling')"><div class="training-icon" style="background:#eff6ff;"><i data-lucide="pencil" style="width:22px;height:22px;"></i></div><div class="training-label">拼写</div></div>
+          <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;"><i data-lucide="message-square" style="width:22px;height:22px;"></i></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">AI 对话 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
+          <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;"><i data-lucide="gem" style="width:22px;height:22px;"></i></div><div class="training-label">消消乐</div></div>
+          <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;"><i data-lucide="book" style="width:22px;height:22px;"></i></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">语法 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
+          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;"><i data-lucide="x-circle" style="width:22px;height:22px;"></i></div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
         </div>
       </div>
     </div>
@@ -434,7 +436,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
   <!-- LEARNING -->
   <div id="page-learning" class="page">
     <div class="page-nav">
-      <button class="nav-back" id="learningBackBtn" onclick="onLearningBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="nav-back" id="learningBackBtn" onclick="onLearningBack()"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i></button>
       <span class="page-nav-title" id="learningTitle">单元学习</span>
       <div style="width:36px;"></div>
     </div>
@@ -450,7 +452,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       </div>
       <div id="textDetailMode" class="hidden">
         <div style="display:flex;align-items:center;gap:8px;margin:12px 0 14px;">
-          <button class="nav-back" onclick="backToTextList()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="nav-back" onclick="backToTextList()"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
           <span style="font-size:16px;font-weight:700;flex:1;" id="textDetailTitle">课文</span>
           <button class="recite-record-btn recite-record-start" id="playAllBtn" onclick="playAllSentences()" style="padding:4px 10px;font-size:12px;">🔊 朗读全文</button>
         </div>
@@ -468,7 +470,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       <!-- cardMode -->
       <div id="cardMode" class="hidden" style="display:flex;flex-direction:column;height:100%;padding:0 16px;">
         <div style="display:flex;align-items:center;gap:8px;margin:12px 0 4px;">
-          <button class="nav-back" id="cardBackBtn" onclick="exitCardMode()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="nav-back" id="cardBackBtn" onclick="exitCardMode()"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
           <span style="font-size:16px;font-weight:700;flex:1;" id="cardUnitTitle">Unit 1</span>
           <button onclick="showTextList()" style="background:var(--sky-light);color:var(--sky-deep);border:none;border-radius:100px;padding:5px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">📖 课文</button>
         </div>
@@ -567,7 +569,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     </div>
     <div id="reading-toolbar" class="filter-row" style="padding:10px 16px;gap:10px;">
       <div class="search-bar" style="flex:1;background:var(--bg-muted);border-radius:12px;padding:0 14px;display:flex;align-items:center;gap:8px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <i data-lucide="search" style="width:15px;height:15px;flex-shrink:0;"></i>
         <input type="text" id="articleSearchInput" placeholder="搜索文章标题..." style="border:none;background:transparent;outline:none;font-size:13px;font-family:inherit;color:var(--ink);width:100%;" oninput="filterArticles(this.value)">
       </div>
       <button class="filter-pill" style="background:var(--sky-light);color:var(--sky-deep);white-space:nowrap;flex-shrink:0;" onclick="openCalendar()">📅 打卡日历</button>
@@ -588,9 +590,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       <div class="profile-top">
         <div style="display:flex;align-items:center;gap:14px;">
           <div class="profile-avatar" id="profileAvatar" onclick="editAvatar()" style="cursor:pointer;">👤</div>
-          <div><div class="profile-name" id="profileName" onclick="editName()" style="cursor:pointer;">自牧</div><div class="profile-id"><span id="profileId">ID: ZM123456</span><button class="copy-btn" onclick="copyUserId()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div>
+          <div><div class="profile-name" id="profileName" onclick="editName()" style="cursor:pointer;">自牧</div><div class="profile-id"><span id="profileId">ID: ZM123456</span><button class="copy-btn" onclick="copyUserId()"><i data-lucide="copy" style="width:13px;height:13px;"></i></button></div></div>
         </div>
-        <button class="scanner-btn" onclick="openScanner()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></button>
+        <button class="scanner-btn" onclick="openScanner()"><i data-lucide="scan-line" style="width:20px;height:20px;"></i></button>
       </div>
     </div>
     <div class="stats-strip">
@@ -602,19 +604,19 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     <div class="scroll-area" style="padding-top:16px;">
       <div class="vip-card" id="vipCard"></div>
       <div class="menu-card">
-        <button class="menu-row" onclick="showStats()"><div class="menu-row-left"><div class="menu-ico" style="background:#eff6ff;">📊</div>学习统计</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showCollections()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff1f2;">❤️</div>我的收藏</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showGoals()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">🎯</div>学习目标</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAchievements()"><div class="menu-row-left"><div class="menu-ico" style="background:#fffbeb;">🏆</div>成就勋章</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showPlans()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📅</div>学习计划</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showVocabBook()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📒</div>我的词汇</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showStats()"><div class="menu-row-left"><div class="menu-ico" style="background:#eff6ff;"><i data-lucide="bar-chart-3" style="width:17px;height:17px;"></i></div>学习统计</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showCollections()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff1f2;"><i data-lucide="heart" style="width:17px;height:17px;"></i></div>我的收藏</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showGoals()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><i data-lucide="target" style="width:17px;height:17px;"></i></div>学习目标</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showAchievements()"><div class="menu-row-left"><div class="menu-ico" style="background:#fffbeb;"><i data-lucide="trophy" style="width:17px;height:17px;"></i></div>成就勋章</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showPlans()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><i data-lucide="calendar" style="width:17px;height:17px;"></i></div>学习计划</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showVocabBook()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><i data-lucide="book-open" style="width:17px;height:17px;"></i></div>我的词汇</div><span class="menu-chev">›</span></button>
       </div>
       <div class="menu-card">
-        <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;">⚙️</div>设置</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">ℹ️</div>关于我们</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;">💬</div>意见反馈</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📤</div>导出数据</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;"><i data-lucide="settings" style="width:17px;height:17px;"></i></div>设置</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><i data-lucide="info" style="width:17px;height:17px;"></i></div>关于我们</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;"><i data-lucide="message-square" style="width:17px;height:17px;"></i></div>意见反馈</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><i data-lucide="upload" style="width:17px;height:17px;"></i></div>导出数据</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;"><i data-lucide="download" style="width:17px;height:17px;"></i></div>导入数据</div><span class="menu-chev">›</span></button>
         <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       </div>
       <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
@@ -623,9 +625,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
   </div>
 
   <div class="tab-bar">
-    <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon">🏠</div><div class="tab-label">首页</div></button>
-    <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon">📚</div><div class="tab-label">阅读</div></button>
-    <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon">👤</div><div class="tab-label">我的</div></button>
+    <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon"><i data-lucide="home" style="width:22px;height:22px;"></i></div><div class="tab-label">首页</div></button>
+    <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon"><i data-lucide="book-open" style="width:22px;height:22px;"></i></div><div class="tab-label">阅读</div></button>
+    <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon"><i data-lucide="user" style="width:22px;height:22px;"></i></div><div class="tab-label">我的</div></button>
   </div>
 
   </div><!-- /screen -->
@@ -633,9 +635,11 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 
 <div id="offlineBanner" class="offline-banner"><span class="offline-dot"></span>当前处于离线模式，部分功能可能不可用</div>
 <div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)">
-  <div class="modal-sheet"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div>
+  <div class="modal-sheet"><button class="modal-close" onclick="closeModal()"><i data-lucide="x" style="width:16px;height:16px;"></i></button><div id="modalBody"></div></div>
 </div>
 
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="content.js"></script>
 <script>
 const EXAM_BANKS = [
@@ -1097,11 +1101,17 @@ function _runPageSetup(name){
   if(name==='home')updateMission();
 }
 
+let _ringChart=null;
 function updateMission(){
   const done=[D.mission.newDone>=5,D.mission.reviewDone>=3,D.mission.quizDone].filter(Boolean).length;
   const pct=Math.round(done/3*100);
   document.getElementById('missionPct').textContent=pct+'%';
-  document.getElementById('ringFill').style.strokeDashoffset=201-(201*pct/100);
+  // Chart.js Doughnut
+  var ctx=document.getElementById('ringChart');
+  if(ctx&&typeof Chart!=='undefined'){
+    if(_ringChart){_ringChart.data.datasets[0].data=[done,3-done];_ringChart.update();}
+    else{_ringChart=new Chart(ctx,{type:'doughnut',data:{datasets:[{data:[done,3-done],backgroundColor:['#fff','rgba(255,255,255,.2)'],borderWidth:0,borderRadius:20,spacing:0}]},options:{cutout:'80%',responsive:false,plugins:{tooltip:{enabled:false},legend:{display:false}},animation:{animateRotate:true,duration:1000}}});}
+  }
   document.getElementById('dot1').className='mission-task-dot'+(D.mission.newDone>=5?' done':'');
   document.getElementById('dot2').className='mission-task-dot'+(D.mission.reviewDone>=3?' done':'');
   document.getElementById('dot3').className='mission-task-dot'+(D.mission.quizDone?' done':'');
@@ -1752,7 +1762,7 @@ function showArticleWordDetail(en,articleId){
   const already=D.user.wordCollection.some(x=>x.en===en&&x.articleId===articleId);
   const a=CONTENT.articles.find(x=>x.id===articleId);
   showModal(`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-    <button onclick="readArticle(${articleId})" style="background:var(--surface);border:none;border-radius:10px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button onclick="readArticle(${articleId})" style="background:var(--surface);border:none;border-radius:10px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0;"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button>
     <span style="font-size:17px;font-weight:700;color:var(--ink);">词汇详情</span></div>
     <div style="text-align:center;padding:16px 0 20px;">
       <div style="font-size:32px;font-weight:700;color:var(--sky-deep);font-family:'DM Serif Display',serif;margin-bottom:4px;">${w.en}</div>
@@ -1828,6 +1838,30 @@ function updateProfileStats(){
   if(pa){pa.textContent=D.user.avatarIcon||'👤';pa.style.background=D.user.avatarColor||'rgba(255,255,255,.25)';}
   updateVIPCard();
 }
+let _memoryChart=null;
+function _updateMemoryChart(){
+  var ctx=document.getElementById('memoryCurveChart');
+  if(!ctx||typeof Chart==='undefined')return;
+  var total=getCurrentBankTotalWords();
+  var pct=total>0?Math.round(D.user.learnedWords/total*100):0;
+  var days=14,data=[],labels=[],i,x,center,steepness,val;
+  for(i=0;i<days;i++){
+    labels.push('D'+(i+1));
+    x=i/days;center=pct/100;steepness=8;
+    data.push(Math.round((1/(1+Math.exp(-steepness*(x-center))))*100));
+  }
+  var isDark=document.querySelector('.phone')?.classList.contains('dark');
+  var lineColor=isDark?'#38bdf8':'#0ea5e9';
+  var grad=ctx.getContext('2d').createLinearGradient(0,0,0,80);
+  grad.addColorStop(0,lineColor+'4d');grad.addColorStop(1,lineColor+'03');
+  if(_memoryChart){_memoryChart.data.datasets[0].data=data;_memoryChart.update();return;}
+  _memoryChart=new Chart(ctx,{type:'line',
+    data:{labels:labels,datasets:[{data:data,borderColor:lineColor,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:lineColor,pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{tooltip:{enabled:true,mode:'index',intersect:false},legend:{display:false}},
+      scales:{x:{display:false,grid:{display:false}},y:{display:false,grid:{display:false},min:0,max:100}},
+      elements:{point:{radius:0}},animation:{duration:800,easing:'easeOutQuart'}}});
+}
 function updateStats(){
   const g=id=>{const el=document.getElementById(id);return el;};
   if(g('learnedWords'))g('learnedWords').textContent=D.user.learnedWords;
@@ -1835,7 +1869,7 @@ function updateStats(){
   if(g('streakNum'))g('streakNum').textContent=D.user.consecutiveDays;
   if(g('homeLearnedWords'))g('homeLearnedWords').textContent=D.user.learnedWords;
   if(g('homePoints'))g('homePoints').textContent=D.user.points;
-  if(g('memoryCurve'))g('memoryCurve').style.width=Math.round(getCurrentBankTotalWords()>0?D.user.learnedWords/getCurrentBankTotalWords()*100:0)+'%';
+  _updateMemoryChart();
   if(g('totalWordsSpan'))g('totalWordsSpan').textContent=getCurrentBankTotalWords();
   if(g('userName'))g('userName').textContent=D.user.name;
   const ha=document.querySelector('.avatar');
@@ -1853,6 +1887,7 @@ function showModal(html,align='bottom'){
   // Reset sheet transform from any prior drag
   if(sheet){sheet.style.transform='';sheet.style.opacity='';}
   document.getElementById('modalBody').innerHTML=html;
+  if(typeof lucide!=='undefined')lucide.createIcons({attrs:{'stroke-width':2,class:'lucide-icon'}},document.getElementById('modalBody'));
   m.classList.add('active');
   // Parallax: scale down the background
   document.querySelector('.phone')?.classList.add('modal-active');
@@ -1863,6 +1898,10 @@ function showModal(html,align='bottom'){
 function closeModal(){
   stopScanner();
   if(readingAloud){window.speechSynthesis.cancel();readingAloud=false;}
+  // Destroy any Chart.js instances inside the modal
+  if(typeof Chart!=='undefined'){
+    document.querySelectorAll('#modalBody canvas').forEach(function(c){var ch=Chart.getChart(c);if(ch)ch.destroy();});
+  }
   const m=document.getElementById('modal');
   const phone=document.querySelector('.phone');
   // Remove parallax
@@ -3483,6 +3522,7 @@ async function init(){
   D.user.consecutiveDays=calcStreak();D.user.totalWords=getCurrentBankTotalWords();updateBookCard();updateStats();setGreeting();
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+  if(typeof lucide!=='undefined')lucide.createIcons({attrs:{'stroke-width':2,class:'lucide-icon'}});
   setTimeout(()=>updateMission(),500);
   setInterval(()=>checkReminder(),30000);
   updateUserUI();
