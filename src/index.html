@@ -56,6 +56,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .btn-ghost{background:var(--sky-light);color:var(--sky-deep);padding:9px 18px;font-size:13px;}
 .btn-sm{padding:6px 14px;font-size:12px;}
 .btn-danger{background:#fef2f2;color:#ef4444;padding:11px 20px;font-size:14px;}
+.pricing-tab{flex:1;padding:12px;border:2px solid var(--border);border-radius:12px;background:var(--white);color:var(--ink-mid);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s cubic-bezier(.32,.72,0,1);}
+.pricing-tab.active{border-color:var(--sky-deep);background:var(--sky-light);color:var(--sky-deep);}
+.pricing-tab:active{transform:scale(.97);}
 .tab-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10;max-width:430px;margin:auto;border-radius:0 0 44px 44px;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--ink-soft);font-family:inherit;padding:4px 0;transition:color .2s;}
 .tab-item.active{color:var(--sky-deep);}
@@ -949,9 +952,26 @@ function isPro(){
   }
   return false;
 }
+let _pricingPlan='monthly';
 function showProUpgrade(source){
+  _pricingPlan='monthly';
+  const planTpl=(p)=>p==='monthly'
+    ?`<div style='display:flex;align-items:baseline;gap:4px;'><span style='font-size:28px;font-weight:900;color:#d97706;'>¥19.99</span><span style='font-size:13px;color:#a16207;'>/月</span></div>`
+    :`<div style='display:flex;align-items:baseline;gap:4px;'><span style='font-size:28px;font-weight:900;color:#d97706;'>¥99.99</span><span style='font-size:13px;color:#a16207;'>/年</span><span style='font-size:11px;background:#d97706;color:#fff;padding:2px 8px;border-radius:100px;font-weight:700;'>省50%</span></div>`;
+  const btnTpl=(p)=>p==='monthly'?'立即订阅 · ¥19.99/月':'立即订阅 · ¥99.99/年';
+  function renderPricing(plan){
+    document.getElementById('pricingTabM').className='pricing-tab'+(plan==='monthly'?' active':'');
+    document.getElementById('pricingTabY').className='pricing-tab'+(plan==='yearly'?' active':'');
+    document.getElementById('pricingAmount').innerHTML=planTpl(plan);
+    document.getElementById('pricingBtn').textContent=btnTpl(plan);
+    document.getElementById('pricingBtn').disabled=false;
+  }
   showModal(`<div class="modal-title">👑 升级 Pro 会员</div>
     <div style="padding:4px 0;">
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button id="pricingTabM" class="pricing-tab active" onclick="_pricingPlan=\'monthly\';renderPricing(\'monthly\')">月付</button>
+        <button id="pricingTabY" class="pricing-tab" onclick="_pricingPlan=\'yearly\';renderPricing(\'yearly\')">年付 <span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 6px;border-radius:100px;margin-left:3px;">🔥 最划算</span></button>
+      </div>
       <div style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;">解锁全部功能，让学习更高效</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border-radius:12px;"><span style="font-size:18px;">🎤</span><span style="font-size:13px;color:var(--ink);">发音对比 & AI 朗读评分</span></div>
@@ -959,25 +979,30 @@ function showProUpgrade(source){
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border-radius:12px;"><span style="font-size:18px;">📤</span><span style="font-size:13px;color:var(--ink);">数据导入 / 导出</span></div>
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border-radius:12px;"><span style="font-size:18px;">♾️</span><span style="font-size:13px;color:var(--ink);">每日测验 & SRS 复习不限量</span></div>
       </div>
-      <div style="padding:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;margin-bottom:14px;">
-        <div style="font-weight:700;font-size:15px;color:#92400e;">Pro 会员</div>
-        <div style="font-size:22px;font-weight:700;color:#d97706;margin:6px 0;">¥19.99/月 · ¥99.99/年</div>
-        <div style="font-size:12px;color:#a16207;">随时取消 · 永久回看</div>
+      <div style="padding:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;margin-bottom:14px;text-align:center;">
+        <div style="font-weight:700;font-size:15px;color:#92400e;margin-bottom:6px;">Pro 会员</div>
+        <div id="pricingAmount">${planTpl('monthly')}</div>
+        <div style="font-size:12px;color:#a16207;margin-top:4px;">随时取消 · 7天无理由退款</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="closeModal();activatePro()">立即开通 Pro</button>
-      <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">稍后再说</button>
+      <button id="pricingBtn" class="btn btn-primary pay-btn" style="width:100%;transition:opacity .2s;" onclick="activatePro(_pricingPlan)">${btnTpl('monthly')}</button>
+      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--ink-soft);">🔒 安全支付 · 无需订阅 · 一次性购买</div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal()">稍后再说</button>
     </div>`);
 }
-async function activatePro(type){
+async function activatePro(plan){
+  plan=plan||'monthly';
+  const btn=document.getElementById('pricingBtn');
+  if(btn){btn.disabled=true;btn.textContent='处理中...';btn.style.opacity='0.6';}
   if(API.token){
     try {
-      const r = await API.request('POST', '/payment/create-checkout', type ? { type } : {});
+      const r = await API.request('POST', '/payment/create-checkout', { type:'wechat', plan });
       if(r.simulated){
         // Dev mode: instant activation
         D.user.tier='pro'; D.user.proExpiry=0;
         if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
         save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
         updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
+        if(btn){btn.disabled=false;btn.style.opacity='1';}
         return;
       }
       if(r.qrcode){
@@ -986,13 +1011,14 @@ async function activatePro(type){
         showQRPayment(r.qrcode, r.orderId);
         return;
       }
-    } catch(e) { showToast('支付失败：'+e.message); return; }
+    } catch(e) { showToast('支付失败：'+e.message); if(btn){btn.disabled=false;btn.textContent=plan==='monthly'?'立即订阅 · ¥19.99/月':'立即订阅 · ¥99.99/年';btn.style.opacity='1';} return; }
   }
   // Fallback: local activation (offline / no backend)
   D.user.tier='pro'; D.user.proExpiry=0;
   if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
   save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
   updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
 }
 function showQRPayment(qrcode, orderId){
   showModal(`<div class="modal-title">📱 扫码支付</div>

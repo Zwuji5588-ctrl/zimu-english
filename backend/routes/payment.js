@@ -27,9 +27,9 @@ function payjsSign(params) {
   return crypto.createHash('md5').update(str).digest('hex').toUpperCase();
 }
 
-async function createPayJSOrder(userId, type = 'wechat') {
-  const outTradeNo = `ZM${Date.now()}${userId}`;
-  const totalFee = 1999; // ¥19.99
+async function createPayJSOrder(userId, type = 'wechat', plan = 'monthly') {
+  const outTradeNo = `ZM${plan==='yearly'?'Y':'M'}${Date.now()}${userId}`;
+  const totalFee = plan === 'yearly' ? 9999 : 1999; // ¥99.99 / ¥19.99
 
   const params = {
     mchid: PAYJS_MCHID,
@@ -70,16 +70,16 @@ async function createPayJSOrder(userId, type = 'wechat') {
 // Create checkout / payment order
 router.post('/create-checkout', authenticate, async (req, res) => {
   try {
-    const type = req.body.type || 'wechat'; // wechat | alipay
+    const { type = 'wechat', plan = 'monthly' } = req.body;
 
     if (PROVIDER === 'payjs' && PAYJS_MCHID && PAYJS_KEY) {
-      const result = await createPayJSOrder(req.userId, type);
+      const result = await createPayJSOrder(req.userId, type, plan);
       return res.json({ ok: true, provider: 'payjs', ...result });
     }
 
     // Dev mode — instant activation
     await activatePro(req.userId);
-    res.json({ ok: true, simulated: true });
+    res.json({ ok: true, simulated: true, plan });
   } catch (err) {
     console.error('Payment error:', err.message);
     res.status(500).json({ error: '创建支付失败' });
