@@ -169,7 +169,8 @@ body{font-family:'PingFang SC','Noto Sans SC','Microsoft YaHei',-apple-system,'I
 .page.active{display:flex;animation:pageIn .35s cubic-bezier(.4,0,.2,1);}
 @keyframes pageIn{from{opacity:.7;transform:translateX(24px);}to{opacity:1;transform:translateX(0);}}
 .btn-ghost:active,.btn-danger:active,.btn-sm:active{transform:scale(.96);}
-.toast{position:fixed;top:env(safe-area-inset-top,20px);left:50%;transform:translateX(-50%);background:rgba(44,62,45,0.92);color:#fff;padding:12px 24px;border-radius:14px;font-size:var(--fs-footnote);font-weight:600;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.15);animation:toastIn .35s ease,toastOut .35s ease 1.8s forwards;max-width:85%;text-align:center;pointer-events:none;}
+.toast{position:fixed;top:env(safe-area-inset-top,20px);left:50%;transform:translateX(-50%);background:rgba(44,62,45,0.92);color:#fff;padding:12px 24px;border-radius:14px;font-size:var(--fs-footnote);font-weight:600;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.15);max-width:85%;text-align:center;pointer-events:none;transition:opacity .3s;opacity:1;}
+.toast.fade{opacity:0;}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 @keyframes toastOut{from{opacity:1;transform:translateX(-50%) translateY(0);}to{opacity:0;transform:translateX(-50%) translateY(-20px);}}
 .scroll-area{flex:1;overflow-y:auto;padding:0 16px 80px;scrollbar-width:none;}
@@ -2049,7 +2050,24 @@ function floatScore(text){
   document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());
 }
 
-function renderCategories(){document.getElementById('categoryList').innerHTML=CONTENT.categories.map(c=>`<div class="cat-item" onclick="showToast('正在加载「${c.name}」...')"><div class="cat-icon" style="background:${c.bg};color:${c.color};">${c.icon}</div><div class="cat-label">${c.name}</div></div>`).join('');}
+function renderCategories(){
+  const el=document.getElementById('categoryList');
+  if(!el)return;
+  el.innerHTML=CONTENT.categories.map(c=>`<div class="cat-item" data-cat="${c.name}" onclick="filterByCategory('${c.name}')"><div class="cat-icon" style="background:${c.bg};color:${c.color};">${c.icon}</div><div class="cat-label">${c.name}</div></div>`).join('');
+}
+function filterByCategory(name){
+  _articleFilter='';
+  document.getElementById('articleSearchInput').value='';
+  // Filter articles by category
+  const filtered=CONTENT.articles.filter(a=>a.category===name);
+  const listEl=document.getElementById('articlesList');
+  listEl.innerHTML=filtered.length?filtered.map((a,i)=>{
+    const done=D.readArticles[a.id];
+    const wc=CONTENT.articleWords[a.id];const wcnt=wc?wc.length:0;
+    const sc=D.readScores[a.id];const scBadge=sc?'<span style="color:var(--green);font-size:11px;">🎤 '+sc.best+'分</span>':'';
+    return '<div class="article-card" onclick="readArticle('+a.id+')" style="animation:fadeInUp .35s ease '+(i*50)+'ms backwards;"><div class="article-color-strip" style="background:'+a.color+';"></div><div class="article-body"><div class="article-cat-badge" style="background:'+a.color+'18;color:'+a.color+';">'+a.category+'</div><div class="article-title">'+a.title+(done?' <span style=\"color:var(--green);\">✅</span>':'')+'</div><div class="article-title-zh">'+a.titleZh+'</div><div class="article-footer"><div class="article-meta"><span>⏱ '+a.time+'</span>'+(wcnt?'<span style=\"color:var(--sky-deep);\">📝 '+wcnt+'词</span>':'')+(scBadge?' '+scBadge:'')+'</div><div style="display:flex;align-items:center;gap:8px;"><span class="article-level">'+a.level+'</span><button class="fav-btn" onclick="toggleFav(event,'+a.id+')">'+(a.collected?'❤️':'🤍')+'</button></div></div></div></div>';
+  }).join(''):'<div style="text-align:center;padding:40px 0;"><div style="font-size:36px;margin-bottom:8px;">📭</div><div style="font-size:14px;color:var(--ink-soft);">没有该分类的文章</div></div>';
+}
 let _articleFilter='';
 function filterArticles(q){_articleFilter=q.toLowerCase().trim();renderArticles();}
 function renderArticles(){
@@ -3354,7 +3372,7 @@ function updateUserUI(){
   }
 }
 
-function showToast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
+function showToast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('fade');setTimeout(function(){t.remove();},300);},1800);}
 
 function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'早上好 ☀️':h<18?'下午好 🌤️':'晚上好 🌙';}
 function calcStreak(){
