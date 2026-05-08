@@ -544,9 +544,9 @@ body{font-family:'PingFang SC','Noto Sans SC','Microsoft YaHei',-apple-system,'I
         <div class="mission-info">
           <div class="mission-title flex items-center justify-center gap-6"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> 今日任务</div>
           <div class="mission-tasks">
-            <div class="mission-task"><div class="mission-task-dot" id="dot1"></div><span id="task1">新学 0/5 个单词</span></div>
-            <div class="mission-task"><div class="mission-task-dot" id="dot2"></div><span id="task2">复习 0/3 个单词</span></div>
-            <div class="mission-task"><div class="mission-task-dot" id="dot3"></div><span id="task3">完成 1 次测验</span></div>
+            <div class="mission-task" onclick="switchPage('learning')" style="cursor:pointer;"><div class="mission-task-dot" id="dot1"></div><span id="task1">新学 0/5 个单词</span></div>
+            <div class="mission-task" onclick="startTraining('listening')" style="cursor:pointer;"><div class="mission-task-dot" id="dot2"></div><span id="task2">复习 0/3 个单词</span></div>
+            <div class="mission-task" onclick="startQuiz()" style="cursor:pointer;"><div class="mission-task-dot" id="dot3"></div><span id="task3">完成 1 次测验</span></div>
           </div>
           <button class="mission-btn" onclick="startTodayLearning()">开始今日学习 →</button>
         </div>
@@ -2078,19 +2078,20 @@ function readArticle(id){
     }
     chipsHtml='<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;">📝 关键词汇 · <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">点击收藏到词汇本</span></div><div style="display:flex;flex-wrap:wrap;gap:6px;">'+arr2.join('')+'</div></div>';
   }
-  showModal(`<div class="modal-title" style="margin-bottom:2px;">${a.title}</div>
-    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <span class="article-cat-badge" style="background:${a.color}18;color:${a.color};padding:2px 8px;border-radius:6px;font-size:11px;">${a.category}</span>
+  showModal(`<div style="padding:2px 0;">
+    <div style="font-size:var(--fs-h3);font-weight:700;color:var(--ink);margin-bottom:2px;">${a.title}</div>
+    <div style="font-size:var(--fs-caption);color:var(--ink-soft);margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:var(--fs-caption);font-weight:600;background:${a.color}18;color:${a.color};">${a.category}</span>
       <span>${a.level}</span><span>⏱ ${a.time}</span>
       ${readBefore?'<span style="color:var(--green);">✅ 已读完</span>':''}
     </div>
     <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button class="recite-record-btn recite-record-start" id="readAloudBtn" onclick="readArticleAloud(${id})" style="padding:5px 12px;font-size:12px;">🔊 朗读全文</button>
-      <button class="recite-record-btn ${D.readScores[id]?'btn-ghost':'btn-primary'}" onclick="startReadScore(${id})" style="padding:5px 12px;font-size:12px;">${D.readScores[id]?'🎤 上次 '+D.readScores[id].best+'分':'🎤 朗读评分'} <span class="pro-badge">Pro</span></button>
+      <button class="recite-record-btn recite-record-start" id="readAloudBtn" onclick="readArticleAloud(${id})" style="padding:6px 14px;font-size:var(--fs-footnote);">🔊 朗读全文</button>
+      <button class="recite-record-btn ${D.readScores[id]?'btn-ghost':'btn-primary'}" onclick="startReadScore(${id})" style="padding:6px 14px;font-size:var(--fs-footnote);">${D.readScores[id]?'🎤 上次 '+D.readScores[id].best+'分':'🎤 朗读评分'} <span class="pro-badge">Pro</span></button>
     </div>
-    <div style="max-height:380px;overflow-y:auto;border-top:1px solid #eee;padding-top:14px;">${paras}</div>
+    <div style="max-height:380px;overflow-y:auto;border-top:1px solid var(--border);padding-top:16px;">${paras}</div>
     ${chipsHtml}
-    <button style="margin-top:18px;width:100%;" class="btn ${readBefore?'btn-ghost':'btn-primary'}" onclick="completeReading(${id})">${readBefore?'已读完 ✓':'✔ 完成阅读 +10积分'}</button>`);
+    <button style="margin-top:18px;width:100%;" class="btn ${readBefore?'btn-ghost':'btn-primary'}" onclick="completeReading(${id})">${readBefore?'已读完 ✓':'✔ 完成阅读 +10积分'}</button></div>`);
 }
 function readArticleAloud(id){
   const c=CONTENT.articleContent[id];if(!c)return;
@@ -3265,7 +3266,10 @@ function showAchievements(){
     {name:'收藏家',icon:'💝',check:()=>CONTENT.articles.filter(a=>a.collected).length>=3},
     {name:'万事通',icon:'🏅',check:()=>D.user.points>=500},
   ].map(a=>({...a,unlocked:a.check()}));
-  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22v-4"/><path d="M14 22v-4"/><path d="M6 4h12v10a6 6 0 0 1-12 0V4z"/></svg> 成就勋章</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;opacity:${a.unlocked?1:.5};"><div style="font-size:28px;margin-bottom:6px;">${a.icon}</div><div style="font-size:12px;font-weight:600;">${a.name}</div><div style="font-size:10px;color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:3px;">${a.unlocked?'已解锁':'未解锁'}</div></div>`).join('')}</div><div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">已解锁 ${list.filter(a=>a.unlocked).length}/${list.length}</div>`);
+  const nUnlocked=list.filter(a=>a.unlocked).length;
+  showModal(`<div class="modal-title">🏆 成就勋章</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;border:2px solid ${a.unlocked?'rgba(126,200,160,0.2)':'transparent'};transition:all .2s;${a.unlocked?'box-shadow:0 2px 8px rgba(126,200,160,0.1)':''}"><div style="font-size:28px;margin-bottom:4px;">${a.icon}</div><div style="font-size:var(--fs-footnote);font-weight:600;color:${a.unlocked?'var(--ink)':'var(--ink-soft)'};">${a.name}</div><div style="font-size:var(--fs-caption);color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:2px;">${a.unlocked?'✓ 已解锁':'🔒 未解锁'}</div></div>`).join('')}</div>
+    <div style="text-align:center;padding:8px;background:var(--surface);border-radius:12px;font-size:var(--fs-footnote);color:var(--ink-mid);">已解锁 ${nUnlocked}/${list.length} · ${Math.round(nUnlocked/list.length*100)}%</div>`);
 }
 function showPlans(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 学习计划</span></div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
 function openSettings(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 设置</span></div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()"><span style="font-size:15px;">🗑️ 清零学习数据</span><span style="color:var(--rose,#ef4444);font-size:12px;font-weight:600;">点击重置</span></div><button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
@@ -4164,6 +4168,7 @@ async function init(){
   // Hide splash screen
   setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide');},200);
 }
+  document.body.addEventListener('touchstart',function(){navigator.vibrate&&navigator.vibrate(6);},{passive:true});
   window.onerror=function(m,url,line){showToast('出错了，请刷新页面');console.error(m,url,line);};
   window.addEventListener('unhandledrejection',function(e){console.error(e.reason);});
   DB.open().then(()=>init()).catch(function(e){
