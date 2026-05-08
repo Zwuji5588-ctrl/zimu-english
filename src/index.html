@@ -3002,43 +3002,72 @@ function closeListening(){window._ls=null;window.speechSynthesis.cancel();openLi
 function openMatchGame(){
   const all=DataService.getAllWords();
   if(all.length<4){showToast('单词数不足，请先学习单词');return;}
-  const words=[...all].sort(()=>Math.random()-0.5).slice(0,8);
-  const cards=[];
-  words.forEach((w,i)=>{cards.push({text:w.en,en:true,wi:i,ok:false});cards.push({text:w.zh,en:false,wi:i,ok:false});});
-  cards.sort(()=>Math.random()-0.5);
-  window._pr={words,cards,sel:-1,pairs:0,total:8,tries:0};
-  showMatchBoard();
+  const words=[...all].sort(()=>Math.random()-0.5).slice(0,5);
+  // Shuffle Chinese and English separately into 2 columns
+  const left=words.map(w=>({text:w.zh,wi:w,type:'zh',ok:false}));
+  const right=words.map(w=>({text:w.en,wi:w,type:'en',ok:false}));
+  left.sort(()=>Math.random()-0.5);
+  right.sort(()=>Math.random()-0.5);
+  window._pr={words,left,right,total:words.length,pairs:0,tries:0,selLeft:-1,selRight:-1};
+  showModal(`<div class="modal-title">🎤 选择配对</div>
+    <div style="padding:4px 0;">
+      <div class="progress-track" style="margin-bottom:16px;height:12px;border-radius:6px;background:#e5e5e5;">
+        <div id="pairProg" style="height:100%;background:#58cc02;border-radius:6px;transition:width .3s;width:0%;"></div>
+      </div>
+      <div style="text-align:right;font-size:13px;color:#999;">${words.length*2}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:8px;" id="pairLeft"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="pairRight"></div>
+      </div>
+      <div id="pairResult" style="text-align:center;margin-top:8px;"></div>
+    </div>`);
+  renderPairBoard();
 }
-function showMatchBoard(){
+function renderPairBoard(){
   const s=window._pr;if(!s)return;
-  const allDone=s.pairs>=s.total;
-  showModal(`<div class="modal-title">🎤 消消乐</div>
-    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:6px;">点英文 → 点中文，配对消除</div>
-    <div style="font-size:11px;color:var(--ink-mid);margin-bottom:10px;">✅ ${s.pairs}/${s.total} · 尝试 ${s.tries} 次</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;">
-      ${s.cards.map((c,i)=>`<div onclick="onMatchClick(${i})" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:12px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;transition:all .12s;background:var(--surface);border:2.5px solid ${c.ok?'transparent':s.sel===i?'var(--sky-deep)':'var(--border)'};color:${c.ok?'transparent':'var(--ink)'};${c.ok?'pointer-events:none':''}">${c.ok?'✓':c.text}</div>`).join('')}
-    </div>
-    ${allDone?`<button class="btn btn-primary" style="width:100%;" onclick="showMatchResult()">🎉 查看结果</button>`:''}
-    <button class="btn btn-ghost" style="width:100%;margin-top:5px;" onclick="openMatchGame()">🔄 换一组词</button>`);
+  const pct=s.total>0?(s.pairs/s.total*100).toFixed(0):0;
+  document.getElementById('pairProg').style.width=pct+'%';
+  document.getElementById('pairLeft').innerHTML=s.left.map((c,i)=>`<div onclick="onPairLeft(${i})" style="padding:14px 12px;border-radius:14px;text-align:center;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;background:${c.ok?'#e8f5e9':s.selLeft===i?'#e8f5e9':'#fff'};border:2.5px solid ${c.ok?'#58cc02':s.selLeft===i?'#58cc02':'#e5e5e5'};color:${c.ok?'#58cc02':s.selLeft===i?'#58cc02':'#444'};${c.ok?'opacity:.5':''}">${c.ok?'✓':c.text}</div>`).join('');
+  document.getElementById('pairRight').innerHTML=s.right.map((c,i)=>`<div onclick="onPairRight(${i})" style="padding:14px 12px;border-radius:14px;text-align:center;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;background:${c.ok?'#e8f5e9':s.selRight===i?'#e8f5e9':'#fff'};border:2.5px solid ${c.ok?'#58cc02':s.selRight===i?'#58cc02':'#e5e5e5'};color:${c.ok?'#58cc02':s.selRight===i?'#58cc02':'#444'};${c.ok?'opacity:.5':''}">${c.ok?'✓':c.text}</div>`).join('');
+  if(s.pairs>=s.total){
+    document.getElementById('pairResult').innerHTML='<button class="btn btn-primary" onclick="showMatchResult()" style="margin-top:8px;">🎉 查看结果</button><button class="btn btn-ghost" onclick="openMatchGame()" style="margin-top:6px;display:block;width:100%;">🔄 换一组词</button>';
+  }
 }
-function onMatchClick(idx){
+function onPairLeft(i){
+  const s=window._pr;if(!s||s.left[i].ok)return;
+  s.selLeft=i;
+  checkPair();
+}
+function onPairRight(i){
+  const s=window._pr;if(!s||s.right[i].ok)return;
+  s.selRight=i;
+  checkPair();
+}
+function checkPair(){
   const s=window._pr;if(!s)return;
-  if(s.cards[idx].ok)return;
-  if(s.sel===-1){s.sel=idx;showMatchBoard();return;}
-  if(s.sel===idx){s.sel=-1;showMatchBoard();return;}
-  const a=s.cards[s.sel],b=s.cards[idx];
-  s.sel=-1;s.tries++;
-  if(a.wi===b.wi&&a.en!==b.en){a.ok=true;b.ok=true;s.pairs++;showMatchBoard();if(s.pairs>=s.total)setTimeout(()=>showToast('🎉 全部消除！'),400);}
-  else{showMatchBoard();showToast('❌ 不匹配');}
+  if(s.selLeft<0||s.selRight<0){renderPairBoard();return;}
+  const a=s.left[s.selLeft],b=s.right[s.selRight];
+  s.tries++;
+  if(a.wi.en===b.wi.en){
+    a.ok=true;b.ok=true;s.pairs++;
+    s.selLeft=-1;s.selRight=-1;
+    renderPairBoard();
+    if(s.pairs>=s.total)setTimeout(()=>showToast('🎉 全部配对成功！'),400);
+  }else{
+    const li=s.selLeft,ri=s.selRight;
+    s.selLeft=-1;s.selRight=-1;
+    renderPairBoard();
+    showToast('❌ 不匹配');
+  }
 }
 function showMatchResult(){
   const s=window._pr;if(!s)return;
   const pct=Math.round(s.pairs/s.total*100);
-  showModal(`<div class="modal-title">🎤 消消乐</div>
+  showModal(`<div class="modal-title">🎤 配对结果</div>
     <div style="text-align:center;padding:20px 0;">
       <div style="font-size:48px;margin-bottom:8px;">${pct>=100?'🎉':pct>=70?'💪':'📚'}</div>
-      <div style="font-size:32px;font-weight:900;color:var(--green);">${pct}%</div>
-      <div style="font-size:13px;color:var(--ink-soft);margin:8px 0;">匹配 ${s.pairs}/${s.total} 对 · 尝试 ${s.tries} 次</div>
+      <div style="font-size:32px;font-weight:900;color:#58cc02;">${pct}%</div>
+      <div style="font-size:13px;color:var(--ink-soft);margin:8px 0;">配对 ${s.pairs}/${s.total} 对 · 尝试 ${s.tries} 次</div>
       <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="openMatchGame()">再来一轮</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">返回</button>
     </div>`);
