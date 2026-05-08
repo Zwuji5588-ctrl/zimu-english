@@ -622,6 +622,55 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
       <div style="height:8px;"></div>
     </div>
+  <!-- WORD DETAIL -->
+  <div id="page-word-detail" class="page">
+    <div class="page-nav">
+      <button class="nav-back" onclick="closeWordDetail()"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i></button>
+      <div class="page-nav-title" id="wdTitle">单词详情</div>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="scroll-area">
+      <!-- Word header -->
+      <div style="text-align:center;padding:24px 0 16px;">
+        <div style="font-size:32px;font-weight:900;color:var(--ink);font-family:'DM Serif Display',serif;" id="wdWord">—</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
+          <span style="font-size:14px;color:var(--ink-soft);" id="wdPhonetic"></span>
+          <button style="background:var(--surface);border:none;border-radius:100px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--sky-deep);" onclick="speak(document.getElementById('wdWord').textContent)">
+            <i data-lucide="volume-2" style="width:18px;height:18px;"></i>
+          </button>
+        </div>
+        <div style="font-size:18px;color:var(--ink-mid);font-weight:600;margin-top:8px;" id="wdZh"></div>
+      </div>
+      <!-- Definition card -->
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;"><i data-lucide="book-open" style="width:16px;height:16px;vertical-align:middle;"></i> 释义与例句</div>
+        <div id="wdDefinition" style="font-size:14px;color:var(--ink-mid);line-height:1.7;"></div>
+      </div>
+      <!-- Mastery card -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><span style="font-size:14px;font-weight:700;color:var(--ink);"><i data-lucide="target" style="width:16px;height:16px;vertical-align:middle;"></i> 掌握进度</span>
+            <div id="wdMastery" style="margin-top:6px;"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="wdMasteryBtn" onclick="cycleMastery()">标记熟悉</button>
+        </div>
+      </div>
+      <!-- Collection card -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><span style="font-size:14px;font-weight:700;color:var(--ink);"><i data-lucide="bookmark" style="width:16px;height:16px;vertical-align:middle;"></i> 生词本</span>
+            <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">收藏后可在「我的」页面查看</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="wdCollectBtn" onclick="toggleWordCollect()">➕ 加入生词本</button>
+        </div>
+      </div>
+      <!-- Unit context -->
+      <div id="wdUnitContext" class="card" style="display:none;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;"><i data-lucide="layers" style="width:16px;height:16px;vertical-align:middle;"></i> 所属单元</div>
+        <div style="font-size:13px;color:var(--ink-soft);" id="wdUnitName"></div>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
   </div>
 
   <div class="tab-bar">
@@ -2000,7 +2049,7 @@ function searchWords(q){
   let html='';
   if(res.length){
     html+=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">📖 本地词库</div>`;
-    html+=res.slice(0,6).map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;" onclick="speak('${w.en.replace(/'/g,"\\'")}')"><div><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);">${w.ph||''} · ${w.zh}</div></div><button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}')">🔊</button></div>`).join('');
+    html+=res.slice(0,6).map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;" onclick="openWordDetail('${w.en.replace(/'/g,"\\'")}')"><div><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);">${w.ph||''} · ${w.zh}</div></div><button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}')">🔊</button></div>`).join('');
   }
   // online section placeholder
   html+=`<div id="onlineLookup" style="margin-top:8px;"><div style="text-align:center;padding:16px;"><div style="font-size:14px;color:var(--ink-soft);">🌐 查询网络释义中...</div></div></div>`;
@@ -2025,6 +2074,80 @@ function searchWords(q){
     });
   },600);
 }
+
+// ── Word Detail ───────────────────────────
+let _wdData={word:'',unitId:null,wordIndex:null,level:0};
+
+function openWordDetail(word){
+  closeModal();
+  const all=DataService.getAllWords();
+  const w=all.find(x=>x.en.toLowerCase()===word.toLowerCase())||all.find(x=>x.en.toLowerCase().includes(word.toLowerCase()));
+  if(!w){showToast('未找到单词信息');return;}
+  document.getElementById('wdWord').textContent=w.en;
+  document.getElementById('wdPhonetic').textContent=w.ph||'';
+  document.getElementById('wdZh').textContent=w.zh||'';
+  const defEl=document.getElementById('wdDefinition');
+  defEl.innerHTML=w.ex
+    ?'<div style="margin-bottom:4px;">【释义】'+w.zh+'</div><div style="color:var(--sky-deep);border-left:2px solid var(--sky-deep);padding-left:10px;margin-top:4px;">📝 '+w.ex+'</div>'
+    :'<div>'+w.zh+'</div>';
+  _wdData={word:w.en,unitId:w.unitId,wordIndex:null,level:0};
+  const unit=CONTENT.units.find(u=>u.id===w.unitId);
+  if(unit){const idx=unit.words.findIndex(x=>x.en===w.en);if(idx>=0)_wdData.wordIndex=idx;}
+  _renderWordMastery();
+  _renderWordCollect();
+  const uctx=document.getElementById('wdUnitContext');
+  if(w.unitName){
+    uctx.style.display='block';
+    document.getElementById('wdUnitName').textContent=w.unitName+' · Unit '+w.unitId;
+  }else uctx.style.display='none';
+  if(typeof lucide!=='undefined')lucide.createIcons({attrs:{'stroke-width':2,class:'lucide-icon'}},document.getElementById('page-word-detail'));
+  switchPage('word-detail');
+}
+
+function _renderWordMastery(){
+  const level=_wdData.wordIndex!==null?getMastery(_wdData.unitId+'_'+_wdData.wordIndex):0;
+  _wdData.level=level;
+  const m=masteryInfo(level);
+  document.getElementById('wdMastery').innerHTML='<div class="mastery-badge '+m.cls+'"><div class="mastery-dot '+m.dot+'"></div>'+m.label+'</div>';
+  const btn=document.getElementById('wdMasteryBtn');
+  if(level>=2){btn.textContent='✅ 已掌握';btn.disabled=true;btn.style.opacity='0.6';btn.style.cursor='default';}
+  else{btn.textContent=level===0?'标记熟悉':'标记掌握';btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';}
+}
+
+function cycleMastery(){
+  if(_wdData.wordIndex===null){showToast('暂不支持标记此单词');return;}
+  const cur=_wdData.level;
+  const next=Math.min(2,cur+1);
+  DataService.setMastery(_wdData.unitId,_wdData.wordIndex,next);
+  _wdData.level=next;
+  _renderWordMastery();
+  const labels=['生疏','熟悉','掌握'];
+  showToast('已标记为「'+labels[next]+'」');
+  if(next>=2&&_wdData.wordIndex!==null){
+    const key=_wdData.unitId+'_'+_wdData.wordIndex;
+    const prev=getMastery(key);
+    if(prev<2){D.user.learnedWords++;D.mission.newDone=Math.min(D.mission.newDone+1,5);save();updateStats();}
+  }
+}
+
+function _renderWordCollect(){
+  const btn=document.getElementById('wdCollectBtn');
+  const collected=D.user.wordCollection.some(x=>x.en===_wdData.word);
+  if(collected){btn.textContent='📕 已收藏';btn.className='btn btn-sm';btn.style.background='var(--surface)';btn.style.color='var(--green)';}
+  else{btn.textContent='➕ 加入生词本';btn.className='btn btn-ghost btn-sm';btn.style.background='';btn.style.color='';}
+}
+
+function toggleWordCollect(){
+  const idx=D.user.wordCollection.findIndex(x=>x.en===_wdData.word);
+  if(idx>=0){DataService.removeWord(idx);showToast('已移除 ');}
+  else{DataService.collectWord({en:_wdData.word,zh:document.getElementById('wdZh').textContent,ph:document.getElementById('wdPhonetic').textContent,addedAt:new Date().toISOString().slice(0,10)});navigator.vibrate?.(10);showToast('✅ 已收藏 +3积分');}
+  _renderWordCollect();
+}
+
+function closeWordDetail(){
+  switchPage('home');
+}
+
 function openSearchReading(){const m=document.getElementById('modal');m.style.position='absolute';m.style.alignItems='flex-start';m.style.paddingTop='36px';showModal(`<div class="modal-title">搜索文章</div><input type="text" placeholder="搜索文章标题..." style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-family:inherit;background:var(--white);color:var(--ink);" oninput="searchArticles(this.value)"><div id="artResults" style="margin-top:14px;"></div>`);}
 function searchArticles(q){if(!q){document.getElementById('artResults').innerHTML='';return;}const res=CONTENT.articles.filter(a=>a.title.toLowerCase().includes(q.toLowerCase())||a.titleZh.includes(q));document.getElementById('artResults').innerHTML=res.map(a=>`<div style="padding:12px;background:var(--surface);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="readArticle(${a.id});closeModal()"><div style="font-weight:700;">${a.title}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">${a.titleZh}</div></div>`).join('')||`<p style="color:var(--ink-soft);text-align:center;padding:20px;">未找到文章</p>`;}
 function openCalendar(){
