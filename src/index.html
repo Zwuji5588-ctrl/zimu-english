@@ -374,10 +374,12 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
         <div class="book-card">
           <div class="book-thumb" id="bookThumb">新概念英语<br/>第一册</div>
           <div style="flex:1;min-width:0;">
-            <div class="book-title" id="bookTitle">新概念英语第一册</div>
             <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div class="book-title" id="bookTitle">新概念英语第一册</div>
               <span class="book-switch" onclick="openBankSelector()">切换教材 ›</span>
-              <button class="btn btn-primary btn-sm" onclick="switchPage('learning')">进入学习</button>
+            </div>
+            <div style="text-align:center;margin-top:10px;">
+              <button class="btn btn-primary" onclick="switchPage('learning')" style="padding:10px 36px;font-size:15px;">进入学习</button>
             </div>
           </div>
         </div>
