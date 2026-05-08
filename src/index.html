@@ -3577,18 +3577,25 @@ function showGrammarResult(){
     wrongHtml=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:12px;"><div style="font-size:13px;font-weight:700;color:var(--rose,#ef4444);margin-bottom:8px;">❌ 错题回顾 (${s.wrongs.length}题)</div>
       ${s.wrongs.map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:8px;border:1px solid #fee2e2;"><div style="font-size:13px;font-weight:600;margin-bottom:4px;">${w.q}</div><div style="font-size:11px;color:var(--rose,#ef4444);"><s>${w.chosen}</s></div><div style="font-size:11px;color:var(--green);">✓ ${w.correct}</div><div style="font-size:10px;color:var(--ink-soft);margin-top:4px;padding-top:4px;border-top:1px solid #f1f5f9;">💡 ${w.exp}</div></div>`).join('')}</div>`;
   }
-  showModal(`<div class="modal-title">语法练习</div>
-    <div style="max-height:380px;overflow-y:auto;padding:0 2px;">
-    <div style="text-align:center;padding:16px 0 8px;">
-      <div style="font-size:52px;margin-bottom:10px;">${pct>=80?'🎉':pct>=50?'💪':'📚'}</div>
-      <div style="font-size:42px;font-weight:900;color:${pct>=70?'var(--green)':'#f59e0b'};">${pct}%</div>
-      <div style="font-size:15px;color:var(--ink-soft);margin:8px 0;">正确 ${s.score}/${s.total} 题</div>
-      <div style="font-size:24px;letter-spacing:4px;margin:10px 0;">${'⭐'.repeat(Math.min(3,Math.floor(pct/30)+1))}</div>
+  const emoji=pct>=90?'🏆':pct>=80?'🎉':pct>=60?'💪':'📚';
+  const msg=pct>=90?'太厉害了！':pct>=80?'很棒！继续加油':pct>=60?'还可以，多练练':'要多练习哦';
+  showModal(`<div style="padding:4px 0;text-align:center;">
+    <div style="font-size:56px;margin-bottom:8px;">${emoji}</div>
+    <div style="font-size:var(--fs-h1);font-weight:800;color:var(--sky-deep);margin:4px 0;">${pct}%</div>
+    <div style="font-size:var(--fs-sub);color:var(--ink-soft);margin-bottom:4px;">正确 ${s.score}/${s.total} 题</div>
+    <div style="font-size:var(--fs-footnote);color:var(--ink-mid);margin-bottom:12px;">${msg}</div>
+    <div style="background:var(--surface);border-radius:16px;padding:16px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:var(--fs-footnote);color:var(--ink-soft);">正确率</span>
+        <span style="font-size:var(--fs-footnote);font-weight:600;color:var(--sky-deep);">${pct}%</span>
+      </div>
+      <div style="height:8px;background:var(--bg-muted);border-radius:4px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--sky),var(--sky-deep));border-radius:4px;transition:width .6s;"></div>
+      </div>
     </div>
     ${wrongHtml}
-    </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="openGrammar()">再来一轮</button>
-    <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal()">返回</button>`);
+    <button onclick="openGrammar()" style="width:100%;padding:14px;background:linear-gradient(135deg,#7ec8a0,#5aaa7a);color:#fff;border:none;border-radius:14px;font-size:var(--fs-body);font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(90,170,122,0.2);margin-top:8px;">再来一轮</button>
+    <button onclick="closeModal()" style="width:100%;margin-top:8px;padding:12px;background:var(--surface);color:var(--ink);border:none;border-radius:14px;font-size:var(--fs-sub);font-weight:500;cursor:pointer;font-family:inherit;">返回</button></div>`);
 }
 
 // ════ PROFILE: EDIT NAME ════
@@ -3762,12 +3769,15 @@ function renderWrongWordList(){
     const tagColor=i%2===0?'#e8e0ff':'#e0f7ff';
     const tagText=i%2===0?'#6644cc':'#33bbee';
     const pct=50+Math.floor(Math.random()*30);
-    return '<div style="background:#fff;border:2px solid #eee;border-radius:16px;padding:20px;position:relative;margin-bottom:4px;">'+
-      '<div style="font-size:28px;font-weight:700;color:#444488;margin-bottom:8px;">'+w.en+'</div>'+
-      '<div style="position:absolute;top:20px;right:20px;font-size:20px;color:#444488;font-weight:500;">'+pct+'% ▶</div>'+
-      '<div style="font-size:18px;color:#666;line-height:1.5;margin-bottom:12px;">'+w.zh+'</div>'+
-      '<span style="display:inline-block;padding:4px 10px;border-radius:6px;font-size:15px;font-weight:500;background:'+tagColor+';color:'+tagText+';margin-bottom:12px;">'+tag+'</span>'+
-      '<div style="font-size:14px;color:#999;">错误时间 '+errDate+' &nbsp;&nbsp;下次复习 '+nextDate+'</div></div>';
+    const enSafe=w.en.replace(/'/g,"\\'");
+    return '<div style="background:#fff;border:2px solid var(--border);border-radius:16px;padding:20px;position:relative;margin-bottom:4px;">'+
+      '<div style="font-size:26px;font-weight:700;color:var(--ink);margin-bottom:6px;">'+w.en+'</div>'+
+      '<div style="position:absolute;top:20px;right:20px;font-size:18px;color:var(--sky-deep);font-weight:600;">'+pct+'% <span style="color:var(--ink-soft);">▶</span></div>'+
+      '<div style="font-size:var(--fs-sub);color:var(--ink-mid);line-height:1.5;margin-bottom:10px;">'+w.zh+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+      '<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:var(--fs-footnote);font-weight:500;background:'+tagColor+';color:'+tagText+';">'+tag+'</span>'+
+      '<button onclick="speak(\''+enSafe+'\');closeModal();switchPage(\'learning\');D.currentUnit='+item.unitId+';D.currentWordIndex='+item.wordIndex+';setTimeout(function(){enterCardMode('+item.unitId+')},100)" style="padding:6px 16px;background:var(--sky-deep);color:#fff;border:none;border-radius:100px;font-size:var(--fs-footnote);font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(90,170,122,0.2);">立即复习</button></div>'+
+      '<div style="font-size:var(--fs-footnote);color:var(--ink-soft);margin-top:8px;">错误时间 '+errDate+' &nbsp;&nbsp;下次复习 '+nextDate+'</div></div>';
   }).join('');
 }
 function exitWrongWordsMode(){
