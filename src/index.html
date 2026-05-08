@@ -2814,15 +2814,19 @@ function skipSpelling(){
   s.no++;s.i++;showSpellingWord();
 }
 function openListening(){
-  if(window._ls&&window._ls.paragraphs){
-    showListenPlayer();return;
-  }
-  showModal(`<div class="modal-title">👂 随身听</div>
-    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">选择要听的文章</div>
-    ${CONTENT.articles.map(a=>`
-      <div onclick="startListening(${a.id})" style="padding:14px;background:var(--surface);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--border);transition:all .12s;"
-           onmouseenter="this.style.borderColor='var(--sky-deep)'" onmouseleave="this.style.borderColor='var(--border)'">
-        <div style="font-weight:700;font-size:14px;">${a.title}</div>
+  // Use current unit words for dictation-style listening
+  const units=getCurrentBankUnits();
+  if(!units.length){showToast('暂无单词数据');return;}
+  const unit=units[0];
+  _currentUnitId=unit.id;D.currentWordIndex=0;
+  switchPage('learning');
+  setTimeout(function(){
+    document.getElementById('learningScrollArea').style.display='none';
+    document.getElementById('wordFilterBar').style.display='none';
+    document.getElementById('dictationView').classList.remove('hidden');
+    renderDictation(0,unit.words.length);
+  },50);
+}
         <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">${a.titleZh} · ${a.time} · ${a.level}</div>
       </div>`).join('')}
     <div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">🎧 点击文章开始播放</div>`);
