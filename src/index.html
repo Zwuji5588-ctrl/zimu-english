@@ -2056,7 +2056,7 @@ function renderArticles(){
   const filtered=_articleFilter?CONTENT.articles.filter(a=>a.title.toLowerCase().includes(_articleFilter)||a.titleZh.includes(_articleFilter)):CONTENT.articles;
   const listEl=document.getElementById('articlesList');
   // Show skeleton on first load
-  if(!window._articlesLoaded){listEl.innerHTML='<div class="skeleton-card" style="border-radius:20px;"></div><div class="skeleton-card" style="border-radius:20px;height:100px;"></div><div class="skeleton-card" style="border-radius:20px;height:100px;"></div>';window._articlesLoaded=true;}
+  if(!window._articlesLoaded){listEl.innerHTML='<div class="skeleton" style="height:120px;border-radius:20px;margin-bottom:12px;"></div><div class="skeleton" style="height:100px;border-radius:20px;margin-bottom:12px;"></div><div class="skeleton" style="height:100px;border-radius:20px;margin-bottom:12px;"></div>';window._articlesLoaded=true;}
   listEl.innerHTML=filtered.length?filtered.map((a,i)=>{
   const done=D.readArticles[a.id];
   const wc=CONTENT.articleWords[a.id];const wcnt=wc?wc.length:0;
@@ -2303,28 +2303,28 @@ function showVocabBook(){
     if(!groups[key])groups[key]=[];
     groups[key].push({...w,idx:i});
   });
-  let html=`<div class="modal-title">📒 我的词汇本 <span style="font-size:12px;font-weight:400;color:var(--ink-soft);">${col.length}词</span></div>`;
+  let html=`<div class="modal-title">📒 词汇本 <span style="font-size:var(--fs-footnote);font-weight:400;color:var(--ink-soft);">${col.length}词</span></div><div style="max-height:55vh;overflow-y:auto;">`;
   for(const aid of Object.keys(groups)){
     const a=CONTENT.articles.find(x=>x.id==aid);
     const name=a?a.titleZh:'其他';
     const color=a?a.color:'var(--ink-soft)';
-    html+=`<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:600;color:${color};margin-bottom:6px;padding-left:4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> ${name}</div>`;
+    html+=`<div style="margin-bottom:12px;"><div style="font-size:var(--fs-footnote);font-weight:600;color:${color};margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> ${name}</div>`;
     html+=groups[aid].map(w=>{
-      // check if word exists in any unit for "go learn" link
       let unitMatch=null;
       for(const u of CONTENT.units){if(u.words.some(x=>x.en.toLowerCase()===w.en.toLowerCase())){unitMatch=u.id;break;}}
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border-radius:12px;margin-bottom:4px;">
-        <div style="flex:1;"><div style="font-weight:600;font-size:14px;color:var(--ink);">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);">${w.zh}</div></div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}');showToast('🔊')">🔊</button>
-          ${unitMatch?'<button style="background:var(--sky-light);color:var(--sky-deep);border:none;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;" onclick="closeModal();switchPage(\x27learning\x27);showTextDetail('+unitMatch+')">学 →</button>':''}
-          <button style="background:transparent;border:none;font-size:14px;cursor:pointer;color:var(--ink-soft);" onclick="event.stopPropagation();removeVocabWord(${w.idx})">✕</button>
+      const enSafe=w.en.replace(/'/g,"\\'");
+      return `<div style="display:flex;align-items:center;padding:12px 14px;background:var(--white);border-radius:14px;margin-bottom:6px;box-shadow:0 1px 4px rgba(44,62,45,0.04);border:1px solid var(--border);">
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:var(--fs-sub);color:var(--ink);">${w.en}</div><div style="font-size:var(--fs-footnote);color:var(--ink-soft);margin-top:1px;">${w.zh}</div></div>
+        <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">
+          <button onclick="event.stopPropagation();speak('${enSafe}')" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--sky-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--sky-deep);">🔊</button>
+          ${unitMatch?'<button onclick="closeModal();D.currentUnit='+unitMatch+';D.currentWordIndex=0;switchPage(\'learning\')\" style="padding:4px 10px;border-radius:8px;border:none;background:var(--sky-light);color:var(--sky-deep);font-size:var(--fs-caption);font-weight:600;cursor:pointer;font-family:inherit;">学</button>':''}
+          <button onclick="event.stopPropagation();removeVocabWord(${w.idx})" style="width:32px;height:32px;border-radius:8px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink-soft);">✕</button>
         </div>
       </div>`;
     }).join('');
     html+=`</div>`;
   }
-  html+=`<button class="btn btn-ghost" style="width:100%;margin-top:4px;" onclick="closeModal()">关闭</button>`;
+  html+=`</div><button onclick="closeModal()" style="width:100%;margin-top:4px;padding:10px;background:var(--surface);color:var(--ink);border:none;border-radius:14px;font-size:var(--fs-sub);font-weight:500;cursor:pointer;font-family:inherit;">关闭</button>`;
   showModal(html);
 }
 
