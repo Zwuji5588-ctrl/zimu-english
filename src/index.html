@@ -2105,7 +2105,8 @@ document.addEventListener('touchend',e=>{
   if(m.classList.contains('active')){closeModal();return;}
   const a=document.querySelector('.page.active');
   if(!a||a.id==='page-home')return;
-  // From any sub-page → go directly to home
+  if(a.id==='page-learning'){onLearningBack();return;}
+  if(a.id==='page-quiz'){switchPage('learning');return;}
   switchPage('home');
 },{passive:true});
 
