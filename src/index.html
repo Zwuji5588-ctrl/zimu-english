@@ -2843,11 +2843,9 @@ function showDictationSelector(){
   const mastered=Object.values(D.mastery||{}).filter(v=>v&&v.l>=2).length;
   document.getElementById('dictationView').classList.remove('hidden');
   document.getElementById('dictationContent').innerHTML=`
-    <div class="dic-body" style="overflow-y:auto;padding:0 12px 20px;">
-      <div class="dic-nav" style="padding:8px 2px;justify-content:flex-start;gap:12px;">
-        <span class="dic-back" onclick="exitDictationToHome()" style="position:static;font-size:24px;cursor:pointer;line-height:1;">&lt;</span>
-        <span class="dic-title" style="flex:1;">请选择单词</span>
-        <span class="dic-headphone" style="font-size:22px;cursor:pointer;">🎧</span>
+    <div class="dic-body" style="overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;padding:0 12px 20px;">
+      <div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 2px;">
+        <span style="font-size:20px;cursor:pointer;" onclick="speakCurrent()">🎧</span>
       </div>
       <div style="font-size:17px;color:#333;font-weight:500;margin:16px 0 10px;">学习记录</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
