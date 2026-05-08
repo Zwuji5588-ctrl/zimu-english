@@ -25,6 +25,22 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .menu-card{transition:background .3s ease;}
 .article-card{transition:background .3s ease,box-shadow .3s ease;}
 .unit-card{transition:background .3s ease,box-shadow .3s ease,border-color .25s;}
+.unit-tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
+.unit-tabs::-webkit-scrollbar{display:none;}
+.unit-tab{white-space:nowrap;padding:5px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink-soft);background:var(--surface);transition:all .2s;flex-shrink:0;}
+.unit-tab.active{background:var(--sky-deep);color:#fff;}
+.unit-tab-arrow{display:flex;align-items:center;color:var(--sky-deep);font-size:12px;flex-shrink:0;padding:0 4px;}
+.word-card{background:var(--white);border-radius:16px;padding:16px 18px;margin-bottom:10px;box-shadow:var(--cs);cursor:pointer;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.word-card-index{position:absolute;top:8px;left:10px;font-size:10px;color:var(--ink-soft);font-family:monospace;}
+.word-card-left{flex:1;min-width:0;}
+.word-card-en{font-size:18px;font-weight:700;color:var(--sky-deep);}
+.word-card-ph{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+.word-card-right{text-align:right;padding-left:12px;}
+.word-card-zh{font-size:14px;color:var(--ink);font-weight:500;line-height:1.5;}
+.word-filter{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.9);backdrop-filter:blur(10px);padding:6px 12px;display:flex;gap:4px;justify-content:center;border-radius:100px;box-shadow:0 2px 12px rgba(0,0,0,.1);z-index:5;}
+.filter-item{padding:4px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:all .2s;background:transparent;white-space:nowrap;}
+.filter-item.active{color:var(--sky-deep);background:var(--sky-light);}
+.word-list-empty{text-align:center;padding:40px 0;font-size:14px;color:var(--ink-soft);}
 .read-tabs{transition:background .3s ease;}
 .curve-box{transition:background .3s ease;}
 .search-bar{transition:background .3s ease;}
@@ -423,11 +439,21 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     <div class="page-nav">
       <button class="nav-back" id="learningBackBtn" onclick="onLearningBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
       <span class="page-nav-title" id="learningTitle">单元学习</span>
-      <div style="width:36px;"></div>
+      <div style="display:flex;gap:6px;">
+        <button class="icon-btn" onclick="openSearch()" style="width:36px;height:36px;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+        <button class="icon-btn" onclick="openSettings()" style="width:36px;height:36px;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      </div>
     </div>
+    <div class="unit-tabs" id="unitTabs"></div>
     <div class="scroll-area" id="learningScrollArea">
-      <div class="units-grid" id="unitsList"></div>
-    </div><!-- scroll-area -->
+      <div id="wordList"></div>
+    </div>
+    <div class="word-filter" id="wordFilterBar">
+      <span class="filter-item active" data-filter="all" onclick="setWordFilter('all')">全部</span>
+      <span class="filter-item" data-filter="new" onclick="setWordFilter('new')">🆕 生词</span>
+      <span class="filter-item" data-filter="familiar" onclick="setWordFilter('familiar')">🔁 熟词</span>
+      <span class="filter-item" data-filter="mastered" onclick="setWordFilter('mastered')">✅ 掌握</span>
+    </div>
     <div id="textPageView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 24px;background:var(--cream);">
       <div id="textListMode">
         <div style="margin:14px 0 12px;">
@@ -1156,15 +1182,61 @@ function updateMission(){
   if(done===3)setTimeout(fireConfetti,300);
 }
 
+let _wordFilter='all',_currentUnitId=1;
+function setWordFilter(f){
+  _wordFilter=f;
+  document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===f));
+  renderWordList();
+}
+function selectUnitTab(id){
+  _currentUnitId=id;
+  document.querySelectorAll('.unit-tab').forEach(el=>el.classList.toggle('active',parseInt(el.dataset.id)===id));
+  renderWordList();
+}
 function renderUnits(){
-  document.getElementById('unitsList').innerHTML=getCurrentBankUnits().map((u,i)=>`<div class="unit-card ${D.currentUnit===u.id?'selected':''}" onclick="selectUnit(${u.id})"><div class="unit-num">Unit ${u.id}</div><div class="unit-name">${u.name}</div><div class="progress-track"><div class="progress-fill" style="width:${u.progress}%"></div></div><div class="unit-progress">${u.progress}% 完成</div><button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;" onclick="event.stopPropagation();startLearningPath(${u.id})">🚀 开始学习</button></div>`).join('');
+  const units=getCurrentBankUnits();
+  if(!units.length){document.getElementById('unitsList').innerHTML='<div class="word-list-empty">暂无单元数据</div>';return;}
+  // Set current unit if not set
+  if(!_currentUnitId||!units.find(u=>u.id===_currentUnitId))_currentUnitId=units[0].id;
+  // Render unit tabs
+  document.getElementById('unitTabs').innerHTML=units.map(u=>`<span class="unit-tab ${u.id===_currentUnitId?'active':''}" data-id="${u.id}" onclick="selectUnitTab(${u.id})">Unit ${u.id}</span>`).join('')+'<span class="unit-tab-arrow">›</span>';
+  renderWordList();
+}
+function renderWordList(){
+  const units=getCurrentBankUnits();
+  const unit=units.find(u=>u.id===_currentUnitId);
+  if(!unit){document.getElementById('wordList').innerHTML='<div class="word-list-empty">请选择单元</div>';return;}
+  let words=unit.words.map((w,i)=>({...w,idx:i+1}));
+  // Apply filter
+  if(_wordFilter==='new')words=words.filter(w=>{const m=D.mastery[getMasteryKey(_currentUnitId,w.idx-1)];return !m||(m.l||0)<1;});
+  else if(_wordFilter==='familiar')words=words.filter(w=>{const m=D.mastery[getMasteryKey(_currentUnitId,w.idx-1)];return m&&m.l===1;});
+  else if(_wordFilter==='mastered')words=words.filter(w=>{const m=D.mastery[getMasteryKey(_currentUnitId,w.idx-1)];return m&&m.l>=2;});
+  if(!words.length){document.getElementById('wordList').innerHTML='<div class="word-list-empty">没有匹配的单词</div>';return;}
+  document.getElementById('wordList').innerHTML=words.map(w=>{
+    const enSafe=w.en.replace(/'/g,"\\'");
+    const m=D.mastery[getMasteryKey(_currentUnitId,w.idx-1)];
+    const level=m?m.l:0;
+    const badge=['','🔁 ','✅ '][level]||'';
+    return `<div class="word-card" onclick="D.currentUnit=${_currentUnitId};D.currentWordIndex=${w.idx-1};enterCardMode(${_currentUnitId})">
+      <span class="word-card-index">${w.idx}</span>
+      <div class="word-card-left">
+        <div class="word-card-en">${badge}${w.en}</div>
+        <div class="word-card-ph">${w.ph||''}</div>
+      </div>
+      <div class="word-card-right">
+        ${(w.zh||'').split('；').map(z=>`<div class="word-card-zh">${z}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  // Update learning title with unit name
+  document.getElementById('learningTitle').textContent=unit.name;
 }
 function masteryKey(){return D.currentUnit+'_'+D.currentWordIndex;}
 function getMastery(key){const v=D.mastery[key];return v&&typeof v==='object'?v.l:(v||0);}
 function masteryInfo(level){return [{cls:'mastery-new',dot:'mastery-dot-new',label:'生疏'},{cls:'mastery-familiar',dot:'mastery-dot-familiar',label:'熟悉'},{cls:'mastery-mastered',dot:'mastery-dot-mastered',label:'掌握'}][level];}
 function renderMasteryBadge(containerId,level){const m=masteryInfo(level);const el=document.getElementById(containerId);if(el)el.innerHTML=`<div class="mastery-badge ${m.cls}"><div class="mastery-dot ${m.dot}"></div>${m.label}</div>`;}
 
-function selectUnit(id){enterCardMode(id);}
+function selectUnit(id){D.currentWordIndex=0;enterCardMode(id);}
 function currentWord(){const u=CONTENT.units.find(u=>u.id===D.currentUnit);return u?u.words[D.currentWordIndex%u.words.length]:null;}
 function showWord(){
   const w=currentWord();if(!w)return;
@@ -1237,7 +1309,7 @@ function recordFeedback(type){
 // ════ FLASHCARD MODE ════
 function enterCardMode(unitId){
   const u=CONTENT.units.find(x=>x.id===unitId);if(!u)return;
-  D.currentUnit=unitId;D.currentWordIndex=0;D.cardFlipped=false;reciteState.unitId=null;
+  D.currentUnit=unitId;D.cardFlipped=false;reciteState.unitId=null;
   document.getElementById('learningScrollArea').classList.add('hidden');
   document.getElementById('textPageView').classList.remove('hidden');
   document.getElementById('textListMode').classList.add('hidden');
