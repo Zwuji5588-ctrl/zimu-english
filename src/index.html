@@ -635,7 +635,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     </div>
   </div>
 
-  <div class="tab-bar">
+  <div class="tab-bar" id="tabBar">
     <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><div class="tab-label">首页</div></button>
     <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="tab-label">阅读</div></button>
     <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="tab-label">我的</div></button>
@@ -1160,6 +1160,8 @@ function switchPage(name){
   document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
   const map={home:0,reading:1,me:2};
   if(map[name]!==undefined)document.querySelectorAll('.tab-item')[map[name]].classList.add('active');
+  // Show tab bar only on root pages, hide on sub-pages
+  document.getElementById('tabBar').style.display=map[name]!==undefined?'':'none';
   if(name==='learning'){document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
   if(name==='home'){updateMission();}
   if(name==='reading'){renderArticles();renderCategories();}
