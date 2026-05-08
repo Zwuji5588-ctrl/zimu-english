@@ -2787,6 +2787,76 @@ function switchPhoneticTab(t){
   if(t==='v'){pt0.style.background='#e0f7ff';pt0.style.color='#44bbff';pt1.style.background='#f5f5f8';pt1.style.color='#666';v.style.display='';c.style.display='none';}
   else{pt1.style.background='#e0f7ff';pt1.style.color='#44bbff';pt0.style.background='#f5f5f8';pt0.style.color='#666';v.style.display='none';c.style.display='';}
 }
+const PHONICS_LETTERS=[
+  {letter:'a',rules:[{ipa:'/ə/',note:'非重读音节'},{ipa:'/æ/',note:'辅+a+辅'},{ipa:'/eɪ/',note:'a+辅+e结尾'},{ipa:'/ɑ:/',note:'在f/n/sk/ph/sp/ss/st/th前'},{ipa:'/ɔ:/',note:'在l前'},{ipa:'/ɪ/',note:'非重读+ge结尾'},{ipa:'/e/',note:'后跟n/y'},{ipa:'/ʌ/',note:''}]},
+  {letter:'ai',rules:[{ipa:'/eɪ/',note:''},{ipa:'/ə/',note:''}]},
+  {letter:'air',rules:[{ipa:'/er/',note:''}]},
+  {letter:'al',rules:[{ipa:'/ɔ:/',note:''}]},
+  {letter:'ar',rules:[{ipa:'/ɑːr/',note:''},{ipa:'/ər/',note:''},{ipa:'/er/',note:''},{ipa:'/ɔːr/',note:''}]},
+  {letter:'arr',rules:[{ipa:'/ɔːr/',note:''}]},
+  {letter:'au',rules:[{ipa:'/ɔ:/',note:''},{ipa:'/æ/',note:''},{ipa:'/ɑ:/',note:''}]},
+  {letter:'augh',rules:[{ipa:'/ɔ:/',note:'augh发/ɔ:/'},{ipa:'/ɑ:f/',note:'laugh'}]},
+  {letter:'aw',rules:[{ipa:'/ɔ:/',note:''}]},
+  {letter:'ay',rules:[{ipa:'/eɪ/',note:''}]},
+  {letter:'b',rules:[{ipa:'/b/',note:''},{ipa:'/-/',note:'mb/bt在词尾不发音'}]},
+  {letter:'c',rules:[{ipa:'/k/',note:'a/o/u/con前'},{ipa:'/s/',note:'e/i/y前'}]},
+  {letter:'cc',rules:[{ipa:'/k/',note:''}]},
+  {letter:'ch',rules:[{ipa:'/tʃ/',note:''},{ipa:'/ʃ/',note:'外来词'},{ipa:'/k/',note:'希腊词根'}]},
+  {letter:'ck',rules:[{ipa:'/k/',note:''}]},
+  {letter:'d',rules:[{ipa:'/d/',note:''},{ipa:'/t/',note:'过去式ed在清辅音后'}]},
+  {letter:'dr',rules:[{ipa:'/dr/',note:''}]},
+  {letter:'ds',rules:[{ipa:'/dz/',note:''}]},
+  {letter:'e',rules:[{ipa:'/e/',note:'辅+e+辅'},{ipa:'/i:/',note:'e+辅+e或ee'},{ipa:'/ɪ/',note:'非重读'},{ipa:'/-/',note:'词尾不发音e'}]},
+  {letter:'ea',rules:[{ipa:'/i:/',note:''},{ipa:'/e/',note:''},{ipa:'/eɪ/',note:'不常见'}]},
+  {letter:'ear',rules:[{ipa:'/ɪr/',note:''},{ipa:'/er/',note:''},{ipa:'/ɑːr/',note:''}]},
+  {letter:'eau',rules:[{ipa:'/ju:/',note:''}]},
+  {letter:'ed',rules:[{ipa:'/d/',note:'以元音/浊辅音结尾'},{ipa:'/ɪd/',note:'以t/d结尾'},{ipa:'/t/',note:'以清辅音结尾'}]},
+  {letter:'ee',rules:[{ipa:'/i:/',note:''},{ipa:'/ɪ/',note:'非重读'}]},
+  {letter:'eer',rules:[{ipa:'/ɪr/',note:''}]},
+  {letter:'ei',rules:[{ipa:'/i:/',note:'c后或ei组合'},{ipa:'/eɪ/',note:'neighbor/weigh'},{ipa:'/aɪ/',note:'eɪ变体'}]},
+  {letter:'ere',rules:[{ipa:'/ɪr/',note:''},{ipa:'/er/',note:''}]},
+  {letter:'eu',rules:[{ipa:'/ju:/',note:''}]},
+  {letter:'ew',rules:[{ipa:'/ju:/',note:''},{ipa:'/u:/',note:'l/r后'}]},
+  {letter:'f',rules:[{ipa:'/f/',note:''}]},
+  {letter:'g',rules:[{ipa:'/g/',note:'a/o/u前'},{ipa:'/dʒ/',note:'e/i/y前'},{ipa:'/-/',note:'gn在词首不发音'}]},
+  {letter:'gh',rules:[{ipa:'/g/',note:'词首'},{ipa:'/-/',note:'词中不发音'},{ipa:'/f/',note:'词尾laugh/enough'}]},
+  {letter:'h',rules:[{ipa:'/h/',note:''},{ipa:'/-/',note:'wh不发音'}]},
+  {letter:'i',rules:[{ipa:'/aɪ/',note:'i+辅+e'},{ipa:'/ɪ/',note:'辅+i+辅'},{ipa:'/ə/',note:'非重读'}]},
+  {letter:'ie',rules:[{ipa:'/i:/',note:''},{ipa:'/aɪ/',note:'词尾'}]},
+  {letter:'igh',rules:[{ipa:'/aɪ/',note:''}]},
+  {letter:'j',rules:[{ipa:'/dʒ/',note:''}]},
+  {letter:'k',rules:[{ipa:'/k/',note:''},{ipa:'/-/',note:'kn词首不发音'}]},
+  {letter:'kn',rules:[{ipa:'/n/',note:'k不发音'}]},
+  {letter:'l',rules:[{ipa:'/l/',note:''},{ipa:'/-/',note:'alf/alm/alk中l不发音'}]},
+  {letter:'m',rules:[{ipa:'/m/',note:''}]},
+  {letter:'n',rules:[{ipa:'/n/',note:''},{ipa:'/ŋ/',note:'在k/g前'}]},
+  {letter:'o',rules:[{ipa:'/ɒ/',note:'辅+o+辅'},{ipa:'/əʊ/',note:'o+辅+e'},{ipa:'/ʌ/',note:'在m/n/v/th前'},{ipa:'/ɔ:/',note:'在l前'},{ipa:'/ə/',note:'非重读'}]},
+  {letter:'oa',rules:[{ipa:'/əʊ/',note:''}]},
+  {letter:'oi',rules:[{ipa:'/ɔɪ/',note:''}]},
+  {letter:'oo',rules:[{ipa:'/u:/',note:''},{ipa:'/ʊ/',note:'在k/t/d前'}]},
+  {letter:'or',rules:[{ipa:'/ɔ:/',note:''},{ipa:'/ɜ:/',note:'在w后'}]},
+  {letter:'ou',rules:[{ipa:'/aʊ/',note:''},{ipa:'/u:/',note:'在l前'},{ipa:'/ʌ/',note:'country/young'}]},
+  {letter:'ough',rules:[{ipa:'/ɔ:/',note:'thought'},{ipa:'/u:/',note:'through'},{ipa:'/əʊ/',note:'though'},{ipa:'/ɒf/',note:'cough'}]},
+  {letter:'ow',rules:[{ipa:'/aʊ/',note:''},{ipa:'/əʊ/',note:''}]},
+  {letter:'p',rules:[{ipa:'/p/',note:''},{ipa:'/-/',note:'pn/ps词首'}]},
+  {letter:'ph',rules:[{ipa:'/f/',note:''}]},
+  {letter:'qu',rules:[{ipa:'/kw/',note:''}]},
+  {letter:'r',rules:[{ipa:'/r/',note:''}]},
+  {letter:'s',rules:[{ipa:'/s/',note:''},{ipa:'/z/',note:'词尾或元音间'},{ipa:'/ʃ/',note:'ure/ion前'},{ipa:'/ʒ/',note:'词中'}]},
+  {letter:'sh',rules:[{ipa:'/ʃ/',note:''}]},
+  {letter:'t',rules:[{ipa:'/t/',note:''},{ipa:'/tʃ/',note:'ture'},{ipa:'/ʃ/',note:'tia/tio'},{ipa:'/-/',note:'sten/stle'}]},
+  {letter:'th',rules:[{ipa:'/θ/',note:'清音'},{ipa:'/ð/',note:'浊音'}]},
+  {letter:'tr',rules:[{ipa:'/tr/',note:''}]},
+  {letter:'ts',rules:[{ipa:'/ts/',note:''}]},
+  {letter:'u',rules:[{ipa:'/ʌ/',note:'辅+u+辅'},{ipa:'/ju:/',note:'u+辅+e'},{ipa:'/u:/',note:'在l/r后'},{ipa:'/ʊ/',note:'在bull/push中'}]},
+  {letter:'v',rules:[{ipa:'/v/',note:''}]},
+  {letter:'w',rules:[{ipa:'/w/',note:''},{ipa:'/-/',note:'wr词首'},{ipa:'/h/',note:'在ho前'}]},
+  {letter:'wh',rules:[{ipa:'/w/',note:''},{ipa:'/h/',note:'o前'}]},
+  {letter:'wor',rules:[{ipa:'/wɜ:/',note:''}]},
+  {letter:'x',rules:[{ipa:'/ks/',note:''},{ipa:'/gz/',note:'重读音节前'}]},
+  {letter:'y',rules:[{ipa:'/j/',note:'词首'},{ipa:'/aɪ/',note:'单音节词尾'},{ipa:'/ɪ/',note:'双音节词尾'}]},
+  {letter:'z',rules:[{ipa:'/z/',note:''}]}
+];
 function openPhonicsLearning(){
   const vowel=PHONICS_GROUPS.filter(g=>g.tab==='v'),cons=PHONICS_GROUPS.filter(g=>g.tab==='c');
   const grp=g=>g.map(gr=>`
@@ -2805,14 +2875,41 @@ function openPhonicsLearning(){
         </div>`).join('')}
       </div>
     </div>`).join('');
+  // Letter mode content
+  const letterHtml=PHONICS_LETTERS.map(l=>`
+    <div style="margin-top:10px;padding:10px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;">
+      <div style="font-size:16px;font-weight:700;color:var(--sky-deep);margin-bottom:6px;">${l.letter}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${l.rules.map(r=>`<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--sky-light);border-radius:8px;font-size:13px;"><span style="font-weight:700;color:var(--sky-deep);">${r.ipa}</span>${r.note?'<span style="color:var(--ink-soft);font-size:12px;">'+r.note+'</span>':''}</span>`).join('')}</div>
+    </div>`).join('');
   showModal(`<div class="modal-title">🧩 自然拼读规则</div>
-  <div style="display:flex;gap:6px;margin-bottom:4px;">
-    <button class="phtab active" id="pt0" onclick="switchPhoneticTab('v')">元音 (33)</button>
-    <button class="phtab" id="pt1" onclick="switchPhoneticTab('c')">辅音 (10)</button>
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <button class="phtab active" id="phTab0" onclick="switchPhonicsMainTab('v')">音标模式</button>
+    <button class="phtab" id="phTab1" onclick="switchPhonicsMainTab('l')">字母模式</button>
   </div>
-  <div id="pv">${grp(vowel)}</div>
-  <div id="pc" style="display:none;">${grp(cons)}</div>
+  <div id="phMainV">
+    <div style="display:flex;gap:6px;margin-bottom:4px;">
+      <button class="phtab active" id="pv0" onclick="switchPhonicsSubTab('v')">元音 (33)</button>
+      <button class="phtab" id="pv1" onclick="switchPhonicsSubTab('c')">辅音 (10)</button>
+    </div>
+    <div id="phVow">${grp(vowel)}</div>
+    <div id="phCon" style="display:none;">${grp(cons)}</div>
+  </div>
+  <div id="phMainL" style="display:none;">${letterHtml}</div>
   <div style="height:4px;"></div>`);
+}
+function switchPhonicsMainTab(t){
+  const v=document.getElementById('phMainV'),l=document.getElementById('phMainL');
+  const t0=document.getElementById('phTab0'),t1=document.getElementById('phTab1');
+  if(!v||!l)return;
+  if(t==='v'){t0.style.background='var(--sky-deep)';t0.style.color='#fff';t1.style.background='var(--surface)';t1.style.color='var(--ink)';v.style.display='';l.style.display='none';}
+  else{t1.style.background='var(--sky-deep)';t1.style.color='#fff';t0.style.background='var(--surface)';t0.style.color='var(--ink)';v.style.display='none';l.style.display='';}
+}
+function switchPhonicsSubTab(t){
+  const vow=document.getElementById('phVow'),con=document.getElementById('phCon');
+  const t0=document.getElementById('pv0'),t1=document.getElementById('pv1');
+  if(!vow||!con)return;
+  if(t==='v'){t0.style.background='var(--sky-deep)';t0.style.color='#fff';t1.style.background='var(--surface)';t1.style.color='var(--ink)';vow.style.display='';con.style.display='none';}
+  else{t1.style.background='var(--sky-deep)';t1.style.color='#fff';t0.style.background='var(--surface)';t0.style.color='var(--ink)';vow.style.display='none';con.style.display='';}
 }
 function openSpelling(){
   const all=DataService.getAllWords();
