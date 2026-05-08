@@ -482,7 +482,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
         <span class="filter-item" data-filter="mastered" onclick="setWordFilter('mastered')">✅ 掌握</span>
       </div>
       <div class="word-filter-row" style="margin-top:8px;">
-        <span class="filter-item mode-item active" data-mode="browse" onclick="setWordMode('browse')">📖 学习</span>
+        <span class="filter-item mode-item" data-mode="browse" onclick="setWordMode('browse')">📖 学习</span>
         <span class="filter-item mode-item" data-mode="practice" onclick="setWordMode('practice')">✍️ 学+练</span>
         <span class="filter-item mode-item" data-mode="dictation" onclick="setWordMode('dictation')">🎧 听写</span>
       </div>
@@ -1231,7 +1231,6 @@ function setWordFilter(f){
 }
 function setWordMode(m){
   _wordMode=m;
-  document.querySelectorAll('.filter-item,.mode-item').forEach(el=>el.classList.toggle('active',el.dataset.mode===m));
   if(m==='browse'){showPhonicsView();}
   else if(m==='practice'){if(_currentUnitId)selectUnit(_currentUnitId);}
   else if(m==='dictation')showToast('🎧 听写模式开发中');
@@ -1244,6 +1243,7 @@ function showPhonicsView(){
   const word=unit.words[wIdx%unit.words.length];
   if(!word){showToast('没有单词');return;}
   document.getElementById('learningScrollArea').style.display='none';
+  document.getElementById('wordFilterBar').style.display='none';
   document.getElementById('phonicsView').classList.remove('hidden');
   document.getElementById('phonicsView').classList.add('active');
   renderPhonicsWord(word,unit.words,wIdx,unit.words.length);
@@ -1315,6 +1315,8 @@ function nextPhonicsWord(){
 function exitPhonicsView(){
   document.getElementById('phonicsView').classList.add('hidden');
   document.getElementById('phonicsView').classList.remove('active');
+  document.getElementById('wordFilterBar').style.display='';
+  document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===_wordFilter));
   document.getElementById('learningScrollArea').style.display='';
   document.getElementById('learningTitle').textContent='单元学习';
   renderUnits();
