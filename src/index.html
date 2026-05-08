@@ -460,9 +460,45 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .auth-input:focus{outline:none;border-color:var(--sky-deep)!important;}
 .dark .auth-input{background:var(--surface);border-color:var(--border);color:var(--ink);}
 
+/* ── Splash Screen ── */
+#splash{position:fixed;inset:0;z-index:9999;background:#faf7f2;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease,visibility .5s ease;}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-logo{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#7ec8a0,#5aaa7a);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 8px 24px rgba(90,170,122,0.3);margin-bottom:20px;}
+.splash-name{font-size:24px;font-weight:700;color:#2c3e2d;letter-spacing:1px;}
+.splash-sub{font-size:14px;color:#9aaa9a;margin-top:6px;}
+.splash-loader{margin-top:40px;width:120px;height:3px;background:#e8e4de;border-radius:2px;overflow:hidden;}
+.splash-loader-bar{height:100%;width:0;background:linear-gradient(90deg,#7ec8a0,#5aaa7a);border-radius:2px;animation:splashLoad 1.2s ease-in-out infinite;}
+/* ── Utility classes ── */
+.flex{display:flex;}
+.flex-col{flex-direction:column;}
+.flex-wrap{flex-wrap:wrap;}
+.items-center{align-items:center;}
+.justify-between{justify-content:space-between;}
+.justify-center{justify-content:center;}
+.gap-4{gap:4px;}.gap-6{gap:6px;}.gap-8{gap:8px;}.gap-10{gap:10px;}.gap-12{gap:12px;}.gap-14{gap:14px;}
+.p-16{padding:16px;}.p-20{padding:20px;}
+.mt-6{margin-top:6px;}.mt-8{margin-top:8px;}.mt-10{margin-top:10px;}.mt-12{margin-top:12px;}.mt-14{margin-top:14px;}.mb-10{margin-bottom:10px;}.mb-12{margin-bottom:12px;}.mb-14{margin-bottom:14px;}
+.text-center{text-align:center;}
+.flex-1{flex:1;}
+.flex-shrink-0{flex-shrink:0;}
+.w-full{width:100%;}
+.relative{position:relative;}
+.overflow-hidden{overflow:hidden;}
+.rounded-12{border-radius:12px;}.rounded-14{border-radius:14px;}.rounded-16{border-radius:16px;}.rounded-20{border-radius:20px;}
+.font-700{font-weight:700;}
+.text-12{font-size:12px;}.text-13{font-size:13px;}.text-14{font-size:14px;}.text-15{font-size:15px;}.text-16{font-size:16px;}.text-18{font-size:18px;}
+.cursor-pointer{cursor:pointer;}
+.card-white{background:#fff;border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(44,62,45,0.05);}
+@keyframes splashLoad{0%{width:0;transform:translateX(0)}50%{width:70%;transform:translateX(30%)}100%{width:0;transform:translateX(120px)}}
 </style>
 </head>
 <body>
+<div id="splash">
+  <div class="splash-logo">🐑</div>
+  <div class="splash-name">自牧英语</div>
+  <div class="splash-sub">专注 · 陪伴 · 成长</div>
+  <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+</div>
 <div class="phone">
   <div class="screen">
 
@@ -4106,9 +4142,16 @@ async function init(){
   setTimeout(()=>updateMission(),500);
   setInterval(()=>checkReminder(),30000);
   updateUserUI();
+  // Hide splash screen
+  setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide');},200);
 }
-  window.onerror=function(m){showToast('出错：'+m);};
-  DB.open().then(()=>init()).catch(e=>{setTimeout(function(){throw e;},0);});
+  window.onerror=function(m,url,line){showToast('出错了，请刷新页面');console.error(m,url,line);};
+  window.addEventListener('unhandledrejection',function(e){console.error(e.reason);});
+  DB.open().then(()=>init()).catch(function(e){
+    // Even if init fails, hide splash so user sees something
+    var s=document.getElementById('splash');if(s)s.classList.add('hide');
+    setTimeout(function(){throw e;},0);
+  });
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}</script>
 </body>
