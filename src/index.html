@@ -247,6 +247,10 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .float-score{position:fixed;pointer-events:none;font-size:20px;font-weight:900;color:#10b981;z-index:500;animation:floatUp .9s ease forwards;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.3);}}
 .confetti-piece{position:fixed;pointer-events:none;z-index:600;animation:confettiFall linear forwards;}
+.offline-banner{position:fixed;top:0;left:0;right:0;z-index:999;background:#ef4444;color:#fff;text-align:center;padding:6px;font-size:12px;font-weight:600;transform:translateY(-100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-width:430px;margin:0 auto;border-radius:0 0 12px 12px;}
+.offline-banner.show{transform:translateY(0);}
+.offline-banner .offline-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-right:6px;animation:offlinePulse 1.2s ease-in-out infinite;}
+@keyframes offlinePulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 @keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(700px) rotate(720deg);}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 @keyframes bounceIn{0%{opacity:0;transform:scale(.3);}50%{transform:scale(1.08);}70%{transform:scale(.95);}100%{opacity:1;transform:scale(1);}}
@@ -606,8 +610,8 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
         <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;">⚙️</div>设置</div><span class="menu-chev">›</span></button>
         <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">ℹ️</div>关于我们</div><span class="menu-chev">›</span></button>
         <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;">💬</div>意见反馈</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📤</div>导出数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="if(!isPro()){showProUpgrade('import');return;}document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📤</div>导出数据</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据</div><span class="menu-chev">›</span></button>
         <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       </div>
       <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
@@ -624,6 +628,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
   </div><!-- /screen -->
 </div>
 
+<div id="offlineBanner" class="offline-banner"><span class="offline-dot"></span>当前处于离线模式，部分功能可能不可用</div>
 <div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)">
   <div class="modal-sheet"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div>
 </div>
@@ -638,7 +643,7 @@ const EXAM_BANKS = [
   {id:'ielts', name:'雅思',            short:'IELTS', desc:'目标 6.5+'},
 ];
 const D = {
-  user:{name:'自牧',id:'ZM123456',level:1,points:0,reading:0,consecutiveDays:0,learnedWords:0,totalWords:493,targetExam:'nce1',checkedDays:[],notifications:true,darkMode:false,autoPlay:true,accent:'us',checkInDates:[],wordCollection:[],avatarColor:'#0ea5e9',avatarIcon:'👤',reminderEnabled:false,reminderTime:'09:00',tier:'free',proExpiry:0,dialogueAutoPlay:false},
+  user:{name:'自牧',id:'ZM123456',level:1,points:0,reading:0,consecutiveDays:0,learnedWords:0,totalWords:493,targetExam:'nce1',checkedDays:[],notifications:true,darkMode:false,autoPlay:true,ttsRate:0.85,accent:'us',checkInDates:[],wordCollection:[],avatarColor:'#0ea5e9',avatarIcon:'👤',reminderEnabled:false,reminderTime:'09:00',tier:'free',proExpiry:0,dialogueAutoPlay:false},
   achievements:[],  // computed dynamically
   currentUnit:1,currentWordIndex:0,cardFlipped:false,
   mission:{newDone:0,reviewDone:0,quizDone:false,lastQuizDate:'',reviewCount:0,reviewDate:''},
@@ -795,6 +800,13 @@ function updateBookCard(){
 
 // Spaced repetition thresholds (ms): level 0→4h, level 1→24h, level 2→72h
 const REVIEW_THRESHOLDS = [4*3600000, 24*3600000, 72*3600000];
+// Weighted wrong-word tracking for Ebbinghaus priority
+function _trackWrongWord(unitId,wordIndex){
+  const idx=D.wrongWords.findIndex(w=>w.unitId===unitId&&w.wordIndex===wordIndex);
+  if(idx>=0){D.wrongWords[idx].count=(D.wrongWords[idx].count||1)+1;D.wrongWords[idx].lastDate=Date.now();}
+  else D.wrongWords.push({unitId,wordIndex,count:1,lastDate:Date.now()});
+}
+
 function getDueWords(){
   const now=Date.now();const due=[];
   for(const unit of getCurrentBankUnits()){
@@ -807,6 +819,16 @@ function getDueWords(){
       if(now-time>REVIEW_THRESHOLDS[level]) due.push({unitId:unit.id,wordIndex:i,...unit.words[i]});
     }
   }
+  // Priority sort: Ebbinghaus weight pool
+  due.sort((a,b)=>{
+    const wa=D.wrongWords.find(w=>w.unitId===a.unitId&&w.wordIndex===a.wordIndex);
+    const wb=D.wrongWords.find(w=>w.unitId===b.unitId&&w.wordIndex===b.wordIndex);
+    const ca=wa?wa.count||1:0, cb=wb?wb.count||1:0;
+    if(ca!==cb)return cb-ca; // higher wrong count = higher priority
+    const la=typeof D.mastery[getMasteryKey(a.unitId,a.wordIndex)]==='object'?D.mastery[getMasteryKey(a.unitId,a.wordIndex)].t:0;
+    const lb=typeof D.mastery[getMasteryKey(b.unitId,b.wordIndex)]==='object'?D.mastery[getMasteryKey(b.unitId,b.wordIndex)].t:0;
+    return la-lb; // longer un-reviewed = higher priority
+  });
   return due;
 }
 function getDueCount(){return getDueWords().length;}
@@ -879,7 +901,21 @@ async function load(){
       if (grammarP) Object.assign(D.grammarProgress, grammarP);
     }
   } catch(e) { console.warn('load error', e); }
-  // Cloud sync — pull remote data if logged in
+  // Migrate old wrongWords format to weighted format
+  if(D.wrongWords.length>0 && typeof D.wrongWords[0].count==='undefined'){
+    D.wrongWords = D.wrongWords.map(w => ({unitId:w.unitId, wordIndex:w.wordIndex, count:1, lastDate:Date.now()}));
+  }
+  // Online/offline detection
+function updateOfflineStatus(){
+  const banner=document.getElementById('offlineBanner');
+  if(!banner)return;
+  banner.classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('online',updateOfflineStatus);
+window.addEventListener('offline',updateOfflineStatus);
+document.addEventListener('DOMContentLoaded',updateOfflineStatus);
+
+// Cloud sync — pull remote data if logged in
   if(API.token){
     try {
       const remote = await API.syncDownload();
@@ -1076,7 +1112,7 @@ function showWord(){
   document.getElementById('learningProgress').style.width=Math.min(D.currentWordIndex/total*100,100)+'%';
   if(D.user.autoPlay)setTimeout(()=>speakCurrent(),400);
 }
-function flipCard(){D.cardFlipped=!D.cardFlipped;document.getElementById('flipCardInner').classList.toggle('flipped',D.cardFlipped);}
+function flipCard(){D.cardFlipped=!D.cardFlipped;document.getElementById('flipCardInner').classList.toggle('flipped',D.cardFlipped);navigator.vibrate?.(10);}
 function speakCurrent(){const w=currentWord();if(w)speak(w.en);}
 // Audio cache for AI TTS (in-memory Map keyed by text)
 const _ttsCache = new Map();
@@ -1121,7 +1157,7 @@ function recordFeedback(type){
   const cur=getMastery(key);
   if(type==='easy'){DataService.setMastery(D.currentUnit,D.currentWordIndex,Math.min(2,cur+1));D.user.points+=5;D.user.learnedWords++;D.mission.newDone=Math.min(D.mission.newDone+1,5);floatScore('+5 ✨');if(D.mission.newDone>=5&&D.mission.newDone-1<5)showToast('🎉 新学任务完成！');if(D.session.learningPathActive){D.session.learningPathPointsEarned+=5;if(cur<2)D.session.learningPathMasteredCount++;}}
   else if(type==='hard'){DataService.setMastery(D.currentUnit,D.currentWordIndex,Math.max(0,Math.min(1,cur)));D.mission.reviewDone=Math.min(D.mission.reviewDone+1,3);}
-  else{DataService.setMastery(D.currentUnit,D.currentWordIndex,Math.max(0,cur-1));if(!D.wrongWords.some(w=>w.unitId===unit.id&&w.wordIndex===D.currentWordIndex)){D.wrongWords.push({unitId:unit.id,wordIndex:D.currentWordIndex});}}
+  else{DataService.setMastery(D.currentUnit,D.currentWordIndex,Math.max(0,cur-1));_trackWrongWord(unit.id,D.currentWordIndex)}
   D.session.wordsStudied++;
   if(unit){D.currentWordIndex++;unit.progress=Math.min(100,Math.round(D.currentWordIndex/unit.words.length*100));}
   save();updateStats();showWord();
@@ -1283,7 +1319,7 @@ function playAllSentences(){
     const s=t.sentences[i];
     document.getElementById('lessonRecordCurrent').textContent=s.en;
     const u=new SpeechSynthesisUtterance(s.en);
-    u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=0.85;u.pitch=1.1;
+    u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=D.user.ttsRate||0.85;u.pitch=1.1;
     u.onend=()=>{i++;setTimeout(playNext,800);};
     window.speechSynthesis.speak(u);
   };
@@ -1410,8 +1446,8 @@ function renderQuizQuestion(){
 function answerQuiz(btn,correct,chosen,rightEn){
   const qs=D.quizState;if(qs.answered)return;qs.answered=true;
   document.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent.trim()===rightEn)b.classList.add('reveal');});
-  if(correct){btn.classList.add('correct');qs.score+=10;floatScore('+10 🌟');speak(chosen);}
-  else{btn.classList.add('wrong');speak(rightEn);showToast('正确答案：'+rightEn);if(qs.wrongAnswers){const _cq=qs.questions[qs.current];qs.wrongAnswers.push({en:chosen,correctEn:_cq.en,zh:_cq.zh});}}
+  if(correct){btn.classList.add('correct');qs.score+=10;floatScore('+10 🌟');speak(chosen);navigator.vibrate?.(15);}
+  else{btn.classList.add('wrong');speak(rightEn);showToast('正确答案：'+rightEn);navigator.vibrate?.(30);if(qs.wrongAnswers){const _cq=qs.questions[qs.current];qs.wrongAnswers.push({en:chosen,correctEn:_cq.en,zh:_cq.zh});const _ww=DataService.getAllWords().find(x=>x.en===_cq.en);if(_ww)_trackWrongWord(_ww.unitId,_ww.wordIndex);}}
   document.getElementById('quizScore').textContent=qs.score;
   setTimeout(()=>{qs.current++;renderQuizQuestion();},1100);
 }
@@ -1534,7 +1570,7 @@ function readArticleAloud(id){
     const paras=document.querySelectorAll('.reading-paragraph');
     paras.forEach((p,idx)=>p.classList.toggle('reading-active',idx===i));
     const u=new SpeechSynthesisUtterance(c.paragraphs[i].en);
-    u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=0.85;u.pitch=1.1;
+    u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=D.user.ttsRate||0.85;u.pitch=1.1;
     u.onend=()=>{i++;setTimeout(playNext,600);};
     window.speechSynthesis.speak(u);
   };
@@ -1706,7 +1742,7 @@ function collectArticleWord(en,articleId){
   if(D.user.wordCollection.some(x=>x.en===en&&x.articleId===articleId)){showToast('已在词汇本中 📒');return;}
   const words=CONTENT.articleWords[articleId];if(!words)return;
   const w=words.find(x=>x.en===en);if(!w)return;
-  DataService.collectWord({en:w.en,zh:w.zh,ph:w.ph||'',articleId:articleId,addedAt:new Date().toISOString().slice(0,10)});
+  DataService.collectWord({en:w.en,zh:w.zh,ph:w.ph||'',articleId:articleId,addedAt:new Date().toISOString().slice(0,10)});navigator.vibrate?.(10);
   showToast('✅ 已收藏 +3积分 · 可在「我的」页面查看');
   // refresh word detail to show "已收藏"
   showArticleWordDetail(en,articleId);
@@ -1978,7 +2014,7 @@ function doCheckIn(){
   if(tasksDone<2){showToast('📋 完成今日任务后再打卡吧！新学 5 词 + 复习 3 词 + 测验');return;}
   D.user.checkInDates.push(ymd);
   D.user.consecutiveDays=calcStreak();
-  DataService.addPoints(10);
+  DataService.addPoints(10);navigator.vibrate?.(20);
   closeModal();showToast('🎉 签到成功！+10积分 · 连续 '+D.user.consecutiveDays+' 天');
   setTimeout(openCalendar,500);
 }
@@ -2280,7 +2316,7 @@ function startListening(id){
   // speak first (in user gesture context), then show player
   window._ls.playing=true;
   const u=new SpeechSynthesisUtterance(c.paragraphs[0].en);
-  u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=0.9;u.pitch=1.05;
+  u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=Math.min(1.5,D.user.ttsRate*1.05||0.95);u.pitch=1.05;
   const voices=window.speechSynthesis.getVoices();
   const ev=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Female'))||voices.find(v=>v.lang.startsWith('en'));
   if(ev)u.voice=ev;
@@ -2343,7 +2379,7 @@ function speakListenPara(){
   const p=s.paras[s.idx];if(!p)return;
   window.speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(p.en);
-  u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=s.speed*0.9;u.pitch=1.05;
+  u.lang=D.user.accent==='uk'?'en-GB':'en-US';u.rate=s.speed*(D.user.ttsRate||0.85);u.pitch=1.05;
   const voices=window.speechSynthesis.getVoices();
   const ev=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Female'))||voices.find(v=>v.lang.startsWith('en'));
   if(ev)u.voice=ev;
@@ -2549,7 +2585,18 @@ function showAchievements(){
   showModal(`<div class="modal-title">🏆 成就勋章</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;opacity:${a.unlocked?1:.5};"><div style="font-size:28px;margin-bottom:6px;">${a.icon}</div><div style="font-size:12px;font-weight:600;">${a.name}</div><div style="font-size:10px;color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:3px;">${a.unlocked?'已解锁':'未解锁'}</div></div>`).join('')}</div><div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">已解锁 ${list.filter(a=>a.unlocked).length}/${list.length}</div>`);
 }
 function showPlans(){showModal(`<div class="modal-title">📅 学习计划</div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['📖','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
-function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()"><span style="font-size:15px;">🗑️ 清零学习数据</span><span style="color:var(--rose,#ef4444);font-size:12px;font-weight:600;">点击重置</span></div><button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
+function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;">
+<span style="font-size:15px;">🎤 语速</span>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:10px;color:var(--ink-soft);">慢</span>
+<input type="range" min="0.5" max="1.5" step="0.05" value="${D.user.ttsRate||0.85}"
+ onchange="D.user.ttsRate=+this.value;save();this.nextElementSibling.textContent=this.value+'x'"
+ style="width:90px;height:4px;accent-color:var(--sky-deep);cursor:pointer;">
+<span style="font-size:10px;color:var(--ink-soft);">快</span>
+<span style="font-size:12px;font-weight:600;color:var(--sky-deep);min-width:32px;text-align:center;">${D.user.ttsRate||0.85}x</span>
+</div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()">
+<span style="font-size:15px;">🗑️ 清零学习数据</span><span style="color:var(--rose,#ef4444);font-size:12px;font-weight:600;">点击重置</span></div><button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
 function toggleSetting(key,el){D.user[key]=!D.user[key];el.classList.toggle('on');if(key==='darkMode')document.querySelector('.phone').classList.toggle('dark',D.user.darkMode);save();}
 function showAbout(){showModal(`<div style="text-align:center;padding:16px 0;"><div style="font-size:52px;margin-bottom:14px;">📚</div><div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;">自牧英语</div><div style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">Version 2.0.0</div><p style="font-size:14px;line-height:1.8;color:var(--ink-mid);">自牧英语致力于提供高质量、沉浸式英语学习体验。</p><div style="margin-top:16px;display:flex;justify-content:center;gap:16px;font-size:13px;"><a href="#" onclick="showPrivacy();return false;" style="color:var(--sky-deep);text-decoration:none;">隐私政策</a><a href="#" onclick="showTerms();return false;" style="color:var(--sky-deep);text-decoration:none;">用户协议</a></div></div>`);}
 function showPrivacy(){showModal(`<div class="modal-title">🔒 隐私政策</div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>自牧英语尊重并保护您的隐私。本应用仅在本地存储您的学习数据（IndexedDB）。当您注册账号后，您的学习数据将被加密传输至服务器用于云同步。我们不会将您的个人信息分享给第三方。</p><br><p><strong>数据收集</strong>：邮箱地址（仅用于账号识别）、学习进度数据。</p><br><p><strong>数据存储</strong>：本地数据存储在您的设备上；云端数据存储在我们的服务器（SQLite），采用行业标准加密。</p><br><p><strong>第三方服务</strong>：本应用可能使用 ElevenLabs 或 Azure 语音服务处理语音合成请求。</p></div>`);}
@@ -2914,7 +2961,6 @@ function saveAvatar(){
 
 // ════ DATA: EXPORT ════
 function exportData(){
-  if(!isPro()){showProUpgrade('export');return;}
   const data={
     version:'1.0',
     exportedAt:new Date().toISOString(),
@@ -2923,6 +2969,8 @@ function exportData(){
     reciteProgress:D.reciteProgress,
     readArticles:D.readArticles,
     readScores:D.readScores,
+    wrongWords:D.wrongWords,
+    grammarProgress:D.grammarProgress,
     mission:D.mission
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -2936,7 +2984,7 @@ function exportData(){
 
 // ════ DATA: IMPORT ════
 function importData(event){
-  if(!isPro()){showProUpgrade('import');event.target.value='';return;}
+  // free for all users
   const file=event.target.files[0];
   event.target.value='';
   if(!file){showToast('请选择文件');return;}
@@ -3236,9 +3284,9 @@ function reviewFeedback(type){
   if(idx>=words.length)return;
   const w=words[idx];
   const cur=getMastery(getMasteryKey(w.unitId,w.wordIndex));
-  if(type==='easy'){DataService.setMastery(w.unitId,w.wordIndex,Math.min(2,cur+1));D.user.points+=3;floatScore('+3 ✨');}
+  if(type==='easy'){DataService.setMastery(w.unitId,w.wordIndex,Math.min(2,cur+1));D.user.points+=3;floatScore('+3 ✨');navigator.vibrate?.(10);}
   else if(type==='hard'){DataService.setMastery(w.unitId,w.wordIndex,Math.max(0,cur));}
-  else{DataService.setMastery(w.unitId,w.wordIndex,Math.max(0,cur-1));}
+  else{DataService.setMastery(w.unitId,w.wordIndex,Math.max(0,cur-1));_trackWrongWord(w.unitId,w.wordIndex);}
   D.mission.reviewDone=Math.min(D.mission.reviewDone+1,3);
   D.session.reviewIndex=idx+1;
   save();updateStats();updateMission();
