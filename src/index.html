@@ -153,6 +153,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .dic-check{display:flex;justify-content:space-around;}
 .dic-check-item{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);cursor:pointer;}
 .dic-check-item input{width:18px;height:18px;accent-color:var(--sky-deep);}
+.dic-unit-card{background:var(--white);border-radius:16px;padding:16px 10px;text-align:center;font-size:15px;color:var(--ink);font-weight:500;border:2px solid transparent;cursor:pointer;transition:all .2s;}
+.dic-unit-card.selected{border-color:var(--sky-deep);color:var(--sky-deep);}
+.dic-unit-card .unit-count{font-size:13px;font-weight:400;color:#666;margin-top:3px;}
 .read-tabs{transition:background .3s ease;}
 .curve-box{transition:background .3s ease;}
 .search-bar{transition:background .3s ease;}
@@ -2814,18 +2817,79 @@ function skipSpelling(){
   s.no++;s.i++;showSpellingWord();
 }
 function openListening(){
-  // Use current unit words for dictation-style listening
   const units=getCurrentBankUnits();
   if(!units.length){showToast('暂无单词数据');return;}
-  const unit=units[0];
-  _currentUnitId=unit.id;D.currentWordIndex=0;
+  _currentUnitId=units[0].id;D.currentWordIndex=0;
   switchPage('learning');
   setTimeout(function(){
     document.getElementById('learningScrollArea').style.display='none';
     document.getElementById('wordFilterBar').style.display='none';
-    document.getElementById('dictationView').classList.remove('hidden');
-    renderDictation(0,unit.words.length);
+    showDictationSelector();
   },50);
+}
+function showDictationSelector(){
+  const units=getCurrentBankUnits();
+  const totalWords=units.reduce((s,u)=>s+u.words.length,0);
+  const learned=Object.keys(D.mastery||{}).length;
+  const reviewed=D.mission.reviewDone||0;
+  const mastered=Object.values(D.mastery||{}).filter(v=>v&&v.l>=2).length;
+  document.getElementById('dictationView').classList.remove('hidden');
+  document.getElementById('dictationContent').innerHTML=`
+    <div class="dic-body" style="overflow-y:auto;padding:0 12px 20px;">
+      <div class="dic-status-bar"><span id="dicTimer">00:19</span><span>📶 94</span></div>
+      <div class="dic-nav">
+        <span class="dic-back" onclick="exitDictationView()">&lt;</span>
+        <span class="dic-title">请选择单词</span>
+        <span class="dic-headphone">🎧</span>
+      </div>
+      <div style="font-size:18px;color:#333;font-weight:500;margin:20px 0 12px;">学习记录</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div style="background:linear-gradient(135deg,#5555ff,#7777ff);border-radius:16px;padding:24px;color:#fff;font-size:18px;font-weight:500;position:relative;grid-row:span 2;">
+          按日期选择
+          <div style="position:absolute;top:16px;right:16px;font-size:22px;opacity:.7;">📅</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#ff7777,#ff9999);border-radius:16px;padding:20px;color:#fff;font-size:16px;font-weight:500;position:relative;">
+          今日学习<div style="font-size:14px;font-weight:400;margin-top:4px;">0 词</div>
+          <div style="position:absolute;top:16px;right:16px;font-size:20px;opacity:.7;">📖</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#ffaa00,#ffcc33);border-radius:16px;padding:20px;color:#fff;font-size:16px;font-weight:500;position:relative;">
+          今日复习<div style="font-size:14px;font-weight:400;margin-top:4px;">${reviewed} 词</div>
+          <div style="position:absolute;top:16px;right:16px;font-size:20px;opacity:.7;">📝</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#33cc33,#66ff66);grid-column:span 2;border-radius:16px;padding:20px;color:#fff;font-size:16px;font-weight:500;position:relative;">
+          熟词<div style="font-size:14px;font-weight:400;margin-top:4px;">${mastered} 词</div>
+          <div style="position:absolute;top:16px;right:16px;font-size:20px;opacity:.7;">✅</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-size:18px;color:#333;font-weight:500;">按单元选择</div>
+        <button style="background:#fff;border:1px solid var(--sky-deep);color:var(--sky-deep);padding:6px 14px;border-radius:20px;font-size:15px;cursor:pointer;font-family:inherit;" onclick="selectAllUnits()">选择全部单元</button>
+      </div>
+      <div id="dicUnitGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">
+        ${units.map(u=>`<div class="dic-unit-card selected" data-id="${u.id}" onclick="toggleDicUnit(${u.id})">
+          unit ${u.id}
+          <div style="font-size:13px;font-weight:400;color:#666;margin-top:3px;">${u.words.length} 词</div>
+        </div>`).join('')}
+      </div>
+      <button style="width:100%;padding:18px;background:linear-gradient(90deg,#4499ff,#77aaff);color:#fff;border:none;border-radius:12px;font-size:22px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(68,153,255,.3);font-family:inherit;" onclick="startDictationFromSelector()">开始</button>
+    </div>`;
+  document.getElementById('learningTitle').textContent='请选择单词';
+}
+function selectAllUnits(){
+  document.querySelectorAll('.dic-unit-card').forEach(el=>el.classList.add('selected'));
+}
+function toggleDicUnit(id){
+  const el=document.querySelector('.dic-unit-card[data-id="'+id+'"]');
+  if(el)el.classList.toggle('selected');
+}
+function startDictationFromSelector(){
+  const selected=document.querySelectorAll('.dic-unit-card.selected');
+  if(!selected.length){showToast('请至少选择一个单元');return;}
+  const units=getCurrentBankUnits();
+  const ids=[].map.call(selected,function(el){return parseInt(el.dataset.id);});
+  _currentUnitId=ids[0];
+  D.currentWordIndex=0;
+  renderDictation(0,units.reduce(function(s,u){return s+(ids.includes(u.id)?u.words.length:0);},0));
 }
 function startListening(id){
   const art=CONTENT.articles.find(a=>a.id===id);
