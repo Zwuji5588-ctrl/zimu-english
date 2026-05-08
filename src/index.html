@@ -1872,36 +1872,91 @@ function openSearch(word){
 let _searchTimer=null;
 function searchWords(q){
   if(!q){document.getElementById('searchResults').innerHTML='';return;}
-  // local search
   const all=CONTENT.units.flatMap(u=>u.words);
   const res=all.filter(w=>w.en.toLowerCase().includes(q.toLowerCase())||w.zh.includes(q));
   let html='';
   if(res.length){
-    html+=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">📖 本地词库</div>`;
-    html+=res.slice(0,6).map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;" onclick="speak('${w.en.replace(/'/g,"\\'")}')"><div><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);">${w.ph||''} · ${w.zh}</div></div><button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}')">🔊</button></div>`).join('');
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">📖 本地词库 <span style="font-weight:400;">${res.length}个匹配</span></div>`;
+    html+=res.slice(0,10).map(w=>{
+      const enSafe=w.en.replace(/'/g,"\\'");
+      const zhSafe=(w.zh||'').replace(/'/g,"\\'");
+      const phSafe=(w.ph||'').replace(/'/g,"\\'");
+      return `<div style="padding:10px 12px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showWordDetail('${enSafe}')">
+        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.ph||''} · ${w.zh}</div></div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button style="background:var(--white);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);" onclick="event.stopPropagation();speak('${enSafe}')">🔊</button>
+          <button style="background:var(--white);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);" onclick="event.stopPropagation();quickCollect('${enSafe}','${zhSafe}','${phSafe}',this)">➕</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    html+=`<div style="text-align:center;padding:20px;font-size:13px;color:var(--ink-soft);">未找到匹配的单词</div>`;
   }
-  // online section placeholder
-  html+=`<div id="onlineLookup" style="margin-top:8px;"><div style="text-align:center;padding:16px;"><div style="font-size:14px;color:var(--ink-soft);">🌐 查询网络释义中...</div></div></div>`;
   document.getElementById('searchResults').innerHTML=html;
-  // debounce API call via backend
-  clearTimeout(_searchTimer);
-  _searchTimer=setTimeout(()=>{
-    fetch(API.base+'/dict/lookup?q='+encodeURIComponent(q)).then(r=>r.json()).then(data=>{
-      const el=document.getElementById('onlineLookup');
-      if(!el)return;
-      if(data.error||!data.word){
-        el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">${data.fallback?'🌐 联网查词暂不可用':'未找到网络释义'}</div>`;return;
-      }
-      let r=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div><div style="padding:14px;background:var(--white);border-radius:14px;box-shadow:var(--cs);margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--ink);">${data.word}</span>${data.ukPhonetic||data.usPhonetic?`<span style="font-size:13px;color:var(--ink-soft);">${data.ukPhonetic||data.usPhonetic}</span>`:''}${data.audio?`<button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();new Audio('${data.audio}').play()">🔊</button>`:''}</div>`;
-      data.meanings.forEach(m=>{r+=`<div style="margin-top:10px;">`;m.definitions.slice(0,5).forEach(d=>{r+=`<div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>`;if(d.example)r+=`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`;});r+=`</div>`;});
-      if(data.web){r+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-soft);">参考</div>`;data.web.slice(0,3).forEach(w=>{r+=`<div style="margin-top:4px;font-size:13px;color:var(--ink-mid);"><span style="color:var(--sky-deep);">${w.key}</span> ${w.values.join('、')}</div>`;});}
+}
+function showWordDetail(en){
+  const all=CONTENT.units.flatMap(u=>u.words);
+  const w=all.find(x=>x.en.toLowerCase()===en.toLowerCase());
+  if(!w){showToast('未找到单词');return;}
+  const enSafe=w.en.replace(/'/g,"\\'");
+  const zhSafe=(w.zh||'').replace(/'/g,"\\'");
+  const phSafe=(w.ph||'').replace(/'/g,"\\'");
+  const already=D.user.wordCollection.some(x=>x.en===w.en);
+  showModal(`<div style="text-align:center;padding:4px 0 16px;">
+    <div style="font-size:28px;font-weight:800;color:var(--sky-deep);font-family:'DM Serif Display',serif;margin-bottom:2px;">${w.en}</div>
+    <div style="font-size:14px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;">
+      ${w.ph||''}
+      <button style="background:transparent;border:none;font-size:16px;cursor:pointer;padding:4px;" onclick="speak('${enSafe}')">🔊</button>
+    </div>
+    <div style="font-size:20px;color:var(--ink);font-weight:600;margin-bottom:16px;">${w.zh}</div>
+    <button class="btn ${already?'btn-ghost':'btn-primary'}" onclick="collectSearchWord('${enSafe}','${zhSafe}','${phSafe}',this)" style="width:100%;">${already?'✅ 已收藏':'➕ 加入词汇本'}</button>
+    <div id="detailOnline" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">🌐 加载网络释义中...</div>
+    </div>
+  </div>`,'bottom');
+  // Fetch network definitions silently — appends when loaded
+  fetch(API.base+'/dict/lookup?q='+encodeURIComponent(w.en)).then(r=>r.json()).then(data=>{
+    const el=document.getElementById('detailOnline');if(!el)return;
+    if(data.error||!data.word){
+      el.innerHTML=`<div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">${data.fallback?'🌐 联网查词暂不可用':'未找到网络释义'}</div>`;return;
+    }
+    let r=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div>`;
+    if(!w.ph&&(data.ukPhonetic||data.usPhonetic)){
+      r+=`<div style="font-size:13px;color:var(--ink-soft);margin-bottom:8px;">${data.ukPhonetic||data.usPhonetic}</div>`;
+    }
+    data.meanings.forEach(m=>{
+      r+=`<div style="margin-top:10px;">`;
+      if(m.partOfSpeech) r+=`<span style="font-size:11px;font-weight:600;color:var(--sky-deep);background:var(--sky-light);padding:2px 8px;border-radius:6px;">${m.partOfSpeech}</span>`;
+      m.definitions.slice(0,5).forEach(d=>{
+        r+=`<div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>`;
+        if(d.example) r+=`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`;
+      });
       r+=`</div>`;
-      el.innerHTML=r;
-    }).catch(()=>{
-      const el=document.getElementById('onlineLookup');
-      if(el)el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">网络请求失败</div>`;
     });
-  },600);
+    if(data.web){
+      r+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-soft);">参考</div>`;
+      data.web.slice(0,3).forEach(w=>{r+=`<div style="margin-top:4px;font-size:13px;color:var(--ink-mid);"><span style="color:var(--sky-deep);">${w.key}</span> ${w.values.join('、')}</div>`;});
+    }
+    el.innerHTML=r;
+  }).catch(()=>{
+    const el=document.getElementById('detailOnline');
+    if(el)el.innerHTML=`<div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">网络请求失败</div>`;
+  });
+}
+function collectSearchWord(en,zh,ph,btn){
+  if(D.user.wordCollection.some(x=>x.en===en)){showToast('已在词汇本中 📒');return;}
+  D.user.wordCollection.push({en,zh,ph,articleId:'',addedAt:new Date().toISOString().slice(0,10)});
+  D.user.points+=3;save();updateStats();
+  showToast('✅ 已收藏 +3积分');
+  btn.className='btn btn-ghost';
+  btn.textContent='✅ 已收藏';
+}
+function quickCollect(en,zh,ph,btn){
+  if(D.user.wordCollection.some(x=>x.en===en)){showToast('已在词汇本中 📒');btn.textContent='✅';return;}
+  D.user.wordCollection.push({en,zh,ph,articleId:'',addedAt:new Date().toISOString().slice(0,10)});
+  D.user.points+=3;save();updateStats();
+  showToast('✅ 已收藏 +3积分');
+  btn.textContent='✅';
 }
 function openSearchReading(){const m=document.getElementById('modal');m.style.position='absolute';m.style.alignItems='flex-start';m.style.paddingTop='36px';showModal(`<div class="modal-title">搜索文章</div><input type="text" placeholder="搜索文章标题..." style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-family:inherit;background:var(--white);color:var(--ink);" oninput="searchArticles(this.value)"><div id="artResults" style="margin-top:14px;"></div>`);}
 function searchArticles(q){if(!q){document.getElementById('artResults').innerHTML='';return;}const res=CONTENT.articles.filter(a=>a.title.toLowerCase().includes(q.toLowerCase())||a.titleZh.includes(q));document.getElementById('artResults').innerHTML=res.map(a=>`<div style="padding:12px;background:var(--surface);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="readArticle(${a.id});closeModal()"><div style="font-weight:700;">${a.title}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">${a.titleZh}</div></div>`).join('')||`<p style="color:var(--ink-soft);text-align:center;padding:20px;">未找到文章</p>`;}
