@@ -13,16 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install & Build
-        run: |
-          cd backend
-          npm ci
-          npm run build
+      - name: Build
+        run: node backend/build.js
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
