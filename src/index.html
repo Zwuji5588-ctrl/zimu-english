@@ -2713,37 +2713,79 @@ const PHONICS_GROUPS=[
   ]}
 ];
 function openPhoneticLearning(){
-  const vowel=PHONETIC_GROUPS.slice(0,3),cons=PHONETIC_GROUPS.slice(3);
-  const grp=g=>g.map(gr=>`
-    <div style="margin-top:14px;">
-      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;padding:0 2px;">
-        <span style="font-size:13px;font-weight:700;color:${gr.color};">${gr.label}</span>
-        <span style="font-size:10px;color:var(--ink-soft);">${gr.badge} · ${gr.symbols.length}个</span>
+  const name=D.user.name||'自牧';
+  const lv=D.user.level||1;
+  // Build IPA grid
+  const phoGrid=(items,cols)=>{
+    const rows=[];
+    for(let i=0;i<items.length;i+=cols){
+      rows.push(items.slice(i,i+cols));
+    }
+    return rows.map(row=>`<div style="display:grid;grid-template-columns:repeat(${Math.min(cols,row.length)},1fr);gap:10px;margin-bottom:10px;">${row.map(s=>`<div onclick="speak('${s.snd}')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 4px;background:#f8f8ff;border-radius:12px;font-size:20px;color:#333;font-weight:500;min-height:60px;cursor:pointer;"><div style="font-size:14px;color:#999;margin-top:2px;">🔊</div></div>`).join('')}</div>`).join('');
+  };
+  // Define IPA data
+  const makeItem=(ipa,snd)=>'<div style="font-size:20px;font-weight:600;">'+ipa+'</div><div style="font-size:14px;color:#999;margin-top:2px;">🔊</div>';
+  // Vowels
+  const frontV= [{ipa:'i:',snd:'iː'},{ipa:'i',snd:'i'},{ipa:'e',snd:'e'},{ipa:'æ',snd:'æ'}].map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;background:#f8f8ff;border-radius:12px;font-size:24px;color:#333;font-weight:500;min-height:80px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:16px;color:#999;margin-top:4px;">🔊</div></div>');
+  const midV=  [{ipa:'ɜ:',snd:'ɜː'},{ipa:'ə',snd:'ə'},{ipa:'ʌ',snd:'ʌ'}].map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;background:#f8f8ff;border-radius:12px;font-size:24px;color:#333;font-weight:500;min-height:80px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:16px;color:#999;margin-top:4px;">🔊</div></div>');
+  const backV= [{ipa:'u:',snd:'uː'},{ipa:'u',snd:'u'},{ipa:'ɔ:',snd:'ɔː'},{ipa:'ɒ',snd:'ɒ'},{ipa:'ɑ:',snd:'ɑː'}].map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;background:#f8f8ff;border-radius:12px;font-size:24px;color:#333;font-weight:500;min-height:80px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:16px;color:#999;margin-top:4px;">🔊</div></div>');
+  const diphO= [{ipa:'eɪ',snd:'eɪ'},{ipa:'aɪ',snd:'aɪ'},{ipa:'ɔɪ',snd:'ɔɪ'},{ipa:'aʊ',snd:'aʊ'},{ipa:'əʊ',snd:'əʊ'}].map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;background:#f8f8ff;border-radius:12px;font-size:24px;color:#333;font-weight:500;min-height:80px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:16px;color:#999;margin-top:4px;">🔊</div></div>');
+  const diphC= [{ipa:'ɪə',snd:'ɪə'},{ipa:'eə',snd:'eə'},{ipa:'ʊə',snd:'ʊə'}].map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;background:#f8f8ff;border-radius:12px;font-size:24px;color:#333;font-weight:500;min-height:80px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:16px;color:#999;margin-top:4px;">🔊</div></div>');
+  // Consonants
+  const cGrid=(items,label)=>items.map(s=>'<div onclick="speak(\''+s.snd+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 4px;background:#f8f8ff;border-radius:12px;font-size:20px;color:#333;font-weight:500;min-height:60px;cursor:pointer;"><div>'+s.ipa+'</div><div style="font-size:14px;color:#999;margin-top:2px;">🔊</div></div>');
+  const sub=(items,cols)=>'<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:10px;margin-bottom:10px;">'+items.join('')+'</div>';
+  const secTitle=(t)=>'<div style="font-size:18px;color:#666;margin-bottom:10px;margin-top:6px;">'+t+'</div>';
+  const vowelHtml=`
+    <div style="font-size:22px;color:#333;font-weight:600;margin-bottom:12px;">20个元音</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#e0f7ff;color:#44bbff;cursor:pointer;font-family:inherit;">单元音</button>
+      <button style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#f5f5f8;color:#666;cursor:pointer;font-family:inherit;">双元音</button>
+    </div>
+    ${secTitle('前元音')}${sub(frontV,4)}
+    ${secTitle('中元音')}${sub(midV,3)}
+    ${secTitle('后元音')}${sub(backV,5)}
+    ${secTitle('开合双元音')}${sub(diphO,5)}
+    ${secTitle('集中双元音')}${sub(diphC,3)}`;
+  const consHtml=`
+    <div style="font-size:22px;color:#333;font-weight:600;margin-bottom:12px;">28个辅音</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#e0f7ff;color:#44bbff;cursor:pointer;font-family:inherit;">清辅音</button>
+      <button style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#f5f5f8;color:#666;cursor:pointer;font-family:inherit;">浊辅音</button>
+    </div>
+    ${secTitle('爆破音')}${sub(cGrid([{ipa:'p',snd:'p'},{ipa:'t',snd:'t'},{ipa:'k',snd:'k'},{ipa:'b',snd:'b'},{ipa:'d',snd:'d'}]),5)}${sub(cGrid([{ipa:'g',snd:'g'}]),1)}
+    ${secTitle('摩擦音')}${sub(cGrid([{ipa:'f',snd:'f'},{ipa:'s',snd:'s'},{ipa:'ʃ',snd:'ʃ'},{ipa:'θ',snd:'θ'},{ipa:'h',snd:'h'}]),5)}${sub(cGrid([{ipa:'v',snd:'v'},{ipa:'z',snd:'z'},{ipa:'ʒ',snd:'ʒ'},{ipa:'ð',snd:'ð'},{ipa:'r',snd:'r'}]),5)}
+    ${secTitle('破擦音')}${sub(cGrid([{ipa:'tʃ',snd:'tʃ'},{ipa:'tr',snd:'tr'},{ipa:'ts',snd:'ts'},{ipa:'dʒ',snd:'dʒ'},{ipa:'dr',snd:'dr'}]),5)}${sub(cGrid([{ipa:'dz',snd:'dz'}]),1)}
+    ${secTitle('鼻辅音')}${sub(cGrid([{ipa:'m',snd:'m'},{ipa:'n',snd:'n'},{ipa:'ŋ',snd:'ŋ'}]),3)}
+    ${secTitle('舌边音')}${sub(cGrid([{ipa:'l',snd:'l'}]),1)}
+    ${secTitle('半元音')}${sub(cGrid([{ipa:'j',snd:'j'},{ipa:'w',snd:'w'}]),2)}`;
+  showModal(`<div style="background:#f0f0f3;border-radius:20px;margin:-24px;padding:12px;">
+    <div style="background:#fff;border-radius:20px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:42px;height:42px;background:#e0f7ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;">${D.user.avatarIcon||'👤'}</div>
+        <div><div style="font-size:17px;color:#333;font-weight:500;">${name}</div><div style="font-size:14px;color:#999;">Lv.${lv}</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-        ${gr.symbols.map(s=>`<div onclick="speak('${s.snd}')" style="background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .12s;box-shadow:var(--cs);"
-             onmouseenter="this.style.borderColor='${gr.color}';this.style.background='${gr.color}08';"
-             onmouseleave="this.style.borderColor='var(--border)';this.style.background='var(--white)';">
-          <div style="font-size:18px;font-weight:800;color:${gr.color};">/${s.ipa}/</div>
-          <div style="font-size:11px;color:var(--ink-mid);margin-top:3px;">${s.word}</div>
-        </div>`).join('')}
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button onclick="showToast('英音')" style="display:flex;align-items:center;gap:4px;padding:8px 14px;background:#e0f7ff;border:none;border-radius:14px;font-size:16px;color:#44bbff;cursor:pointer;font-family:inherit;">🔊 英音</button>
+        <span style="font-size:22px;color:#999;cursor:pointer;" onclick="showToast('更多')">⋮</span>
       </div>
-    </div>`).join('');
-  showModal(`<div class="modal-title">🔤 音标点读学习</div>
-  <div style="display:flex;gap:6px;margin-bottom:4px;">
-    <button class="phtab active" id="pt0" onclick="switchPhoneticTab('v')">元音 (20)</button>
-    <button class="phtab" id="pt1" onclick="switchPhoneticTab('c')">辅音 (28)</button>
-  </div>
-  <div id="pv">${grp(vowel)}</div>
-  <div id="pc" style="display:none;">${grp(cons)}</div>
-  <div style="height:4px;"></div>`);
+    </div>
+    <div style="background:#fff;border-radius:20px;padding:20px;">
+      <div style="font-size:24px;color:#333;font-weight:600;margin-bottom:12px;">48个国际音标</div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <button class="phtab active" id="pt0" onclick="switchPhoneticTab('v')" style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#e0f7ff;color:#44bbff;cursor:pointer;font-family:inherit;">音标答题</button>
+        <button class="phtab" id="pt1" onclick="switchPhoneticTab('c')" style="padding:6px 14px;border-radius:14px;border:none;font-size:16px;font-weight:500;background:#f5f5f8;color:#666;cursor:pointer;font-family:inherit;">点读</button>
+      </div>
+      <div id="pv">${vowelHtml}</div>
+      <div id="pc" style="display:none;">${consHtml}</div>
+    </div>
+  </div>`);
 }
 function switchPhoneticTab(t){
   const v=document.getElementById('pv'),c=document.getElementById('pc');
   if(!v||!c)return;
-  document.getElementById('pt0').classList.toggle('active',t==='v');
-  document.getElementById('pt1').classList.toggle('active',t==='c');
-  v.style.display=t==='v'?'':'none';c.style.display=t==='c'?'':'none';
+  const pt0=document.getElementById('pt0'),pt1=document.getElementById('pt1');
+  if(t==='v'){pt0.style.background='#e0f7ff';pt0.style.color='#44bbff';pt1.style.background='#f5f5f8';pt1.style.color='#666';v.style.display='';c.style.display='none';}
+  else{pt1.style.background='#e0f7ff';pt1.style.color='#44bbff';pt0.style.background='#f5f5f8';pt0.style.color='#666';v.style.display='none';c.style.display='';}
 }
 function openPhonicsLearning(){
   const vowel=PHONICS_GROUPS.filter(g=>g.tab==='v'),cons=PHONICS_GROUPS.filter(g=>g.tab==='c');
