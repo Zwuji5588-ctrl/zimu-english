@@ -2827,10 +2827,6 @@ function openListening(){
     renderDictation(0,unit.words.length);
   },50);
 }
-        <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">${a.titleZh} · ${a.time} · ${a.level}</div>
-      </div>`).join('')}
-    <div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">🎧 点击文章开始播放</div>`);
-}
 function startListening(id){
   const art=CONTENT.articles.find(a=>a.id===id);
   const c=CONTENT.articleContent[id];
