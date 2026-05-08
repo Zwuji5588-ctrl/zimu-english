@@ -1201,7 +1201,7 @@ function switchPage(name){
   document.getElementById('tabBar').style.display=isRoot?'':'none';
   const subPad=name==='learning'?'110px':'16px';
   document.querySelectorAll('.scroll-area').forEach(s=>s.style.paddingBottom=isRoot?'80px':subPad);
-  if(name==='learning'){document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
+  if(name==='learning'){document.getElementById('phonicsView').classList.add('hidden');document.getElementById('phonicsView').classList.remove('active');document.getElementById('wordFilterBar').style.display='';document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===_wordFilter));document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('learningScrollArea').style.display='';document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
   if(name==='home'){updateMission();}
   if(name==='reading'){renderArticles();renderCategories();}
   if(name==='me'){updateProfileStats();updateVIPCard();}
@@ -2104,8 +2104,9 @@ document.addEventListener('touchend',e=>{
   const m=document.getElementById('modal');
   if(m.classList.contains('active')){closeModal();return;}
   const a=document.querySelector('.page.active');
-  if(!a)return;
-  if(a.id==='page-learning'||a.id==='page-quiz')switchPage('home');
+  if(!a||a.id==='page-home')return;
+  // From any sub-page → go directly to home
+  switchPage('home');
 },{passive:true});
 
 function showModal(html,align='bottom'){const m=document.getElementById('modal');m.style.alignItems=align==='top'?'flex-start':'flex-end';m.style.paddingTop=align==='top'?'60px':'';document.getElementById('modalBody').innerHTML=html;m.classList.add('active');document.querySelector('.page.active .scroll-area')?.style.setProperty('overflow','hidden');m.addEventListener('touchmove',preventModalScroll,{passive:false});}
