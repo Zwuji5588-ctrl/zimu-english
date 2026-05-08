@@ -1,785 +1,132 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>自牧英语</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
-<meta name="theme-color" content="#0ea5e9">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--sky:#38bdf8;--sky-deep:#0ea5e9;--sky-light:#e0f4fd;--ink:#0f172a;--ink-mid:#475569;--ink-soft:#94a3b8;--cream:#f8fafc;--white:#fff;--surface:#f1f5f9;--gold:#f59e0b;--green:#10b981;--rose:#f43f5e;--lavender:#8b5cf6;--orange:#f97316;--cs:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);--bg-muted:#f1f5f9;--border:#e2e8f0;}
-.dark{--ink:#f1f5f9;--ink-mid:#cbd5e1;--ink-soft:#64748b;--cream:#0f172a;--white:#1e293b;--surface:#334155;--sky-light:#0c4a6e;--cs:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);--bg-muted:#1e293b;--border:#334155;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 100%);min-height:100dvh;display:flex;flex-direction:column;}
-.phone{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--cream);transition:background .3s ease;}
-.screen{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--cream);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);transition:background .3s ease;}
-.card{transition:background .3s ease,box-shadow .3s ease;}
-.tab-bar{transition:background .3s ease,border-color .3s ease;}
-.page-nav{transition:background .3s ease,border-color .3s ease;}
-.home-header{transition:background .3s ease;}
-.menu-card{transition:background .3s ease;}
-.article-card{transition:background .3s ease,box-shadow .3s ease;}
-.unit-card{transition:background .3s ease,box-shadow .3s ease,border-color .25s;}
-.unit-tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
-.unit-tabs::-webkit-scrollbar{display:none;}
-.unit-tab{white-space:nowrap;padding:5px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink-soft);background:var(--surface);transition:all .2s;flex-shrink:0;}
-.unit-tab.active{background:var(--sky-deep);color:#fff;}
-.unit-tab-arrow{display:flex;align-items:center;color:var(--sky-deep);font-size:12px;flex-shrink:0;padding:0 4px;}
-.word-card{background:var(--white);border-radius:16px;padding:16px 18px;margin-bottom:10px;box-shadow:var(--cs);cursor:pointer;display:flex;align-items:center;justify-content:space-between;position:relative;}
-.word-card-index{position:absolute;top:8px;left:10px;font-size:10px;color:var(--ink-soft);font-family:monospace;}
-.word-card-left{flex:1;min-width:0;}
-.word-card-en{font-size:18px;font-weight:700;color:var(--sky-deep);}
-.word-card-ph{font-size:12px;color:var(--ink-soft);margin-top:1px;}
-.word-card-right{text-align:right;padding-left:12px;}
-.word-card-zh{font-size:14px;color:var(--ink);font-weight:500;line-height:1.5;}
-.word-filter{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);z-index:5;display:flex;flex-direction:column;align-items:center;max-width:430px;margin:auto;}
-.word-filter-row{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;}
-.filter-item{padding:4px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:all .2s;background:transparent;white-space:nowrap;}
-.filter-item.active{color:var(--sky-deep);background:var(--sky-light);}
-.mode-item{padding:10px 28px;font-size:16px;font-weight:700;border:2px solid var(--sky-deep);border-radius:100px;}
-/* Phonics detail view */
-.pho-nav{display:flex;gap:15px;overflow-x:auto;padding:16px 0 12px;color:var(--ink-soft);font-weight:500;font-size:14px;border-bottom:1px solid var(--border);margin-bottom:20px;scrollbar-width:none;}
-.pho-nav::-webkit-scrollbar{display:none;}
-.pho-word{text-align:center;font-size:48px;font-weight:700;letter-spacing:2px;margin:16px 0 8px;}
-.pho-word .pho-syl{display:inline;}
-.pho-syl-red{color:#FF6B6B;}
-.pho-syl-blue{color:#4D96FF;}
-.pho-syl-gray{color:#CCC;}
-.pho-syls{display:flex;justify-content:center;gap:8px;margin:8px 0 12px;flex-wrap:wrap;}
-.pho-syl-box{background:#F0F7FF;color:#4D96FF;padding:4px 15px;border-radius:12px;font-size:14px;font-weight:600;}
-.pho-phonetic{text-align:center;color:#4D96FF;margin:8px 0;font-size:16px;}
-.pho-accent{background:#E1F0FF;font-size:12px;padding:2px 6px;border-radius:4px;color:#4D96FF;}
-.pho-trans{color:var(--ink-mid);font-size:15px;line-height:1.7;text-align:center;margin-bottom:20px;}
-.pho-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:24px;}
-.pho-grid-item{text-align:center;}
-.pho-grid-letter{background:#F5F5F5;padding:8px 0;border-radius:8px 8px 0 0;font-weight:700;font-size:15px;}
-.pho-grid-ipa{background:#EDF2F9;padding:5px 0;border-radius:0 0 8px 8px;font-size:12px;color:var(--ink-soft);}
-.pho-example h3{color:#4D96FF;font-size:16px;margin-bottom:10px;}
-.pho-example .en{font-weight:700;color:var(--ink);margin-bottom:4px;}
-.pho-example .zh{color:var(--ink-soft);font-size:14px;line-height:1.5;}
-.pho-actions{display:flex;gap:10px;margin-top:24px;padding-bottom:16px;}
-.pho-actions .pho-btn{flex:1;padding:12px;border-radius:25px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;text-align:center;}
-.pho-ghost{background:#F0F7FF;color:#4D96FF;}
-.pho-primary{background:linear-gradient(135deg,var(--sky-deep),#2563eb);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.35);}
-/* Practice mode (学+练) */
-.prac-body{background:var(--cream);min-height:100%;padding:0 0 16px;}
-.prac-nav{display:flex;align-items:center;padding:8px 12px;position:relative;}
-.prac-back{font-size:22px;color:var(--sky-deep);cursor:pointer;line-height:1;}
-.prac-title{position:absolute;left:50%;transform:translateX(-50%);font-size:18px;font-weight:600;color:var(--ink);white-space:nowrap;}
-.prac-icons{margin-left:auto;display:flex;gap:16px;}
-.prac-icon{font-size:18px;color:var(--sky-deep);cursor:pointer;}
-.prac-funcs{display:flex;justify-content:center;gap:8px;padding:12px 8px;flex-wrap:wrap;}
-.prac-func{width:58px;height:58px;border-radius:14px;border:none;background:#e8f4ff;color:var(--sky-deep);font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all .2s;font-family:inherit;}
-.prac-func:active{transform:scale(.95);}
-.prac-func.active{background:var(--sky-deep);color:#fff;}
-.prac-func-icon{font-size:22px;}
-.prac-card{background:var(--white);border-radius:20px;padding:24px 16px;margin:0 8px;position:relative;box-shadow:var(--cs);}
-.prac-search-icon{position:absolute;top:16px;right:16px;font-size:16px;color:var(--orange);border:2px solid var(--orange);border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.prac-dashes{text-align:center;letter-spacing:10px;color:#ccc;font-size:20px;margin-bottom:6px;}
-.prac-word-display{text-align:center;font-size:42px;font-weight:700;letter-spacing:3px;position:relative;display:block;margin:8px 0;}
-.prac-letter-red{color:#FF6B6B;}
-.prac-letter-blue{color:#4D96FF;}
-.prac-letter-gray{color:#CCC;}
-.prac-underline{display:block;height:3px;background:#FF6B6B;width:30%;margin:2px auto 0;border-radius:2px;}
-.prac-syls{display:flex;justify-content:center;gap:12px;margin:16px 0;}
-.prac-syl-tag{padding:6px 18px;background:#e8f4ff;color:var(--sky-deep);border-radius:12px;font-size:16px;font-weight:500;}
-.prac-phonetic{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0;}
-.prac-pho{font-size:20px;color:var(--ink);}
-.prac-pho .red{color:#FF6B6B;}
-.prac-pho .blue{color:#4D96FF;}
-.prac-pronounce{padding:4px 12px;border-radius:10px;border:none;background:#e8f4ff;color:var(--sky-deep);font-size:14px;cursor:pointer;font-family:inherit;}
-.prac-known{position:absolute;right:16px;top:120px;width:44px;height:44px;background:#10b981;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(16,185,129,.3);}
-.prac-defs{text-align:center;margin:20px 0 24px;line-height:1.8;}
-.prac-def{font-size:16px;color:var(--ink-mid);}
-.prac-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:24px;}
-.prac-grid-item{text-align:center;}
-.prac-grid-letter{height:36px;background:#f5f5f5;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;}
-.prac-grid-letter.red{color:#FF6B6B;}
-.prac-grid-letter.blue{color:#4D96FF;}
-.prac-grid-ph{font-size:14px;color:var(--ink-soft);padding:4px 0;background:#EDF2F9;border-radius:0 0 8px 8px;}
-.prac-actions{display:flex;justify-content:center;gap:16px;margin-bottom:24px;}
-.prac-action-btn{width:100px;height:52px;border-radius:14px;border:none;background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--sky-deep);font-size:12px;cursor:pointer;font-family:inherit;}
-.prac-action-icon{font-size:20px;}
-.prac-example{padding:0 4px;}
-.prac-example-title{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.prac-example-title::before{content:'';width:8px;height:8px;background:var(--sky-deep);border-radius:50%;flex-shrink:0;}
-.prac-example-en{font-size:18px;line-height:1.5;color:var(--ink);margin-bottom:8px;}
-.prac-example-zh{font-size:16px;color:var(--ink-soft);line-height:1.5;}
-.prac-spell{display:flex;justify-content:center;gap:12px;padding:16px 8px;}
-.prac-spell-btn{flex:1;max-width:180px;height:52px;border-radius:26px;border:none;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;}
-.prac-spell-gray{background:#f0f0f0;color:var(--ink-mid);}
-.prac-spell-blue{background:var(--sky-deep);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.35);}
-.prac-bottom{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;}
-.prac-arrow{width:48px;height:48px;border-radius:50%;background:var(--white);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink-mid);cursor:pointer;}
-.prac-btm-actions{display:flex;gap:24px;}
-.prac-btm-action{display:flex;flex-direction:column;align-items:center;color:var(--ink-soft);font-size:12px;cursor:pointer;}
-.prac-btm-icon{font-size:20px;margin-bottom:2px;}
-.word-list-empty{text-align:center;padding:40px 0;font-size:14px;color:var(--ink-soft);}
-/* Dictation mode (听写) */
-.dic-body{background:#e0edf9;flex:1;display:flex;flex-direction:column;padding:0 0 8px;}
-.dic-status-bar{display:flex;justify-content:space-between;padding:10px 16px;font-size:16px;font-weight:500;color:#000;}
-.dic-nav{display:flex;align-items:center;justify-content:center;padding:12px 12px;position:relative;}
-.dic-back{position:absolute;left:16px;font-size:22px;color:var(--ink);cursor:pointer;line-height:1;}
-.dic-title{font-size:20px;font-weight:500;color:var(--ink);}
-.dic-headphone{position:absolute;right:16px;font-size:20px;color:var(--ink-soft);}
-.dic-card{background:var(--white);border-radius:16px;margin:0 12px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.dic-progress{display:flex;align-items:center;padding:20px 16px;gap:10px;}
-.dic-prog-label{font-size:16px;color:var(--ink);font-weight:500;}
-.dic-prog-bar{flex:1;height:6px;background:#e5e7eb;border-radius:4px;overflow:hidden;}
-.dic-prog-fill{height:100%;background:var(--sky-deep);border-radius:4px;transition:width .4s;}
-.dic-prog-text{font-size:16px;color:var(--sky-deep);font-weight:500;}
-.dic-star{font-size:20px;color:#ccc;cursor:pointer;}
-.dic-wave{flex:1;display:flex;align-items:center;justify-content:center;min-height:120px;}
-.dic-waveform{width:70%;height:60px;position:relative;}
-.dic-wave-line{position:absolute;top:50%;left:0;width:100%;height:2px;background:linear-gradient(90deg,#ffcc00,#ffcc00);border-radius:1px;transform:translateY(-50%);}
-.dic-wave-line:nth-child(1){clip-path:polygon(0% 50%,10% 30%,20% 70%,30% 20%,40% 80%,50% 30%,60% 70%,70% 20%,80% 80%,90% 30%,100% 50%);}
-.dic-wave-line:nth-child(2){clip-path:polygon(0% 50%,15% 70%,25% 30%,35% 80%,45% 20%,55% 70%,65% 30%,75% 80%,85% 20%,95% 70%,100% 50%);opacity:.7;}
-.dic-wave-line:nth-child(3){clip-path:polygon(0% 50%,8% 40%,18% 60%,28% 30%,38% 70%,48% 20%,58% 80%,68% 30%,78% 70%,88% 40%,100% 50%);opacity:.5;}
-.dic-tip{text-align:center;padding:24px 0;font-size:16px;color:var(--ink-soft);}
-.dic-controls{background:var(--white);border-radius:24px 24px 0 0;padding:24px 16px 16px;}
-.dic-play{display:flex;align-items:center;justify-content:center;gap:32px;margin-bottom:20px;}
-.dic-cbtn{width:56px;height:56px;border-radius:50%;border:2px solid var(--sky-deep);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sky-deep);cursor:pointer;}
-.dic-cbtn.play{width:72px;height:72px;background:var(--sky-deep);border-color:var(--sky-deep);color:#fff;}
-.dic-options{display:flex;justify-content:space-around;margin-bottom:20px;gap:8px;}
-.dic-opt-btn{padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:var(--white);font-size:15px;color:var(--ink);cursor:pointer;font-family:inherit;}
-.dic-radio{display:flex;justify-content:space-around;margin-bottom:16px;}
-.dic-radio-item{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);cursor:pointer;}
-.dic-radio-item input{width:18px;height:18px;accent-color:var(--sky-deep);}
-.dic-check{display:flex;justify-content:space-around;}
-.dic-check-item{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);cursor:pointer;}
-.dic-check-item input{width:18px;height:18px;accent-color:var(--sky-deep);}
-.dic-unit-card{background:var(--white);border-radius:16px;padding:16px 10px;text-align:center;font-size:15px;color:var(--ink);font-weight:500;border:2px solid transparent;cursor:pointer;transition:all .2s;}
-.dic-unit-card.selected{border-color:var(--sky-deep);color:var(--sky-deep);}
-.dic-unit-card .unit-count{font-size:13px;font-weight:400;color:#666;margin-top:3px;}
-.read-tabs{transition:background .3s ease;}
-.curve-box{transition:background .3s ease;}
-.search-bar{transition:background .3s ease;}
-.profile-hero{transition:background .3s ease;}
-.stats-strip{transition:background .3s ease,box-shadow .3s ease;}
-.vip-card{transition:background .3s ease;}
-.page{display:none;flex-direction:column;flex:1;overflow:hidden;}
-.page.active{display:flex;animation:pageIn .35s cubic-bezier(.4,0,.2,1);}
-@keyframes pageIn{from{opacity:.5;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.scroll-area{flex:1;overflow-y:auto;padding:0 16px 80px;scrollbar-width:none;}
-.scroll-area::-webkit-scrollbar{display:none;}
-.card{background:var(--white);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--cs);}
-.btn{border:none;border-radius:100px;font-family:inherit;font-weight:600;cursor:pointer;transition:all .18s;}
-.btn-primary{background:linear-gradient(135deg,var(--sky-deep),#2563eb);color:#fff;padding:11px 20px;font-size:14px;box-shadow:0 4px 12px rgba(14,165,233,.35);transition:all .2s cubic-bezier(.4,0,.2,1);}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,233,.45);}
-.btn-primary:active{transform:scale(.97);}
-.btn-ghost{background:var(--sky-light);color:var(--sky-deep);padding:9px 18px;font-size:13px;}
-.btn-sm{padding:6px 14px;font-size:12px;}
-.btn-danger{background:#fef2f2;color:#ef4444;padding:11px 20px;font-size:14px;}
-.tab-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10;max-width:430px;margin:auto;border-radius:0 0 44px 44px;}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--ink-soft);font-family:inherit;padding:4px 0;transition:color .2s;}
-.tab-item.active{color:var(--sky-deep);}
-.tab-icon{font-size:22px;line-height:1;}
-.tab-label{font-size:10px;font-weight:600;}
-.tab-dot{width:4px;height:4px;border-radius:2px;background:var(--sky-deep);opacity:0;transition:opacity .2s;}
-.tab-item.active .tab-dot{opacity:1;}
-.home-header{background:var(--white);padding:16px 20px 20px;flex-shrink:0;}
-.home-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.user-row{display:flex;align-items:center;gap:10px;}
-.avatar{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#fcd34d,#f97316);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 10px rgba(249,115,22,.25);}
-.user-greeting{font-size:12px;color:var(--ink-soft);}
-.user-name{font-size:17px;font-weight:700;color:var(--ink);}
-.header-actions{display:flex;gap:6px;}
-.icon-btn{width:38px;height:38px;border:none;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-mid);transition:background .2s;}
-.icon-btn:active{background:var(--bg-muted);}
-.mission-card{background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:24px;padding:18px;color:#fff;box-shadow:0 8px 24px rgba(14,165,233,.35);display:flex;align-items:center;gap:16px;}
-.ring-wrap{flex-shrink:0;position:relative;width:76px;height:76px;}
-.ring-svg{width:76px;height:76px;transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:rgba(255,255,255,.2);stroke-width:8;}
-.ring-fill{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-dasharray:201;stroke-dashoffset:201;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);}
-.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.ring-pct{font-size:17px;font-weight:900;color:#fff;line-height:1;}
-.ring-sub{font-size:10px;color:rgba(255,255,255,.8);}
-.mission-info{flex:1;text-align:center;}
-.mission-title{font-size:16px;font-weight:700;margin-bottom:6px;}
-.mission-tasks{display:flex;flex-direction:column;gap:5px;align-items:center;}
-.mission-task{font-size:12px;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:6px;}
-.mission-task-dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.4);flex-shrink:0;transition:background .3s;}
-.mission-task-dot.done{background:#6ee7b7;}
-.mission-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:100px;padding:6px 14px;cursor:pointer;margin-top:8px;}
-.mission-btn:active{background:rgba(255,255,255,.35);}
-.streak-banner{background:linear-gradient(135deg,#f97316,#ef4444);border-radius:18px;padding:14px 18px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;box-shadow:0 4px 16px rgba(239,68,68,.28);}
-.streak-flame{font-size:12px;opacity:.9;margin-bottom:2px;}
-.streak-num{font-size:28px;font-weight:900;line-height:1;}
-.streak-label{font-size:12px;opacity:.8;}
-.streak-stats{display:flex;gap:14px;align-items:center;}
-.streak-stat{text-align:center;}
-.streak-stat-num{font-size:16px;font-weight:700;}
-.streak-stat-label{font-size:10px;opacity:.8;}
-.streak-divider{width:1px;height:24px;background:rgba(255,255,255,.3);}
-.section-title{font-size:17px;font-weight:700;color:var(--ink);}
-.plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.training-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
-.training-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
-.training-icon{width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .2s;}
-.training-item:active .training-icon{transform:scale(.88);}
-.training-label{font-size:11px;color:var(--ink-mid);font-weight:500;text-align:center;}
-.quiz-entry{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:20px;padding:16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid #bbf7d0;cursor:pointer;}
-.quiz-entry:active{transform:scale(.98);}
-.quiz-entry-icon{font-size:30px;}
-.quiz-entry-title{font-size:15px;font-weight:700;color:#166534;}
-.quiz-entry-sub{font-size:12px;color:#16a34a;margin-top:2px;}
-.quiz-entry-badge{background:var(--green);color:#fff;border-radius:100px;padding:6px 14px;font-size:12px;font-weight:700;border:none;font-family:inherit;cursor:pointer;}
-.book-card{display:flex;gap:14px;align-items:center;}
-.book-thumb{width:52px;height:70px;background:linear-gradient(160deg,#fde68a,#f59e0b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;text-align:center;color:#92400e;flex-shrink:0;padding:4px;box-shadow:3px 3px 0 rgba(0,0,0,.12);line-height:1.3;}
-.book-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;}
-.book-switch{font-size:12px;color:var(--sky-deep);cursor:pointer;margin-bottom:10px;}
-.progress-track{height:6px;background:var(--bg-muted);border-radius:3px;overflow:hidden;margin-bottom:8px;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--sky-deep));border-radius:3px;transition:width .9s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;}
-.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transform:translateX(-100%);animation:proShimmer 3s ease-in-out infinite;}
-@keyframes proShimmer{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
-.curve-box{background:var(--surface);border-radius:14px;padding:14px;margin-top:14px;}
-.curve-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.curve-title{font-size:14px;font-weight:600;color:var(--ink);}
-.curve-edit{font-size:12px;color:var(--sky-deep);cursor:pointer;}
-.curve-meta{font-size:12px;color:var(--ink-soft);}
-.curve-meta span{color:var(--sky-deep);font-weight:600;}
-.page-nav{background:var(--white);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;position:relative;}
-.nav-back{width:36px;height:36px;border:none;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
-.page-nav-title{font-size:17px;font-weight:700;color:var(--ink);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;}
-.units-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;}
-.unit-card{background:var(--white);border-radius:18px;padding:14px;cursor:pointer;border:2px solid transparent;box-shadow:var(--cs);transition:all .25s cubic-bezier(.4,0,.2,1);}
-.unit-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08);border-color:var(--sky);}
-.unit-card:active{transform:translateY(0) scale(.98);}
-.unit-card.selected{border-color:var(--sky-deep);}
-.unit-num{font-size:11px;color:var(--ink-soft);margin-bottom:4px;}
-.unit-name{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-.unit-progress{font-size:11px;color:var(--sky-deep);margin-top:6px;}
-.flip-wrapper{perspective:1000px;margin:0 auto 14px;width:100%;}
-.flip-card-inner{width:100%;aspect-ratio:3/2;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative;}
-.flip-card-inner.flipped{transform:rotateY(180deg);}
-.card-slide-left{animation:cardSlideLeft .25s ease forwards;}
-.card-slide-right{animation:cardSlideRight .25s ease forwards;}
-@keyframes cardSlideLeft{from{transform:translateX(0) scale(1);opacity:1;}to{transform:translateX(-60px) scale(.92);opacity:0;}}
-@keyframes cardSlideRight{from{transform:translateX(0) scale(1);opacity:1;}to{transform:translateX(60px) scale(.92);opacity:0;}}
-.card-slide-in-left{animation:cardSlideInLeft .25s ease forwards;}
-.card-slide-in-right{animation:cardSlideInRight .25s ease forwards;}
-@keyframes cardSlideInLeft{from{transform:translateX(60px) scale(.92);opacity:0;}to{transform:translateX(0) scale(1);opacity:1;}}
-@keyframes cardSlideInRight{from{transform:translateX(-60px) scale(.92);opacity:0;}to{transform:translateX(0) scale(1);opacity:1;}}
-/* ── unused but kept for reference ── */
-.quiz-header{background:linear-gradient(135deg,#6d28d9,#8b5cf6);padding:20px;color:#fff;flex-shrink:0;}
-.quiz-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
-.quiz-q-num{font-size:13px;opacity:.85;white-space:nowrap;}
-.quiz-progress-track{flex:1;height:5px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden;}
-.quiz-progress-fill{height:100%;background:#fff;border-radius:3px;transition:width .4s ease;}
-.quiz-score-row{font-size:24px;font-weight:900;}
-.quiz-score-label{font-size:12px;opacity:.8;}
-.quiz-question-card{background:var(--white);border-radius:24px;padding:22px;margin-bottom:14px;box-shadow:var(--cs);text-align:center;}
-.quiz-zh{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;}
-.quiz-hint{font-size:13px;color:var(--ink-soft);}
-.quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
-.quiz-opt{background:var(--white);border:2px solid var(--border);border-radius:18px;padding:16px;font-family:'Georgia','Times New Roman',serif;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .2s;box-shadow:var(--cs);}
-.quiz-opt:active{transform:scale(.97);}
-.quiz-opt.correct{background:#f0fdf4;border-color:var(--green);color:#166534;}
-.quiz-opt.wrong{background:#fef2f2;border-color:var(--rose);color:#be123c;}
-.quiz-opt.reveal{border-color:var(--green);background:#f0fdf4;}
-.quiz-result{text-align:center;padding:16px 0;}
-.read-tabs{background:var(--white);display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
-.read-tab{flex:1;padding:14px;text-align:center;background:transparent;border:none;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink-soft);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;}
-.read-tab.active{color:var(--sky-deep);border-bottom-color:var(--sky-deep);}
-.reading-paragraph{margin-bottom:16px;}
-.reading-en{font-size:15px;line-height:1.75;color:var(--ink);margin-bottom:4px;padding:8px 10px;border-radius:8px;transition:background .3s;}
-.reading-zh{font-size:13px;line-height:1.6;color:var(--ink-soft);padding:0 10px;}
-.reading-paragraph.reading-active .reading-en{background:#e0f2fe;}
-.filter-row{display:flex;gap:8px;padding:12px 16px 4px;overflow-x:auto;scrollbar-width:none;background:var(--white);flex-shrink:0;}
-.filter-row::-webkit-scrollbar{display:none;}
-.filter-pill{border:none;border-radius:100px;padding:7px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;}
-.filter-pill.active{background:var(--sky-deep);color:#fff;box-shadow:0 4px 10px rgba(14,165,233,.3);}
-.filter-pill:not(.active){background:var(--surface);color:var(--ink-mid);}
-.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 16px;}
-.cat-item{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;}
-.cat-icon{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .25s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 8px rgba(0,0,0,.08);}
-.cat-item:hover .cat-icon{transform:scale(1.1) translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.12);}
-.cat-item:active .cat-icon{transform:scale(.9);}
-.cat-label{font-size:11px;color:var(--ink-mid);font-weight:500;text-align:center;}
-.article-card{background:var(--white);border-radius:20px;overflow:hidden;margin-bottom:14px;cursor:pointer;box-shadow:var(--cs);transition:all .25s cubic-bezier(.4,0,.2,1);}
-.article-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.1);}
-.article-card:active{transform:scale(.98);}
-.article-color-strip{height:4px;}
-.article-body{padding:16px;}
-.article-cat-badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-bottom:8px;}
-.article-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
-.article-title-zh{font-size:13px;color:var(--ink-soft);margin-bottom:12px;}
-.article-footer{display:flex;align-items:center;justify-content:space-between;}
-.article-meta{font-size:12px;color:var(--ink-soft);display:flex;gap:10px;}
-.article-level{font-size:11px;font-weight:700;color:var(--sky-deep);background:var(--sky-light);padding:3px 9px;border-radius:100px;}
-.fav-btn{background:transparent;border:none;font-size:18px;cursor:pointer;transition:transform .2s;}
-.fav-btn:active{transform:scale(1.3);}
-.search-bar{background:var(--surface);border-radius:14px;display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;flex:1;}
-.search-bar-text{font-size:13px;color:var(--ink-soft);}
-.empty-bird{background:var(--white);border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;box-shadow:var(--cs);}
-.profile-hero{background:linear-gradient(160deg,#0ea5e9,#2563eb);padding:20px 20px 40px;position:relative;overflow:hidden;flex-shrink:0;}
-.profile-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08);}
-.profile-top{display:flex;align-items:center;justify-content:space-between;}
-.profile-avatar{width:62px;height:62px;border-radius:20px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid rgba(255,255,255,.4);}
-.profile-name{font-size:22px;font-weight:700;color:#fff;}
-.profile-id{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px;display:flex;align-items:center;gap:6px;}
-.copy-btn{background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,.7);display:flex;align-items:center;padding:0;}
-.scanner-btn{width:40px;height:40px;border:none;border-radius:14px;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.stats-strip{background:var(--white);border-radius:22px;margin:-20px 16px 0;padding:20px;display:flex;box-shadow:0 4px 24px rgba(0,0,0,.1);position:relative;z-index:2;}
-.stat-block{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
-.stat-block+.stat-block{border-left:1px solid var(--border);}
-.stat-val{font-size:22px;font-weight:700;color:var(--sky-deep);}
-.stat-lbl{font-size:11px;color:var(--ink-soft);font-weight:500;}
-.vip-card{background:linear-gradient(135deg,#fef3c7,#fde68a,#fcd34d);border-radius:20px;padding:18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 16px rgba(245,158,11,.2);}
-.vip-crown{font-size:20px;margin-bottom:4px;}
-.vip-title{font-size:15px;font-weight:700;color:#92400e;}
-.vip-desc{font-size:12px;color:#a16207;margin-top:2px;}
-.vip-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:100px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 10px rgba(217,119,6,.35);}
-.menu-card{background:var(--white);border-radius:20px;overflow:hidden;margin-bottom:14px;box-shadow:var(--cs);}
-.menu-row{width:100%;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:transparent;border:none;border-bottom:1px solid var(--border);font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .15s;}
-.menu-row:last-child{border-bottom:none;}
-.menu-row:hover{background:var(--cream);transform:translateX(3px);}
-.menu-row:active{background:var(--surface);transform:scale(.99);}
-.menu-row-left{display:flex;align-items:center;gap:12px;}
-.menu-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
-.menu-chev{color:#cbd5e1;font-size:18px;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);z-index:100;align-items:flex-end;justify-content:center;}
-.modal-overlay.active{display:flex;}
-.modal-sheet{background:var(--white);border-radius:28px;padding:24px 24px 40px;width:375px;max-height:80vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.4,0,.2,1);position:relative;}
-@keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
-.modal-title{font-size:19px;font-weight:700;color:var(--ink);margin-bottom:20px;}
-.modal-close{position:absolute;top:20px;right:20px;width:32px;height:32px;border:none;background:var(--surface);border-radius:10px;cursor:pointer;font-size:16px;color:var(--ink-mid);display:flex;align-items:center;justify-content:center;}
-.cal-weekday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--ink-soft);}
-.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.cal-header .month{font-size:16px;font-weight:700;color:var(--ink);}
-.cal-streak{text-align:center;padding:12px;background:var(--surface);border-radius:14px;margin-bottom:14px;display:flex;justify-content:space-around;}
-.cal-streak-item{text-align:center;}
-.cal-streak-num{font-size:24px;font-weight:700;color:var(--sky-deep);}
-.cal-streak-label{font-size:11px;color:var(--ink-soft);margin-top:2px;}
-.cal-btn{width:100%;margin-top:14px;}
-.cal-btn:disabled{opacity:.5;cursor:not-allowed;}
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.9);color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;white-space:nowrap;animation:toastIn .3s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(10px);}
-@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
-.float-score{position:fixed;pointer-events:none;font-size:20px;font-weight:900;color:#10b981;z-index:500;animation:floatUp .9s ease forwards;}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.3);}}
-.confetti-piece{position:fixed;pointer-events:none;z-index:600;animation:confettiFall linear forwards;}
-@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(700px) rotate(720deg);}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-@keyframes bounceIn{0%{opacity:0;transform:scale(.3);}50%{transform:scale(1.08);}70%{transform:scale(.95);}100%{opacity:1;transform:scale(1);}}
-@keyframes celebrate{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-10deg);}75%{transform:rotate(10deg);}}
-@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(14,165,233,.3);}50%{box-shadow:0 0 24px rgba(14,165,233,.6);}}
-.toggle{width:46px;height:26px;background:var(--border);border-radius:13px;position:relative;cursor:pointer;transition:background .3s;}
-.toggle.on{background:var(--green);}
-.toggle::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:11px;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
-.toggle.on::after{left:22px;}
-.btn-hover-surface:hover{background:var(--sky-light)!important;}
-.btn-hover-green:hover{background:#bbf7d0!important;}
-.btn-hover-amber:hover{background:#fde68a!important;}
-.btn-hover-red:hover{background:#fecaca!important;}
-.chip-hover:hover{background:var(--sky-deep)!important;color:#fff!important;}
-.pro-badge{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-radius:100px;padding:1px 5px;font-size:8px;font-weight:700;vertical-align:super;margin-left:1px;}
-.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:12px;font-weight:600;background:var(--surface);color:var(--ink-soft);}
-.cal-day.checked{background:var(--green);color:#fff;}
-.cal-day.today{border:2px solid var(--sky-deep);color:var(--sky-deep);}
-.cal-day.checked.today{background:var(--green);color:#fff;border:none;}
-.cal-day.empty{visibility:hidden;}
-.hidden{display:none!important;}
+// content data - auto-extracted
+const CONTENT={
+  units:[
+    {id:1,name:'初次见面',progress:0,words:[{en:'Excuse',zh:'对不起',ph:'/ɪkˈskjuːz/',ex:'Excuse me.'},{en:'Yes',zh:'是的',ph:'/jes/',ex:'Yes, it is.'},{en:'Pardon',zh:'原谅',ph:'/ˈpɑːrdn/',ex:'I beg your pardon.'},{en:'Thank',zh:'谢谢',ph:'/θæŋk/',ex:'Thank you very much.'},{en:'Please',zh:'请',ph:'/pliːz/',ex:'Please sit down.'},{en:'Handbag',zh:'手提包',ph:'/ˈhændbæɡ/',ex:'Is this your handbag?'},{en:'Pen',zh:'钢笔',ph:'/pen/',ex:'This is my pen.'},{en:'Pencil',zh:'铅笔',ph:'/ˈpensl/',ex:'Give me a pencil.'},{en:'Book',zh:'书',ph:'/bʊk/',ex:'Read your book.'},{en:'Watch',zh:'手表',ph:'/wɒtʃ/',ex:'That is a watch.'},{en:'Coat',zh:'外套',ph:'/koʊt/',ex:'My coat is blue.'},{en:'Dress',zh:'连衣裙',ph:'/dres/',ex:'Your dress is lovely.'},{en:'Skirt',zh:'裙子',ph:'/skɜːrt/',ex:'She wears a skirt.'},{en:'Shirt',zh:'衬衫',ph:'/ʃɜːrt/',ex:'His shirt is white.'},{en:'Car',zh:'汽车',ph:'/kɑːr/',ex:'The car is new.'},{en:'House',zh:'房子',ph:'/haʊs/',ex:'This is a house.'},{en:'Umbrella',zh:'雨伞',ph:'/ʌmˈbrelə/',ex:'Take your umbrella.'},{en:'Ticket',zh:'票',ph:'/ˈtɪkɪt/',ex:'Here is your ticket.'},{en:'Suit',zh:'套装',ph:'/suːt/',ex:'Your suit is smart.'},{en:'School',zh:'学校',ph:'/skuːl/',ex:'Go to school.'},{en:'Teacher',zh:'老师',ph:'/ˈtiːtʃər/',ex:'She is a teacher.'},{en:'Son',zh:'儿子',ph:'/sʌn/',ex:'My son is tall.'},{en:'Daughter',zh:'女儿',ph:'/ˈdɔːtər/',ex:'Her daughter is young.'},{en:'Morning',zh:'早晨',ph:'/ˈmɔːrnɪŋ/',ex:'Good morning.'},{en:'Nice',zh:'好的',ph:'/naɪs/',ex:'Nice to meet you.'},{en:'Meet',zh:'遇见',ph:'/miːt/',ex:'Nice to meet you.'},{en:'Sir',zh:'先生',ph:'/sɜːr/',ex:'Thank you, sir.'},{en:'Here',zh:'这里',ph:'/hɪər/',ex:'Here you are.'}]},
+    {id:2,name:'物品颜色',progress:0,words:[{en:'Hello',zh:'你好',ph:'/həˈloʊ/',ex:'Hello, everyone.'},{en:'Today',zh:'今天',ph:'/təˈdeɪ/',ex:'How are you today?'},{en:'Well',zh:'好地',ph:'/wel/',ex:'I am very well.'},{en:'Fine',zh:'好的',ph:'/faɪn/',ex:'I am fine.'},{en:'Goodbye',zh:'再见',ph:'/ɡʊdˈbaɪ/',ex:'Goodbye, see you.'},{en:'Colour',zh:'颜色',ph:'/ˈkʌlər/',ex:'What colour is it?'},{en:'Green',zh:'绿色',ph:'/ɡriːn/',ex:'The grass is green.'},{en:'Blue',zh:'蓝色',ph:'/bluː/',ex:'The sky is blue.'},{en:'White',zh:'白色',ph:'/waɪt/',ex:'Snow is white.'},{en:'Black',zh:'黑色',ph:'/blæk/',ex:'My shoes are black.'},{en:'Yellow',zh:'黄色',ph:'/ˈjeloʊ/',ex:'The sun is yellow.'},{en:'Orange',zh:'橙色',ph:'/ˈɔːrɪndʒ/',ex:'The orange is orange.'},{en:'Brown',zh:'棕色',ph:'/braʊn/',ex:'His eyes are brown.'},{en:'Red',zh:'红色',ph:'/red/',ex:'The rose is red.'},{en:'New',zh:'新的',ph:'/njuː/',ex:'My car is new.'},{en:'Old',zh:'旧的',ph:'/oʊld/',ex:'This house is old.'},{en:'Big',zh:'大的',ph:'/bɪɡ/',ex:'The box is big.'},{en:'Small',zh:'小的',ph:'/smɔːl/',ex:'The cat is small.'},{en:'Fat',zh:'胖的',ph:'/fæt/',ex:'The dog is fat.'},{en:'Thin',zh:'瘦的',ph:'/θɪn/',ex:'She is thin.'},{en:'Tall',zh:'高的',ph:'/tɔːl/',ex:'He is very tall.'},{en:'Short',zh:'矮的',ph:'/ʃɔːrt/',ex:'She is short.'},{en:'Young',zh:'年轻的',ph:'/jʌŋ/',ex:'She is young.'},{en:'Clean',zh:'干净的',ph:'/kliːn/',ex:'The room is clean.'},{en:'Dirty',zh:'脏的',ph:'/ˈdɜːrti/',ex:'Your hands are dirty.'},{en:'Hot',zh:'热的',ph:'/hɒt/',ex:'The coffee is hot.'},{en:'Cold',zh:'冷的',ph:'/koʊld/',ex:'The water is cold.'},{en:'Shoes',zh:'鞋子',ph:'/ʃuːz/',ex:'Your shoes are nice.'}]},
+    {id:3,name:'日常起居',progress:0,words:[{en:'Come',zh:'来',ph:'/kʌm/',ex:'Come here, please.'},{en:'Go',zh:'去',ph:'/ɡoʊ/',ex:'Go upstairs.'},{en:'Sit',zh:'坐',ph:'/sɪt/',ex:'Sit down, please.'},{en:'Stand',zh:'站',ph:'/stænd/',ex:'Stand up, please.'},{en:'Open',zh:'打开',ph:'/ˈoʊpən/',ex:'Open the door.'},{en:'Close',zh:'关上',ph:'/kloʊz/',ex:'Close the window.'},{en:'Door',zh:'门',ph:'/dɔːr/',ex:'Open the door.'},{en:'Window',zh:'窗户',ph:'/ˈwɪndoʊ/',ex:'The window is clean.'},{en:'Bedroom',zh:'卧室',ph:'/ˈbedruːm/',ex:'This is my bedroom.'},{en:'Bathroom',zh:'浴室',ph:'/ˈbæθruːm/',ex:'The bathroom is small.'},{en:'Kitchen',zh:'厨房',ph:'/ˈkɪtʃɪn/',ex:'She is in the kitchen.'},{en:'Garden',zh:'花园',ph:'/ˈɡɑːrdn/',ex:'The garden is lovely.'},{en:'Room',zh:'房间',ph:'/ruːm/',ex:'The room is big.'},{en:'Table',zh:'桌子',ph:'/ˈteɪbl/',ex:'The book is on the table.'},{en:'Chair',zh:'椅子',ph:'/tʃeər/',ex:'Sit on the chair.'},{en:'Bed',zh:'床',ph:'/bed/',ex:'The bed is soft.'},{en:'Cup',zh:'杯子',ph:'/kʌp/',ex:'A cup of tea.'},{en:'Glass',zh:'玻璃杯',ph:'/ɡlæs/',ex:'A glass of water.'},{en:'Plate',zh:'盘子',ph:'/pleɪt/',ex:'The plate is clean.'},{en:'Box',zh:'盒子',ph:'/bɒks/',ex:'The box is empty.'},{en:'Cigarette',zh:'香烟',ph:'/ˌsɪɡəˈret/',ex:'Give me a cigarette.'},{en:'Television',zh:'电视',ph:'/ˈtelɪvɪʒn/',ex:'Turn on the television.'},{en:'Radio',zh:'收音机',ph:'/ˈreɪdioʊ/',ex:'Listen to the radio.'},{en:'Newspaper',zh:'报纸',ph:'/ˈnjuːzpeɪpər/',ex:'Read the newspaper.'},{en:'Empty',zh:'空的',ph:'/ˈempti/',ex:'The box is empty.'},{en:'Full',zh:'满的',ph:'/fʊl/',ex:'The glass is full.'},{en:'Large',zh:'大的',ph:'/lɑːrdʒ/',ex:'A large room.'},{en:'Little',zh:'小的',ph:'/ˈlɪtl/',ex:'A little girl.'}]},
+    {id:4,name:'家务物品',progress:0,words:[{en:'Refrigerator',zh:'冰箱',ph:'/rɪˈfrɪdʒəreɪtər/',ex:'Open the refrigerator.'},{en:'Electric',zh:'电的',ph:'/ɪˈlektrɪk/',ex:'An electric cooker.'},{en:'Cooker',zh:'炉灶',ph:'/ˈkʊkər/',ex:'The cooker is new.'},{en:'Cupboard',zh:'碗柜',ph:'/ˈkʌbərd/',ex:'Put it in the cupboard.'},{en:'Picture',zh:'图画',ph:'/ˈpɪktʃər/',ex:'The picture is on the wall.'},{en:'Wall',zh:'墙',ph:'/wɔːl/',ex:'The wall is white.'},{en:'Floor',zh:'地板',ph:'/flɔːr/',ex:'The floor is clean.'},{en:'Lamp',zh:'灯',ph:'/læmp/',ex:'Turn on the lamp.'},{en:'Desk',zh:'书桌',ph:'/desk/',ex:'The book is on the desk.'},{en:'Shelf',zh:'架子',ph:'/ʃelf/',ex:'Put it on the shelf.'},{en:'Knife',zh:'刀',ph:'/naɪf/',ex:'The knife is sharp.'},{en:'Fork',zh:'叉子',ph:'/fɔːrk/',ex:'Give me a fork.'},{en:'Spoon',zh:'勺子',ph:'/spuːn/',ex:'The spoon is dirty.'},{en:'Bottle',zh:'瓶子',ph:'/ˈbɒtl/',ex:'A bottle of milk.'},{en:'Tin',zh:'罐头',ph:'/tɪn/',ex:'A tin of beans.'},{en:'Sharp',zh:'锋利的',ph:'/ʃɑːrp/',ex:'The knife is sharp.'},{en:'Blunt',zh:'钝的',ph:'/blʌnt/',ex:'The pencil is blunt.'},{en:'Soft',zh:'软的',ph:'/sɒft/',ex:'The bed is soft.'},{en:'Hard',zh:'硬的',ph:'/hɑːrd/',ex:'The table is hard.'},{en:'Sweet',zh:'甜的',ph:'/swiːt/',ex:'The candy is sweet.'},{en:'Sour',zh:'酸的',ph:'/ˈsaʊər/',ex:'The lemon is sour.'},{en:'Carpet',zh:'地毯',ph:'/ˈkɑːrpɪt/',ex:'The carpet is red.'},{en:'Saucer',zh:'茶托',ph:'/ˈsɔːsər/',ex:'A cup and saucer.'},{en:'Teapot',zh:'茶壶',ph:'/ˈtiːpɒt/',ex:'The teapot is on the table.'},{en:'Case',zh:'箱子',ph:'/keɪs/',ex:'This is your case.'},{en:'Hat',zh:'帽子',ph:'/hæt/',ex:'Your hat is lovely.'},{en:'Dresser',zh:'梳妆台',ph:'/ˈdresər/',ex:'The dresser is in the bedroom.'},{en:'Trousers',zh:'裤子',ph:'/ˈtraʊzərz/',ex:'My trousers are new.'}]},
+    {id:5,name:'天气行动',progress:0,words:[{en:'Cloud',zh:'云',ph:'/klaʊd/',ex:'The cloud is white.'},{en:'Sky',zh:'天空',ph:'/skaɪ/',ex:'The sky is blue.'},{en:'Sun',zh:'太阳',ph:'/sʌn/',ex:'The sun is hot.'},{en:'Shine',zh:'照耀',ph:'/ʃaɪn/',ex:'The sun is shining.'},{en:'Rain',zh:'雨',ph:'/reɪn/',ex:'It is raining.'},{en:'Snow',zh:'雪',ph:'/snoʊ/',ex:'It is snowing.'},{en:'Wind',zh:'风',ph:'/wɪnd/',ex:'The wind is strong.'},{en:'Weather',zh:'天气',ph:'/ˈweðər/',ex:'The weather is nice.'},{en:'Walk',zh:'步行',ph:'/wɔːk/',ex:'Walk across the street.'},{en:'Run',zh:'跑',ph:'/rʌn/',ex:'He runs fast.'},{en:'Jump',zh:'跳',ph:'/dʒʌmp/',ex:'Jump up and down.'},{en:'Fly',zh:'飞',ph:'/flaɪ/',ex:'The bird flies.'},{en:'Sleep',zh:'睡觉',ph:'/sliːp/',ex:'Sleep well.'},{en:'Wash',zh:'洗',ph:'/wɒʃ/',ex:'Wash your hands.'},{en:'Cook',zh:'做饭',ph:'/kʊk/',ex:'She cooks dinner.'},{en:'Drink',zh:'喝',ph:'/drɪŋk/',ex:'Drink some water.'},{en:'Eat',zh:'吃',ph:'/iːt/',ex:'Eat your food.'},{en:'Put',zh:'放',ph:'/pʊt/',ex:'Put on your coat.'},{en:'Take',zh:'拿',ph:'/teɪk/',ex:'Take off your shoes.'},{en:'Turn',zh:'转动',ph:'/tɜːrn/',ex:'Turn left.'},{en:'Over',zh:'在上面',ph:'/ˈoʊvər/',ex:'Jump over the wall.'},{en:'Between',zh:'在…之间',ph:'/bɪˈtwiːn/',ex:'Sit between us.'},{en:'Across',zh:'穿过',ph:'/əˈkrɒs/',ex:'Walk across the road.'},{en:'Under',zh:'在…下面',ph:'/ˈʌndər/',ex:'The cat is under the table.'},{en:'Near',zh:'在…附近',ph:'/nɪr/',ex:'The school is near.'},{en:'Behind',zh:'在…后面',ph:'/bɪˈhaɪnd/',ex:'The dog is behind the door.'},{en:'In',zh:'在…里',ph:'/ɪn/',ex:'It is in the box.'},{en:'On',zh:'在…上',ph:'/ɒn/',ex:'The book is on the desk.'}]},
+    {id:6,name:'食物餐饮',progress:0,words:[{en:'Bread',zh:'面包',ph:'/bred/',ex:'I eat bread for breakfast.'},{en:'Cheese',zh:'奶酪',ph:'/tʃiːz/',ex:'Do you like cheese?'},{en:'Egg',zh:'鸡蛋',ph:'/eɡ/',ex:'I have an egg.'},{en:'Butter',zh:'黄油',ph:'/ˈbʌtər/',ex:'Pass me the butter.'},{en:'Sugar',zh:'糖',ph:'/ˈʃʊɡər/',ex:'Do you want sugar?'},{en:'Coffee',zh:'咖啡',ph:'/ˈkɒfi/',ex:'A cup of coffee.'},{en:'Tea',zh:'茶',ph:'/tiː/',ex:'Would you like tea?'},{en:'Milk',zh:'牛奶',ph:'/mɪlk/',ex:'Drink your milk.'},{en:'Water',zh:'水',ph:'/ˈwɔːtər/',ex:'Give me some water.'},{en:'Juice',zh:'果汁',ph:'/dʒuːs/',ex:'Orange juice, please.'},{en:'Meat',zh:'肉',ph:'/miːt/',ex:'The meat is good.'},{en:'Chicken',zh:'鸡肉',ph:'/ˈtʃɪkɪn/',ex:'I like chicken.'},{en:'Fish',zh:'鱼',ph:'/fɪʃ/',ex:'The fish is fresh.'},{en:'Rice',zh:'米饭',ph:'/raɪs/',ex:'We eat rice for lunch.'},{en:'Potato',zh:'土豆',ph:'/pəˈteɪtoʊ/',ex:'Potatoes are cheap.'},{en:'Vegetable',zh:'蔬菜',ph:'/ˈvedʒtəbl/',ex:'Eat your vegetables.'},{en:'Fruit',zh:'水果',ph:'/fruːt/',ex:'Fruit is healthy.'},{en:'Apple',zh:'苹果',ph:'/ˈæpl/',ex:'An apple a day.'},{en:'Banana',zh:'香蕉',ph:'/bəˈnænə/',ex:'The banana is yellow.'},{en:'Orange',zh:'橙子',ph:'/ˈɔːrɪndʒ/',ex:'This orange is sweet.'},{en:'Lemon',zh:'柠檬',ph:'/ˈlemən/',ex:'The lemon is sour.'},{en:'Breakfast',zh:'早餐',ph:'/ˈbrekfəst/',ex:'Breakfast is ready.'},{en:'Lunch',zh:'午餐',ph:'/lʌntʃ/',ex:'We have lunch at noon.'},{en:'Dinner',zh:'晚餐',ph:'/ˈdɪnər/',ex:'Dinner is at six.'},{en:'Hungry',zh:'饿的',ph:'/ˈhʌŋɡri/',ex:'I am hungry.'},{en:'Thirsty',zh:'渴的',ph:'/ˈθɜːrsti/',ex:'I am thirsty.'},{en:'Salt',zh:'盐',ph:'/sɔːlt/',ex:'Pass the salt, please.'}]},
+    {id:7,name:'购物街区',progress:0,words:[{en:'Butcher',zh:'屠夫',ph:'/ˈbʊtʃər/',ex:'Go to the butcher.'},{en:'Baker',zh:'面包师',ph:'/ˈbeɪkər/',ex:'The baker makes bread.'},{en:'Grocer',zh:'杂货商',ph:'/ˈɡroʊsər/',ex:'The grocer sells food.'},{en:'Greengrocer',zh:'蔬菜水果商',ph:'/ˈɡriːnɡroʊsər/',ex:'Buy apples from the greengrocer.'},{en:'Shop',zh:'商店',ph:'/ʃɒp/',ex:'The shop is open.'},{en:'Buy',zh:'买',ph:'/baɪ/',ex:'Buy some meat.'},{en:'Sell',zh:'卖',ph:'/sel/',ex:'They sell vegetables.'},{en:'Price',zh:'价格',ph:'/praɪs/',ex:'The price is high.'},{en:'Cheap',zh:'便宜的',ph:'/tʃiːp/',ex:'It is very cheap.'},{en:'Expensive',zh:'昂贵的',ph:'/ɪkˈspensɪv/',ex:'The car is expensive.'},{en:'Money',zh:'钱',ph:'/ˈmʌni/',ex:'Do you have money?'},{en:'Pound',zh:'英镑',ph:'/paʊnd/',ex:'It costs ten pounds.'},{en:'Dollar',zh:'美元',ph:'/ˈdɒlər/',ex:'Give me five dollars.'},{en:'Cent',zh:'分',ph:'/sent/',ex:'Fifty cents.'},{en:'Want',zh:'想要',ph:'/wɒnt/',ex:'I want some apples.'},{en:'Need',zh:'需要',ph:'/niːd/',ex:'I need some help.'},{en:'Have',zh:'有',ph:'/hæv/',ex:'I have a car.'},{en:'Some',zh:'一些',ph:'/sʌm/',ex:'Give me some bread.'},{en:'Many',zh:'许多',ph:'/ˈmeni/',ex:'How many eggs?'},{en:'Much',zh:'许多',ph:'/mʌtʃ/',ex:'How much is it?'},{en:'Time',zh:'时间',ph:'/taɪm/',ex:'What is the time?'},{en:'Minute',zh:'分钟',ph:'/ˈmɪnɪt/',ex:'Wait a minute.'},{en:'Hour',zh:'小时',ph:'/ˈaʊər/',ex:'An hour later.'},{en:'Yesterday',zh:'昨天',ph:'/ˈjestərdeɪ/',ex:'Yesterday was Sunday.'},{en:'Tomorrow',zh:'明天',ph:'/təˈmɔːroʊ/',ex:'See you tomorrow.'}]},
+    {id:8,name:'时间日常',progress:0,words:[{en:'Get up',zh:'起床',ph:'/ɡet ʌp/',ex:'I get up at seven.'},{en:'Shave',zh:'刮胡子',ph:'/ʃeɪv/',ex:'He shaves every morning.'},{en:'Teeth',zh:'牙齿',ph:'/tiːθ/',ex:'Brush your teeth.'},{en:'Home',zh:'家',ph:'/hoʊm/',ex:'Go home.'},{en:'Work',zh:'工作',ph:'/wɜːrk/',ex:'I work hard.'},{en:'Evening',zh:'傍晚',ph:'/ˈiːvnɪŋ/',ex:'Good evening.'},{en:'Night',zh:'夜晚',ph:'/naɪt/',ex:'Good night.'},{en:'Afternoon',zh:'下午',ph:'/ˌæftərˈnuːn/',ex:'Good afternoon.'},{en:'Noon',zh:'中午',ph:'/nuːn/',ex:'At noon.'},{en:'Every',zh:'每个',ph:'/ˈevri/',ex:'Every day.'},{en:'Day',zh:'天',ph:'/deɪ/',ex:'Have a nice day.'},{en:'Week',zh:'周',ph:'/wiːk/',ex:'A week has seven days.'},{en:'Month',zh:'月',ph:'/mʌnθ/',ex:'This month is June.'},{en:'Year',zh:'年',ph:'/jɪr/',ex:'Happy New Year.'},{en:'Spring',zh:'春天',ph:'/sprɪŋ/',ex:'Spring is warm.'},{en:'Summer',zh:'夏天',ph:'/ˈsʌmər/',ex:'Summer is hot.'},{en:'Autumn',zh:'秋天',ph:'/ˈɔːtəm/',ex:'Autumn is cool.'},{en:'Winter',zh:'冬天',ph:'/ˈwɪntər/',ex:'Winter is cold.'},{en:'Season',zh:'季节',ph:'/ˈsiːzn/',ex:'Four seasons.'},{en:'January',zh:'一月',ph:'/ˈdʒænjueri/',ex:'January is cold.'},{en:'February',zh:'二月',ph:'/ˈfebrueri/',ex:'February is short.'},{en:'March',zh:'三月',ph:'/mɑːrtʃ/',ex:'March is windy.'},{en:'April',zh:'四月',ph:'/ˈeɪprəl/',ex:'April is warm.'},{en:'June',zh:'六月',ph:'/dʒuːn/',ex:'June is hot.'},{en:'July',zh:'七月',ph:'/dʒuˈlaɪ/',ex:'July is sunny.'},{en:'August',zh:'八月',ph:'/ɔːˈɡʌst/',ex:'August is hot.'},{en:'September',zh:'九月',ph:'/sepˈtembər/',ex:'September is cool.'},{en:'October',zh:'十月',ph:'/ɒkˈtoʊbər/',ex:'October is nice.'}]},
+    {id:9,name:'周末计划',progress:0,words:[{en:'Sunday',zh:'周日',ph:'/ˈsʌndeɪ/',ex:'Sunday is a holiday.'},{en:'Monday',zh:'周一',ph:'/ˈmʌndeɪ/',ex:'Monday morning.'},{en:'Tuesday',zh:'周二',ph:'/ˈtjuːzdeɪ/',ex:'Tuesday afternoon.'},{en:'Wednesday',zh:'周三',ph:'/ˈwenzdeɪ/',ex:'Wednesday evening.'},{en:'Thursday',zh:'周四',ph:'/ˈθɜːrzdeɪ/',ex:'Thursday night.'},{en:'Friday',zh:'周五',ph:'/ˈfraɪdeɪ/',ex:'Friday is fun.'},{en:'Saturday',zh:'周六',ph:'/ˈsætərdeɪ/',ex:'Saturday is weekend.'},{en:'Weekend',zh:'周末',ph:'/ˌwiːkˈend/',ex:'Have a nice weekend.'},{en:'Holiday',zh:'假日',ph:'/ˈhɒlədeɪ/',ex:'Summer holiday.'},{en:'Visit',zh:'拜访',ph:'/ˈvɪzɪt/',ex:'Visit my friend.'},{en:'Friend',zh:'朋友',ph:'/frend/',ex:'She is my friend.'},{en:'Stay',zh:'停留',ph:'/steɪ/',ex:'Stay at home.'},{en:'Play',zh:'玩',ph:'/pleɪ/',ex:'Play in the garden.'},{en:'Game',zh:'游戏',ph:'/ɡeɪm/',ex:'Play a game.'},{en:'Read',zh:'阅读',ph:'/riːd/',ex:'Read a book.'},{en:'Write',zh:'写',ph:'/raɪt/',ex:'Write a letter.'},{en:'Letter',zh:'信',ph:'/ˈletər/',ex:'Write a letter.'},{en:'Phone',zh:'电话',ph:'/foʊn/',ex:'Phone me.'},{en:'Call',zh:'打电话',ph:'/kɔːl/',ex:'Call the doctor.'},{en:'Together',zh:'一起',ph:'/təˈɡeðər/',ex:'We go together.'},{en:'With',zh:'和…一起',ph:'/wɪð/',ex:'Come with me.'},{en:'For',zh:'为了',ph:'/fɔːr/',ex:'A gift for you.'},{en:'But',zh:'但是',ph:'/bʌt/',ex:'But I am busy.'},{en:'Also',zh:'也',ph:'/ˈɔːlsoʊ/',ex:'I also like it.'},{en:'Very',zh:'非常',ph:'/ˈveri/',ex:'Very good.'},{en:'Too',zh:'太',ph:'/tuː/',ex:'Too expensive.'},{en:'Only',zh:'仅仅',ph:'/ˈoʊnli/',ex:'Only one.'},{en:'Really',zh:'真正地',ph:'/ˈriːəli/',ex:'Really nice.'}]},
+    {id:10,name:'出行旅游',progress:0,words:[{en:'Left',zh:'左',ph:'/left/',ex:'Turn left.'},{en:'Right',zh:'右',ph:'/raɪt/',ex:'Turn right.'},{en:'Straight',zh:'直',ph:'/streɪt/',ex:'Go straight ahead.'},{en:'Road',zh:'路',ph:'/roʊd/',ex:'The road is long.'},{en:'Street',zh:'街道',ph:'/striːt/',ex:'Cross the street.'},{en:'Corner',zh:'拐角',ph:'/ˈkɔːrnər/',ex:'At the corner.'},{en:'Bridge',zh:'桥',ph:'/brɪdʒ/',ex:'Cross the bridge.'},{en:'River',zh:'河',ph:'/ˈrɪvər/',ex:'The river is wide.'},{en:'Stop',zh:'停',ph:'/stɒp/',ex:'Stop here.'},{en:'Bus',zh:'公共汽车',ph:'/bʌs/',ex:'Take the bus.'},{en:'Train',zh:'火车',ph:'/treɪn/',ex:'The train is fast.'},{en:'Boat',zh:'船',ph:'/boʊt/',ex:'A boat on the river.'},{en:'Taxi',zh:'出租车',ph:'/ˈtæksi/',ex:'Take a taxi.'},{en:'Drive',zh:'开车',ph:'/draɪv/',ex:'Drive carefully.'},{en:'Ride',zh:'骑',ph:'/raɪd/',ex:'Ride a bike.'},{en:'Always',zh:'总是',ph:'/ˈɔːlweɪz/',ex:'Always be kind.'},{en:'Often',zh:'经常',ph:'/ˈɔːfən/',ex:'I often read.'},{en:'Usually',zh:'通常',ph:'/ˈjuːʒuəli/',ex:'I usually walk.'},{en:'Never',zh:'从不',ph:'/ˈnevər/',ex:'I never smoke.'},{en:'Sometimes',zh:'有时',ph:'/ˈsʌmtaɪmz/',ex:'Sometimes I swim.'},{en:'Then',zh:'然后',ph:'/ðen/',ex:'Then go home.'},{en:'First',zh:'首先',ph:'/fɜːrst/',ex:'First, wash your hands.'},{en:'Next',zh:'接下来',ph:'/nekst/',ex:'Next, open the door.'},{en:'Last',zh:'最后',ph:'/læst/',ex:'Last week.'},{en:'Again',zh:'再次',ph:'/əˈɡen/',ex:'Say it again.'},{en:'Away',zh:'离开',ph:'/əˈweɪ/',ex:'Go away.'},{en:'About',zh:'大约',ph:'/əˈbaʊt/',ex:'About ten minutes.'}]},
+    {id:11,name:'日常生活',progress:0,words:[{en:'Live',zh:'居住',ph:'/lɪv/',ex:'I live in London.'},{en:'Feel',zh:'感觉',ph:'/fiːl/',ex:'I feel tired.'},{en:'Tired',zh:'累的',ph:'/ˈtaɪərd/',ex:'I am very tired.'},{en:'Ill',zh:'生病的',ph:'/ɪl/',ex:'She is ill.'},{en:'Better',zh:'更好',ph:'/ˈbetər/',ex:'I feel better.'},{en:'Worse',zh:'更糟',ph:'/wɜːrs/',ex:'It is getting worse.'},{en:'Doctor',zh:'医生',ph:'/ˈdɒktər/',ex:'See a doctor.'},{en:'Medicine',zh:'药',ph:'/ˈmedɪsn/',ex:'Take the medicine.'},{en:'Rest',zh:'休息',ph:'/rest/',ex:'Have a rest.'},{en:'Headache',zh:'头痛',ph:'/ˈhedeɪk/',ex:'I have a headache.'},{en:'Toothache',zh:'牙痛',ph:'/ˈtuːθeɪk/',ex:'I have a toothache.'},{en:'Stomach',zh:'胃',ph:'/ˈstʌmək/',ex:'My stomach hurts.'},{en:'Temperature',zh:'体温',ph:'/ˈtemprətʃər/',ex:'Take your temperature.'},{en:'Aspirin',zh:'阿司匹林',ph:'/ˈæsprɪn/',ex:'Take an aspirin.'},{en:'Must',zh:'必须',ph:'/mʌst/',ex:'You must rest.'},{en:'Can',zh:'能',ph:'/kæn/',ex:'I can swim.'},{en:'May',zh:'可以',ph:'/meɪ/',ex:'May I come in?'},{en:'Could',zh:'可以',ph:'/kʊd/',ex:'Could you help me?'},{en:'Should',zh:'应该',ph:'/ʃʊd/',ex:'You should study.'},{en:'Think',zh:'想',ph:'/θɪŋk/',ex:'I think so.'},{en:'Know',zh:'知道',ph:'/noʊ/',ex:'I know the answer.'},{en:'Believe',zh:'相信',ph:'/bɪˈliːv/',ex:'I believe you.'},{en:'Remember',zh:'记住',ph:'/rɪˈmembər/',ex:'Remember the words.'},{en:'Forget',zh:'忘记',ph:'/fərˈɡet/',ex:'Do not forget.'},{en:'Hope',zh:'希望',ph:'/hoʊp/',ex:'I hope so.'},{en:'Find',zh:'找到',ph:'/faɪnd/',ex:'Find your book.'},{en:'Lose',zh:'丢失',ph:'/luːz/',ex:'Do not lose it.'}]},
+    {id:12,name:'居家事物',progress:0,words:[{en:'Move',zh:'搬家',ph:'/muːv/',ex:'Move to a new house.'},{en:'Housework',zh:'家务',ph:'/ˈhaʊswɜːrk/',ex:'Do housework.'},{en:'Dust',zh:'灰尘',ph:'/dʌst/',ex:'Dust the table.'},{en:'Sweep',zh:'扫',ph:'/swiːp/',ex:'Sweep the floor.'},{en:'Air',zh:'通风',ph:'/eər/',ex:'Air the room.'},{en:'Make',zh:'整理',ph:'/meɪk/',ex:'Make the bed.'},{en:'Draw',zh:'拉',ph:'/drɔː/',ex:'Draw the curtain.'},{en:'Curtain',zh:'窗帘',ph:'/ˈkɜːrtn/',ex:'Close the curtain.'},{en:'Light',zh:'灯',ph:'/laɪt/',ex:'Turn on the light.'},{en:'Switch',zh:'开关',ph:'/swɪtʃ/',ex:'Switch it off.'},{en:'Put on',zh:'穿上',ph:'/pʊt ɒn/',ex:'Put on your coat.'},{en:'Take off',zh:'脱下',ph:'/teɪk ɒf/',ex:'Take off your shoes.'},{en:'Look after',zh:'照顾',ph:'/lʊk ˈæftər/',ex:'Look after the baby.'},{en:'Listen',zh:'听',ph:'/ˈlɪsn/',ex:'Listen to me.'},{en:'Wait',zh:'等待',ph:'/weɪt/',ex:'Wait for me.'},{en:'Hurry',zh:'赶快',ph:'/ˈhʌri/',ex:'Hurry up!'},{en:'Careful',zh:'小心的',ph:'/ˈkerfl/',ex:'Be careful!'},{en:'Quick',zh:'快的',ph:'/kwɪk/',ex:'Be quick.'},{en:'Slow',zh:'慢的',ph:'/sloʊ/',ex:'Slow down.'},{en:'Fast',zh:'快的',ph:'/fæst/',ex:'Run fast.'},{en:'Quiet',zh:'安静的',ph:'/ˈkwaɪət/',ex:'Be quiet.'},{en:'Loud',zh:'大声的',ph:'/laʊd/',ex:'Speak loud.'},{en:'Aloud',zh:'出声地',ph:'/əˈlaʊd/',ex:'Read aloud.'},{en:'Kitchen',zh:'厨房',ph:'/ˈkɪtʃɪn/',ex:'Clean the kitchen.'},{en:'Wash',zh:'洗',ph:'/wɒʃ/',ex:'Wash the dishes.'},{en:'Clean',zh:'打扫',ph:'/kliːn/',ex:'Clean the room.'}]},
+    {id:13,name:'人物描述',progress:0,words:[{en:'Handsome',zh:'英俊的',ph:'/ˈhænsəm/',ex:'He is handsome.'},{en:'Pretty',zh:'漂亮的',ph:'/ˈprɪti/',ex:'She is pretty.'},{en:'Ugly',zh:'丑的',ph:'/ˈʌɡli/',ex:'Not ugly.'},{en:'Strong',zh:'强壮的',ph:'/strɒŋ/',ex:'He is strong.'},{en:'Weak',zh:'虚弱的',ph:'/wiːk/',ex:'She feels weak.'},{en:'Happy',zh:'快乐的',ph:'/ˈhæpi/',ex:'I am happy.'},{en:'Sad',zh:'伤心的',ph:'/sæd/',ex:'Do not be sad.'},{en:'Angry',zh:'生气的',ph:'/ˈæŋɡri/',ex:'She is angry.'},{en:'Afraid',zh:'害怕的',ph:'/əˈfreɪd/',ex:'I am afraid.'},{en:'Brave',zh:'勇敢的',ph:'/breɪv/',ex:'Be brave.'},{en:'Kind',zh:'善良的',ph:'/kaɪnd/',ex:'She is kind.'},{en:'Lazy',zh:'懒惰的',ph:'/ˈleɪzi/',ex:'Do not be lazy.'},{en:'Busy',zh:'忙的',ph:'/ˈbɪzi/',ex:'I am busy today.'},{en:'Free',zh:'空闲的',ph:'/friː/',ex:'Are you free?'},{en:'Ready',zh:'准备好的',ph:'/ˈredi/',ex:'Are you ready?'},{en:'Sure',zh:'确定的',ph:'/ʃʊr/',ex:'I am sure.'},{en:'Sorry',zh:'抱歉的',ph:'/ˈsɒri/',ex:'I am sorry.'},{en:'Glad',zh:'高兴的',ph:'/ɡlæd/',ex:'I am glad.'},{en:'Proud',zh:'自豪的',ph:'/praʊd/',ex:'I am proud of you.'},{en:'Shy',zh:'害羞的',ph:'/ʃaɪ/',ex:'She is shy.'},{en:'Clever',zh:'聪明的',ph:'/ˈklevər/',ex:'He is clever.'},{en:'Foolish',zh:'愚蠢的',ph:'/ˈfuːlɪʃ/',ex:'That is foolish.'},{en:'Rich',zh:'富有的',ph:'/rɪtʃ/',ex:'He is rich.'},{en:'Poor',zh:'贫穷的',ph:'/pʊr/',ex:'She is poor.'},{en:'Dear',zh:'亲爱的',ph:'/dɪr/',ex:'My dear friend.'},{en:'Great',zh:'伟大的',ph:'/ɡreɪt/',ex:'That is great!'},{en:'Wonderful',zh:'精彩的',ph:'/ˈwʌndərfl/',ex:'Wonderful idea!'}]},
+    {id:14,name:'交流表达',progress:0,words:[{en:'Talk',zh:'谈话',ph:'/tɔːk/',ex:'Talk to me.'},{en:'Speak',zh:'说话',ph:'/spiːk/',ex:'Speak English.'},{en:'Say',zh:'说',ph:'/seɪ/',ex:'Say it again.'},{en:'Tell',zh:'告诉',ph:'/tel/',ex:'Tell me a story.'},{en:'Ask',zh:'问',ph:'/æsk/',ex:'Ask a question.'},{en:'Answer',zh:'回答',ph:'/ˈænsər/',ex:'Answer the question.'},{en:'Question',zh:'问题',ph:'/ˈkwestʃən/',ex:'Good question.'},{en:'Story',zh:'故事',ph:'/ˈstɔːri/',ex:'Tell a story.'},{en:'Secret',zh:'秘密',ph:'/ˈsiːkrət/',ex:'Keep the secret.'},{en:'News',zh:'新闻',ph:'/njuːz/',ex:'Good news!'},{en:'Message',zh:'消息',ph:'/ˈmesɪdʒ/',ex:'Leave a message.'},{en:'Meaning',zh:'意思',ph:'/ˈmiːnɪŋ/',ex:'What is the meaning?'},{en:'Nothing',zh:'没什么',ph:'/ˈnʌθɪŋ/',ex:'Nothing is wrong.'},{en:'Something',zh:'某事',ph:'/ˈsʌmθɪŋ/',ex:'Something is wrong.'},{en:'Everything',zh:'一切',ph:'/ˈevriθɪŋ/',ex:'Everything is OK.'},{en:'Wrong',zh:'错的',ph:'/rɒŋ/',ex:'Something is wrong.'},{en:'Right',zh:'对的',ph:'/raɪt/',ex:'You are right.'},{en:'True',zh:'真的',ph:'/truː/',ex:'It is true.'},{en:'Correct',zh:'正确的',ph:'/kəˈrekt/',ex:'Correct answer.'},{en:'Mistake',zh:'错误',ph:'/mɪˈsteɪk/',ex:'Make a mistake.'},{en:'Problem',zh:'问题',ph:'/ˈprɒbləm/',ex:'No problem.'},{en:'Idea',zh:'主意',ph:'/aɪˈdɪə/',ex:'Good idea!'},{en:'Help',zh:'帮助',ph:'/help/',ex:'I need help.'},{en:'Important',zh:'重要的',ph:'/ɪmˈpɔːrtnt/',ex:'It is important.'},{en:'Necessary',zh:'必要的',ph:'/ˈnesəseri/',ex:'It is necessary.'},{en:'Different',zh:'不同的',ph:'/ˈdɪfrənt/',ex:'Different ideas.'},{en:'Same',zh:'相同的',ph:'/seɪm/',ex:'The same thing.'}]},
+    {id:15,name:'出行交通',progress:0,words:[{en:'Airport',zh:'机场',ph:'/ˈeərpɔːrt/',ex:'Go to the airport.'},{en:'Station',zh:'车站',ph:'/ˈsteɪʃn/',ex:'The train station.'},{en:'Platform',zh:'站台',ph:'/ˈplætfɔːrm/',ex:'Platform 5.'},{en:'Catch',zh:'赶上',ph:'/kætʃ/',ex:'Catch the train.'},{en:'Miss',zh:'错过',ph:'/mɪs/',ex:'Do not miss it.'},{en:'Leave',zh:'离开',ph:'/liːv/',ex:'The train leaves.'},{en:'Arrive',zh:'到达',ph:'/əˈraɪv/',ex:'Arrive on time.'},{en:'Travel',zh:'旅行',ph:'/ˈtrævl/',ex:'Travel by train.'},{en:'Journey',zh:'旅程',ph:'/ˈdʒɜːrni/',ex:'A long journey.'},{en:'Trip',zh:'旅行',ph:'/trɪp/',ex:'A nice trip.'},{en:'Abroad',zh:'国外',ph:'/əˈbrɔːd/',ex:'Go abroad.'},{en:'Country',zh:'国家',ph:'/ˈkʌntri/',ex:'A beautiful country.'},{en:'Town',zh:'城镇',ph:'/taʊn/',ex:'Go to town.'},{en:'City',zh:'城市',ph:'/ˈsɪti/',ex:'The city is big.'},{en:'Village',zh:'村庄',ph:'/ˈvɪlɪdʒ/',ex:'A small village.'},{en:'Farm',zh:'农场',ph:'/fɑːrm/',ex:'The farm is big.'},{en:'Field',zh:'田地',ph:'/fiːld/',ex:'The field is green.'},{en:'Mountain',zh:'山',ph:'/ˈmaʊntn/',ex:'High mountains.'},{en:'Sea',zh:'海',ph:'/siː/',ex:'The sea is blue.'},{en:'Lake',zh:'湖',ph:'/leɪk/',ex:'A beautiful lake.'},{en:'Forest',zh:'森林',ph:'/ˈfɒrɪst/',ex:'Walk in the forest.'},{en:'Map',zh:'地图',ph:'/mæp/',ex:'Read the map.'},{en:'Way',zh:'路',ph:'/weɪ/',ex:'Find the way.'},{en:'Mile',zh:'英里',ph:'/maɪl/',ex:'Ten miles away.'},{en:'Kilometre',zh:'公里',ph:'/ˈkɪləmiːtər/',ex:'Five kilometres.'},{en:'Far',zh:'远的',ph:'/fɑːr/',ex:'Is it far?'},{en:'Near',zh:'近的',ph:'/nɪr/',ex:'It is near.'}]},
+    {id:16,name:'人际关系',progress:0,words:[{en:'Family',zh:'家庭',ph:'/ˈfæməli/',ex:'My family is big.'},{en:'Father',zh:'父亲',ph:'/ˈfɑːðər/',ex:'My father works.'},{en:'Mother',zh:'母亲',ph:'/ˈmʌðər/',ex:'My mother cooks.'},{en:'Brother',zh:'兄弟',ph:'/ˈbrʌðər/',ex:'My brother is tall.'},{en:'Sister',zh:'姐妹',ph:'/ˈsɪstər/',ex:'My sister is young.'},{en:'Husband',zh:'丈夫',ph:'/ˈhʌzbənd/',ex:'Her husband is kind.'},{en:'Wife',zh:'妻子',ph:'/waɪf/',ex:'His wife is pretty.'},{en:'Baby',zh:'婴儿',ph:'/ˈbeɪbi/',ex:'The baby is cute.'},{en:'Child',zh:'孩子',ph:'/tʃaɪld/',ex:'The child is happy.'},{en:'Boy',zh:'男孩',ph:'/bɔɪ/',ex:'The boy runs.'},{en:'Girl',zh:'女孩',ph:'/ɡɜːrl/',ex:'The girl sings.'},{en:'Man',zh:'男人',ph:'/mæn/',ex:'The man is strong.'},{en:'Woman',zh:'女人',ph:'/ˈwʊmən/',ex:'The woman is smart.'},{en:'People',zh:'人们',ph:'/ˈpiːpl/',ex:'People are nice.'},{en:'Name',zh:'名字',ph:'/neɪm/',ex:'What is your name?'},{en:'Friend',zh:'朋友',ph:'/frend/',ex:'My best friend.'},{en:'Neighbour',zh:'邻居',ph:'/ˈneɪbər/',ex:'Our neighbour is kind.'},{en:'Guest',zh:'客人',ph:'/ɡest/',ex:'We have a guest.'},{en:'Welcome',zh:'欢迎',ph:'/ˈwelkəm/',ex:'Welcome home!'},{en:'Invite',zh:'邀请',ph:'/ɪnˈvaɪt/',ex:'Invite him to dinner.'},{en:'Party',zh:'聚会',ph:'/ˈpɑːrti/',ex:'Have a party.'},{en:'Gift',zh:'礼物',ph:'/ɡɪft/',ex:'A gift for you.'},{en:'Surprise',zh:'惊喜',ph:'/sərˈpraɪz/',ex:'What a surprise!'},{en:'Love',zh:'爱',ph:'/lʌv/',ex:'I love my family.'},{en:'Miss',zh:'想念',ph:'/mɪs/',ex:'I miss you.'},{en:'Enjoy',zh:'享受',ph:'/ɪnˈdʒɔɪ/',ex:'Enjoy the party.'},{en:'Share',zh:'分享',ph:'/ʃeər/',ex:'Share with others.'}]},
+    {id:17,name:'运动爱好',progress:0,words:[{en:'Sport',zh:'运动',ph:'/spɔːrt/',ex:'I like sports.'},{en:'Swim',zh:'游泳',ph:'/swɪm/',ex:'Go swimming.'},{en:'Run',zh:'跑步',ph:'/rʌn/',ex:'Go running.'},{en:'Walk',zh:'散步',ph:'/wɔːk/',ex:'Go for a walk.'},{en:'Football',zh:'足球',ph:'/ˈfʊtbɔːl/',ex:'Play football.'},{en:'Basketball',zh:'篮球',ph:'/ˈbæskɪtbɔːl/',ex:'Play basketball.'},{en:'Win',zh:'赢',ph:'/wɪn/',ex:'We win the match.'},{en:'Lose',zh:'输',ph:'/luːz/',ex:'Do not lose hope.'},{en:'Team',zh:'队伍',ph:'/tiːm/',ex:'Our team wins.'},{en:'Ball',zh:'球',ph:'/bɔːl/',ex:'Throw the ball.'},{en:'Music',zh:'音乐',ph:'/ˈmjuːzɪk/',ex:'Listen to music.'},{en:'Song',zh:'歌曲',ph:'/sɒŋ/',ex:'Sing a song.'},{en:'Sing',zh:'唱',ph:'/sɪŋ/',ex:'She sings well.'},{en:'Dance',zh:'跳舞',ph:'/dæns/',ex:'Let us dance.'},{en:'Paint',zh:'画画',ph:'/peɪnt/',ex:'Paint a picture.'},{en:'Draw',zh:'画',ph:'/drɔː/',ex:'Draw a flower.'},{en:'Film',zh:'电影',ph:'/fɪlm/',ex:'Watch a film.'},{en:'Theatre',zh:'剧院',ph:'/ˈθɪətər/',ex:'Go to the theatre.'},{en:'Cinema',zh:'电影院',ph:'/ˈsɪnəmə/',ex:'Go to the cinema.'},{en:'Concert',zh:'音乐会',ph:'/ˈkɑːnsərt/',ex:'A wonderful concert.'},{en:'Hobby',zh:'爱好',ph:'/ˈhɒbi/',ex:'My hobby is reading.'},{en:'Collect',zh:'收集',ph:'/kəˈlekt/',ex:'Collect stamps.'},{en:'Stamp',zh:'邮票',ph:'/stæmp/',ex:'A beautiful stamp.'},{en:'Camera',zh:'相机',ph:'/ˈkæmərə/',ex:'My camera is new.'},{en:'Photo',zh:'照片',ph:'/ˈfoʊtoʊ/',ex:'Take a photo.'},{en:'Garden',zh:'花园',ph:'/ˈɡɑːrdn/',ex:'Beautiful garden.'},{en:'Flower',zh:'花',ph:'/ˈflaʊər/',ex:'The flower is red.'}]},
+    {id:18,name:'梦想未来',progress:0,words:[{en:'Dream',zh:'梦想',ph:'/driːm/',ex:'Follow your dream.'},{en:'Future',zh:'未来',ph:'/ˈfjuːtʃər/',ex:'The future is bright.'},{en:'Plan',zh:'计划',ph:'/plæn/',ex:'Make a plan.'},{en:'Goal',zh:'目标',ph:'/ɡoʊl/',ex:'Set a goal.'},{en:'Try',zh:'尝试',ph:'/traɪ/',ex:'Try your best.'},{en:'Learn',zh:'学习',ph:'/lɜːrn/',ex:'Learn English.'},{en:'Study',zh:'学习',ph:'/ˈstʌdi/',ex:'Study hard.'},{en:'Practice',zh:'练习',ph:'/ˈpræktɪs/',ex:'Practice every day.'},{en:'Improve',zh:'提高',ph:'/ɪmˈpruːv/',ex:'Improve your English.'},{en:'Achieve',zh:'实现',ph:'/əˈtʃiːv/',ex:'Achieve your dream.'},{en:'Success',zh:'成功',ph:'/səkˈses/',ex:'Success is coming.'},{en:'Hard',zh:'努力的',ph:'/hɑːrd/',ex:'Work hard.'},{en:'Easy',zh:'容易的',ph:'/ˈiːzi/',ex:'It is easy.'},{en:'Difficult',zh:'困难的',ph:'/ˈdɪfɪkəlt/',ex:'Not difficult.'},{en:'Simple',zh:'简单的',ph:'/ˈsɪmpl/',ex:'Very simple.'},{en:'Special',zh:'特别的',ph:'/ˈspeʃl/',ex:'A special day.'},{en:'Enjoy',zh:'享受',ph:'/ɪnˈdʒɔɪ/',ex:'Enjoy your life.'},{en:'Life',zh:'生活',ph:'/laɪf/',ex:'Life is beautiful.'},{en:'World',zh:'世界',ph:'/wɜːrld/',ex:'Explore the world.'},{en:'Change',zh:'改变',ph:'/tʃeɪndʒ/',ex:'Change your life.'},{en:'Start',zh:'开始',ph:'/stɑːrt/',ex:'Start now.'},{en:'Finish',zh:'完成',ph:'/ˈfɪnɪʃ/',ex:'Finish your work.'},{en:'Continue',zh:'继续',ph:'/kənˈtɪnjuː/',ex:'Continue learning.'},{en:'Confident',zh:'自信的',ph:'/ˈkɒnfɪdənt/',ex:'Be confident.'},{en:'Perfect',zh:'完美的',ph:'/ˈpɜːrfɪkt/',ex:'Practice makes perfect.'},{en:'Excellent',zh:'优秀的',ph:'/ˈeksələnt/',ex:'Excellent work!'},{en:'Language',zh:'语言',ph:'/ˈlæŋɡwɪdʒ/',ex:'Learn a language.'}]}
+],
+  articles:[
+    {id:1,title:'Su Shi: A Life of Optimism',titleZh:'苏轼：豁达一生',category:'传统文化',color:'#ec4899',level:'450L',time:'8分钟',collected:false},
+    {id:2,title:'Climate Change: A Global Challenge',titleZh:'气候变化：全球挑战',category:'时事热点',color:'#3b82f6',level:'350L',time:'6分钟',collected:false},
+    {id:3,title:'The Power of Reading',titleZh:'阅读的力量',category:'晨读美文',color:'#f59e0b',level:'280L',time:'5分钟',collected:false},
+    {id:4,title:'Technology and Life',titleZh:'科技与生活',category:'科技创新',color:'#f97316',level:'400L',time:'7分钟',collected:false},
+    {id:5,title:'Nature Conservation',titleZh:'自然保护',category:'自然奥秘',color:'#10b981',level:'380L',time:'6分钟',collected:false},
+    {id:6,title:'Fairy Tales Around the World',titleZh:'世界童话',category:'童话故事',color:'#8b5cf6',level:'320L',time:'5分钟',collected:false}
+  ],
+  articleContent:{
+    1:{paragraphs:[
+      {en:'Su Shi (1037–1101), also known as Su Dongpo, was one of the greatest poets in Chinese history.',zh:'苏轼（1037–1101），又名苏东坡，是中国历史上最伟大的诗人之一。'},
+      {en:'He lived during the Song Dynasty and wrote many beautiful poems about nature, life, and friendship.',zh:'他生活在宋朝，写了许多关于自然、生活和友谊的优美诗歌。'},
+      {en:'Su Shi faced many difficult times in his life. He lost his job and had to move to faraway places.',zh:'苏轼一生经历了许多困难时期。他失去了官职，被迫迁往偏远之地。'},
+      {en:'But he never gave up. He found joy in simple things like cooking, painting, and walking in the rain.',zh:'但他从未放弃。他在烹饪、绘画和雨中漫步等简单事物中找到了快乐。'},
+      {en:'He is famous for his optimistic spirit. He once wrote, "The moon has its ups and downs, just like life."',zh:'他以乐观精神著称。他曾写道："人有悲欢离合，月有阴晴圆缺。"'},
+      {en:'Today, people still love his poems. His story teaches us to stay strong and smile, even when life is hard.',zh:'今天，人们依然热爱他的诗歌。他的故事教会我们，即使生活艰难，也要保持坚强和微笑。'},
+    ]},
+    2:{paragraphs:[
+      {en:'Climate change is one of the biggest problems facing our world today.',zh:'气候变化是当今世界面临的最大问题之一。'},
+      {en:'The Earth is getting warmer because of greenhouse gases like carbon dioxide.',zh:'由于二氧化碳等温室气体，地球正在变暖。'},
+      {en:'This causes ice to melt, sea levels to rise, and more extreme weather like floods and droughts.',zh:'这导致冰川融化、海平面上升，以及洪水、干旱等更极端的天气。'},
+      {en:'But there are things we can do. We can use less energy, walk or bike instead of driving, and recycle more.',zh:'但我们能做的事情也很多。我们可以减少能源消耗，步行或骑自行车代替开车，以及更多地回收利用。'},
+      {en:'Every small action helps. If everyone does their part, we can make a big difference.',zh:'每一个小行动都有帮助。如果每个人都尽自己的一份力，我们就能带来巨大的改变。'},
+      {en:'Let us work together to protect our planet for future generations.',zh:'让我们一起努力，为子孙后代保护我们的地球。'},
+    ]},
+    3:{paragraphs:[
+      {en:'Reading is a wonderful habit that can change your life.',zh:'阅读是一个奇妙的习惯，它可以改变你的人生。'},
+      {en:'When you read, you learn new words and ideas. You travel to different worlds without leaving your room.',zh:'当你阅读时，你会学到新单词和新思想。你足不出户就能旅行到不同的世界。'},
+      {en:'Reading also makes you smarter. It helps you think better and understand other people\'s feelings.',zh:'阅读也能让你更聪明。它帮助你更好地思考，并理解他人的感受。'},
+      {en:'You can read anywhere — on the bus, before bed, or during a break. Just ten pages a day is a good start.',zh:'你可以在任何地方阅读——在公交车上、睡前或休息时。每天只读十页就是一个好的开始。'},
+      {en:'Try to read different kinds of books: stories, news, or non-fiction. Every book teaches you something new.',zh:'尝试阅读不同类型的书籍：故事、新闻或非虚构作品。每一本书都会教给你新的东西。'},
+      {en:'Remember: today a reader, tomorrow a leader. Start your reading journey today!',zh:'记住：今天的阅读者，明天的领导者。从今天开始你的阅读之旅吧！'},
+    ]},
+    4:{paragraphs:[
+      {en:'Technology has changed the way we live, work, and communicate.',zh:'科技改变了我们生活、工作和交流的方式。'},
+      {en:'Smartphones and the Internet connect us with people all over the world in just seconds.',zh:'智能手机和互联网让我们能在几秒钟内与世界各地的人们联系。'},
+      {en:'We can learn online, shop without leaving home, and even see our friends on video calls.',zh:'我们可以在线学习、足不出户购物，甚至通过视频通话见到朋友。'},
+      {en:'But technology also has challenges. Spending too much time on screens is bad for our eyes and health.',zh:'但科技也带来了挑战。在屏幕前花费太多时间对眼睛和健康有害。'},
+      {en:'It is important to find a balance. Use technology to help you, but do not let it control your life.',zh:'找到平衡很重要。让科技帮助你，但不要让它控制你的生活。'},
+      {en:'When we use technology wisely, it makes our lives better and easier.',zh:'当我们明智地使用科技时，它会让我们的生活更美好、更便捷。'},
+    ]},
+    5:{paragraphs:[
+      {en:'Nature is beautiful and full of wonders. Forests, rivers, mountains, and oceans are home to millions of animals and plants.',zh:'大自然是美丽而充满奇迹的。森林、河流、山脉和海洋是数百万动植物的家园。'},
+      {en:'But many of these places are in danger. People cut down trees, pollute rivers, and destroy habitats.',zh:'但许多这样的地方正面临危险。人们砍伐树木、污染河流、破坏栖息地。'},
+      {en:'When we lose one animal or plant, it affects everything else. Nature is like a big family — everyone needs each other.',zh:'当我们失去一种动物或植物，就会影响到其他一切。大自然就像一个大家庭——彼此需要。'},
+      {en:'The good news is that people are working to protect nature. They plant trees, clean rivers, and create wildlife reserves.',zh:'好消息是人们正在努力保护大自然。他们植树、清理河流、建立野生动物保护区。'},
+      {en:'You can help too! Do not litter, save water, and respect the animals and plants around you.',zh:'你也可以帮忙！不要乱扔垃圾，节约用水，尊重你周围的动植物。'},
+      {en:'Together, we can keep our Earth green and beautiful for years to come.',zh:'我们一起努力，让我们的地球在未来依然绿色而美丽。'},
+    ]},
+    6:{paragraphs:[
+      {en:'Once upon a time, in a small village, there lived a kind girl named Little Red Riding Hood.',zh:'从前，在一个小村庄里，住着一个善良的女孩叫小红帽。'},
+      {en:'She loved to visit her grandmother, who lived on the other side of the forest.',zh:'她喜欢去看望住在森林另一边的奶奶。'},
+      {en:'One day, while walking through the forest, she met a big gray wolf. The wolf had a clever but scary plan.',zh:'一天，当她穿过森林时，遇到了一只大灰狼。狼有一个狡猾又可怕的计划。'},
+      {en:'Stories like this are found in every culture. They teach us lessons about courage, kindness, and wisdom.',zh:'这样的故事在每个文化中都能找到。它们教会我们关于勇气、善良和智慧的道理。'},
+      {en:'Fairy tales help children learn about the world in a fun and magical way.',zh:'童话故事帮助孩子们用有趣而神奇的方式了解世界。'},
+      {en:'No matter how old we are, these stories always remind us that good will win over evil in the end.',zh:'无论我们多大，这些故事总是提醒我们：正义最终会战胜邪恶。'},
+    ]}
+	  },
+	  articleWords:{
+	    1:[
+	      {en:'poet',zh:'诗人',ph:'/ˈpoʊət/'},{en:'dynasty',zh:'王朝，朝代',ph:'/ˈdaɪnəsti/'},{en:'nature',zh:'自然',ph:'/ˈneɪtʃər/'},{en:'faraway',zh:'遥远的',ph:'/ˌfɑːrəˈweɪ/'},{en:'optimistic',zh:'乐观的',ph:'/ˌɑːptɪˈmɪstɪk/'},{en:'spirit',zh:'精神',ph:'/ˈspɪrɪt/'},{en:'famous',zh:'著名的',ph:'/ˈfeɪməs/'},{en:'stay strong',zh:'保持坚强',ph:'/steɪ strɒŋ/'}
+	    ],
+	    2:[
+	      {en:'climate',zh:'气候',ph:'/ˈklaɪmət/'},{en:'greenhouse',zh:'温室',ph:'/ˈɡriːnhaʊs/'},{en:'carbon dioxide',zh:'二氧化碳',ph:'/ˈkɑːrbən daɪˈɑːksaɪd/'},{en:'extreme',zh:'极端的',ph:'/ɪkˈstriːm/'},{en:'energy',zh:'能源',ph:'/ˈenərdʒi/'},{en:'recycle',zh:'回收利用',ph:'/ˌriːˈsaɪkl/'},{en:'protect',zh:'保护',ph:'/prəˈtekt/'},{en:'planet',zh:'行星，地球',ph:'/ˈplænɪt/'},{en:'generation',zh:'一代人',ph:'/ˌdʒenəˈreɪʃn/'}
+	    ],
+	    3:[
+	      {en:'habit',zh:'习惯',ph:'/ˈhæbɪt/'},{en:'smarter',zh:'更聪明的',ph:'/ˈsmɑːrtər/'},{en:'understand',zh:'理解',ph:'/ˌʌndərˈstænd/'},{en:'fiction',zh:'小说',ph:'/ˈfɪkʃn/'},{en:'non-fiction',zh:'非虚构作品',ph:'/nɒn ˈfɪkʃn/'},{en:'reader',zh:'读者',ph:'/ˈriːdər/'},{en:'leader',zh:'领导者',ph:'/ˈliːdər/'},{en:'journey',zh:'旅程',ph:'/ˈdʒɜːrni/'}
+	    ],
+	    4:[
+	      {en:'technology',zh:'技术',ph:'/tekˈnɑːlədʒi/'},{en:'communicate',zh:'交流',ph:'/kəˈmjuːnɪkeɪt/'},{en:'smartphone',zh:'智能手机',ph:'/ˈsmɑːrtfoʊn/'},{en:'Internet',zh:'互联网',ph:'/ˈɪntərnet/'},{en:'balance',zh:'平衡',ph:'/ˈbæləns/'},{en:'control',zh:'控制',ph:'/kənˈtroʊl/'},{en:'wisely',zh:'明智地',ph:'/ˈwaɪzli/'},{en:'convenient',zh:'方便的',ph:'/kənˈviːniənt/'}
+	    ],
+	    5:[
+	      {en:'nature',zh:'大自然',ph:'/ˈneɪtʃər/'},{en:'wonder',zh:'奇迹',ph:'/ˈwʌndər/'},{en:'pollute',zh:'污染',ph:'/pəˈluːt/'},{en:'destroy',zh:'破坏',ph:'/dɪˈstrɔɪ/'},{en:'habitat',zh:'栖息地',ph:'/ˈhæbɪtæt/'},{en:'affect',zh:'影响',ph:'/əˈfekt/'},{en:'reserve',zh:'保护区',ph:'/rɪˈzɜːrv/'},{en:'respect',zh:'尊重',ph:'/rɪˈspekt/'}
+	    ],
+	    6:[
+	      {en:'fairy tale',zh:'童话',ph:'/ˈferi teɪl/'},{en:'grandmother',zh:'祖母',ph:'/ˈɡrænmʌðər/'},{en:'forest',zh:'森林',ph:'/ˈfɔːrɪst/'},{en:'clever',zh:'聪明的',ph:'/ˈklevər/'},{en:'courage',zh:'勇气',ph:'/ˈkɜːrɪdʒ/'},{en:'kindness',zh:'善良',ph:'/ˈkaɪndnəs/'},{en:'wisdom',zh:'智慧',ph:'/ˈwɪzdəm/'},{en:'magical',zh:'神奇的',ph:'/ˈmædʒɪkl/'},{en:'win over',zh:'战胜',ph:'/wɪn ˈoʊvər/'}
+	    ]
+	  },
+	  reciteTexts:{
+    1:{title:'Excuse Me!',sentences:[{en:'Excuse me.',zh:'对不起，打扰一下。'},{en:'Yes, sir?',zh:'什么事，先生？'},{en:'Is this your handbag?',zh:'这是你的手提包吗？'},{en:'Pardon?',zh:'请再说一遍？'},{en:'Oh yes, thank you very much.',zh:'哦是的，非常感谢。'},{en:'Please sit down.',zh:'请坐。'},{en:'Nice to meet you.',zh:'很高兴认识你。'},{en:'Nice to meet you too.',zh:'我也很高兴认识你。'}]},
+    2:{title:'Colours and Things',sentences:[{en:'What colour is your new dress?',zh:'你的新裙子是什么颜色？'},{en:'It is green.',zh:'它是绿色的。'},{en:'My coat is blue and my shoes are black.',zh:'我的外套是蓝色的，鞋子是黑色的。'},{en:'The sky is blue and the sun is yellow.',zh:'天空是蓝色的，太阳是黄色的。'},{en:'Her eyes are brown and her hair is black.',zh:'她的眼睛是棕色的，头发是黑色的。'},{en:'The old house is clean and white.',zh:'老房子干净又洁白。'},{en:'The young girl has a big red box.',zh:'小女孩有一个大红盒子。'}]},
+    3:{title:'Daily Life at Home',sentences:[{en:'Open the door, please.',zh:'请开门。'},{en:'Close the window and sit down.',zh:'关上窗户坐下来。'},{en:'This is my bedroom.',zh:'这是我的卧室。'},{en:'The kitchen is clean.',zh:'厨房很干净。'},{en:'The garden is lovely.',zh:'花园很可爱。'},{en:'A cup of tea, please.',zh:'请给我一杯茶。'},{en:'The glass is full of water.',zh:'玻璃杯装满了水。'}]},
+    4:{title:'Household Items',sentences:[{en:'The refrigerator is in the kitchen.',zh:'冰箱在厨房里。'},{en:'Put the plate in the cupboard.',zh:'把盘子放在碗柜里。'},{en:'The picture is on the wall.',zh:'画挂在墙上。'},{en:'The lamp is on the desk.',zh:'台灯在书桌上。'},{en:'The knife is sharp, be careful.',zh:'刀很锋利，小心点。'},{en:'A bottle of milk is on the table.',zh:'一瓶牛奶在桌子上。'},{en:'The carpet is red and soft.',zh:'地毯是红色且柔软的。'}]},
+    5:{title:'Weather and Actions',sentences:[{en:'The weather is nice today.',zh:'今天天气很好。'},{en:'The sun is shining in the sky.',zh:'阳光在天空中照耀。'},{en:'It is not raining now.',zh:'现在没下雨。'},{en:'Walk across the road carefully.',zh:'小心穿过马路。'},{en:'The bird flies high in the sky.',zh:'鸟在天空高飞。'},{en:'Sleep well at night.',zh:'晚上睡个好觉。'},{en:'Cook dinner with your mother.',zh:'和你妈妈一起做晚饭。'}]},
+    6:{title:'Food and Meals',sentences:[{en:'Breakfast is ready.',zh:'早餐准备好了。'},{en:'I eat bread and eggs.',zh:'我吃面包和鸡蛋。'},{en:'A cup of coffee, please.',zh:'请给我一杯咖啡。'},{en:'The chicken is very good.',zh:'鸡肉很好吃。'},{en:'The fish is fresh.',zh:'鱼很新鲜。'},{en:'We eat rice for lunch.',zh:'我们午饭吃米饭。'},{en:'An apple a day is healthy.',zh:'一天一个苹果很健康。'}]},
+    7:{title:'Shopping',sentences:[{en:'Go to the grocer to buy food.',zh:'去杂货店买食物。'},{en:'Buy some bread and butter.',zh:'买一些面包和黄油。'},{en:'How much is it?',zh:'这个多少钱？'},{en:'Two pounds, please.',zh:'请给我两英镑。'},{en:'That is very cheap.',zh:'那很便宜。'},{en:'I need some apples for dinner.',zh:'我需要一些苹果做晚饭。'},{en:'Do you have enough money?',zh:'你有足够的钱吗？'}]},
+    8:{title:'Time and Seasons',sentences:[{en:'I get up at seven every morning.',zh:'我每天早上七点起床。'},{en:'I brush my teeth and go to work.',zh:'我刷牙然后去上班。'},{en:'Good evening. How are you today?',zh:'晚上好。你今天怎么样？'},{en:'Spring is warm and summer is hot.',zh:'春天温暖，夏天炎热。'},{en:'Autumn is cool and winter is cold.',zh:'秋天凉爽，冬天寒冷。'},{en:'A year has twelve months.',zh:'一年有十二个月。'},{en:'Every day is a nice day.',zh:'每一天都是美好的一天。'}]},
+    9:{title:'Weekend Plans',sentences:[{en:'Sunday is a holiday.',zh:'星期天是假日。'},{en:'I visit my friend on Saturday.',zh:'我星期六拜访朋友。'},{en:'We stay at home and play games.',zh:'我们呆在家里玩游戏。'},{en:'We read a book together.',zh:'我们一起看书。'},{en:'I call my mother on the phone.',zh:'我打电话给我妈妈。'},{en:'Come with me to the party.',zh:'跟我一起去聚会吧。'},{en:'Have a nice weekend!',zh:'周末愉快！'}]},
+    10:{title:'Travel and Directions',sentences:[{en:'Go straight ahead.',zh:'一直往前走。'},{en:'Turn left at the corner.',zh:'在拐角处左转。'},{en:'Cross the bridge over the river.',zh:'穿过河上的桥。'},{en:'Take the bus or the train.',zh:'坐公共汽车或火车。'},{en:'Take a taxi to the airport.',zh:'打车去机场。'},{en:'I always travel by train.',zh:'我总是坐火车旅行。'},{en:'Sometimes I walk to the town.',zh:'有时我步行去镇上。'}]},
+    11:{title:'Feeling Well',sentences:[{en:'I live in a small town.',zh:'我住在一个小镇上。'},{en:'I feel very tired today.',zh:'我今天感觉很累。'},{en:'I have a headache.',zh:'我头疼。'},{en:'You must rest and take medicine.',zh:'你必须休息吃药。'},{en:'I think I am feeling better now.',zh:'我觉得我现在好多了。'},{en:'Do not forget to see the doctor.',zh:'别忘了看医生。'},{en:'I hope you feel well soon.',zh:'希望你早日康复。'}]},
+    12:{title:'Housework',sentences:[{en:'Make the bed every morning.',zh:'每天早上整理床铺。'},{en:'Sweep the floor and dust the table.',zh:'扫地擦桌子。'},{en:'Put on your coat before you go out.',zh:'出门前穿上外套。'},{en:'Take off your shoes at the door.',zh:'在门口脱鞋。'},{en:'Look after the baby carefully.',zh:'小心照顾宝宝。'},{en:'Hurry up! Be quick!',zh:'快点！赶快！'},{en:'Be quiet and read aloud.',zh:'安静地大声朗读。'}]},
+    13:{title:'Describing People',sentences:[{en:'He is handsome and strong.',zh:'他英俊又强壮。'},{en:'She is pretty and very kind.',zh:'她漂亮又善良。'},{en:'I am happy today.',zh:'我今天很开心。'},{en:'Do not be sad or angry.',zh:'不要伤心或生气。'},{en:'Be brave and clever.',zh:'勇敢又聪明。'},{en:'The rich man is proud of his car.',zh:'那个富人为他的车骄傲。'},{en:'The poor girl is shy but wonderful.',zh:'那个可怜的女孩害羞但很棒。'}]},
+    14:{title:'Communication',sentences:[{en:'Speak English every day.',zh:'每天说英语。'},{en:'Say it again, please.',zh:'请再说一遍。'},{en:'Tell me an interesting story.',zh:'给我讲个有趣的故事。'},{en:'Ask me a question.',zh:'问我一个问题。'},{en:'That is the correct answer.',zh:'那是正确答案。'},{en:'Good idea! No problem!',zh:'好主意！没问题！'},{en:'Everything is OK now.',zh:'现在一切都好了。'}]},
+    15:{title:'Transportation',sentences:[{en:'Go to the train station.',zh:'去火车站。'},{en:'Catch the train at platform five.',zh:'在五号站台上火车。'},{en:'Do not miss the train.',zh:'别错过了火车。'},{en:'The train leaves at noon.',zh:'火车中午出发。'},{en:'Arrive at the city on time.',zh:'准时到达城市。'},{en:'The journey is long but beautiful.',zh:'旅程漫长但美好。'},{en:'The village is near the mountain.',zh:'村庄在山的附近。'}]},
+    16:{title:'My Family',sentences:[{en:'This is my family.',zh:'这是我的家人。'},{en:'My father works in the city.',zh:'我爸爸在城市工作。'},{en:'My mother cooks in the kitchen.',zh:'我妈妈在厨房做饭。'},{en:'My brother is tall and strong.',zh:'我哥哥高大又强壮。'},{en:'Welcome to my home!',zh:'欢迎来我家！'},{en:'I love my family very much.',zh:'我非常爱我的家人。'},{en:'Share your toys with others.',zh:'和别人分享你的玩具。'}]},
+    17:{title:'Sports and Hobbies',sentences:[{en:'I like sports very much.',zh:'我非常喜欢运动。'},{en:'I go swimming on Saturday.',zh:'我星期六去游泳。'},{en:'We play football in the garden.',zh:'我们在花园里踢足球。'},{en:'Our team always wins.',zh:'我们队总是赢。'},{en:'Listen to music and sing a song.',zh:'听音乐唱首歌。'},{en:'My hobby is reading books.',zh:'我的爱好是读书。'},{en:'Take a photo with my camera.',zh:'用我的相机拍张照片。'}]},
+    18:{title:'Dreams and Future',sentences:[{en:'Follow your dream.',zh:'追寻你的梦想。'},{en:'The future is bright.',zh:'未来是光明的。'},{en:'Make a plan and try your best.',zh:'制定计划并全力以赴。'},{en:'Learn English every day and improve.',zh:'每天学英语，不断提高。'},{en:'Practice makes perfect.',zh:'熟能生巧。'},{en:'Be confident and achieve your dream!',zh:'自信一点，实现你的梦想！'},{en:'Life is beautiful.',zh:'生活是美好的。'}]}
+  },
+  categories:[
+    {name:'传统文化',icon:'🎭',bg:'#fdf2f8',color:'#ec4899'},{name:'时事热点',icon:'📰',bg:'#eff6ff',color:'#3b82f6'},
+    {name:'科技创新',icon:'💡',bg:'#fff7ed',color:'#f97316'},{name:'自然奥秘',icon:'🌍',bg:'#f0fdf4',color:'#10b981'},
+    {name:'晨读美文',icon:'🌅',bg:'#fffbeb',color:'#f59e0b'},{name:'童话故事',icon:'🏰',bg:'#faf5ff',color:'#8b5cf6'},
+    {name:'健康生活',icon:'❤️',bg:'#fff1f2',color:'#f43f5e'},{name:'更多',icon:'⋯',bg:'#f8fafc',color:'#64748b'}
+  ],
+};
 
-/* ── Mastery Badge ── */
-.mastery-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700;}
-.mastery-new{background:#fef2f2;color:#ef4444;}
-.mastery-familiar{background:#fffbeb;color:#d97706;}
-.mastery-mastered{background:#f0fdf4;color:#16a34a;}
-.mastery-dot{width:7px;height:7px;border-radius:50%;}
-.mastery-dot-new{background:#ef4444;}
-.mastery-dot-familiar{background:#f59e0b;}
-.mastery-dot-mastered{background:#10b981;}
-.phtab{flex:1;padding:7px;text-align:center;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;border:none;background:var(--bg-muted);color:var(--ink-soft);font-family:inherit;transition:all .2s;}
-.phtab.active{background:var(--sky-deep);color:#fff;}
-
-/* ── Recite / Text Lesson ── */
-.recite-sentence{background:var(--white);border-radius:16px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--cs);cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);}
-.recite-sentence:hover{transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.06);}
-.recite-sentence:active{transform:scale(.98);}
-.recite-sentence.active{border:2px solid var(--sky-deep);background:var(--sky-light);transform:translateX(4px);box-shadow:0 4px 16px rgba(14,165,233,.15);}
-.recite-sentence-row{display:flex;gap:10px;}
-.recite-sound-btn{width:34px;height:34px;border:none;background:var(--sky-light);border-radius:10px;cursor:pointer;font-size:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.recite-sound-btn:active{background:var(--sky-deep);color:#fff;}
-.recite-sentence-en{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;}
-.recite-sentence-zh{font-size:13px;color:var(--ink-soft);}
-.recite-record-bar{background:var(--white);border-radius:20px;padding:16px;box-shadow:var(--cs);margin-bottom:20px;}
-.recite-record-label{font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
-.recite-record-current{font-size:18px;font-weight:700;color:var(--sky-deep);margin-bottom:12px;line-height:1.4;min-height:28px;}
-.recite-record-row{display:flex;gap:10px;justify-content:center;}
-.recite-record-btn{border:none;border-radius:100px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
-.recite-record-start{background:var(--sky-deep);color:#fff;}
-.recite-record-start:active{transform:scale(.95);}
-.recite-record-stop{background:#ef4444;color:#fff;animation:pulse .8s infinite;box-shadow:0 0 16px rgba(239,68,68,.4);}
-@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 16px rgba(239,68,68,.4);}50%{transform:scale(1.06);box-shadow:0 0 28px rgba(239,68,68,.6);}}
-.recording{animation:recPulse .6s infinite;}
-@keyframes recPulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.recite-score-box{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:14px;margin-top:12px;text-align:center;}
-.recite-score-big{font-size:28px;font-weight:900;color:var(--green);}
-.recite-score-label{font-size:12px;color:var(--ink-soft);margin-bottom:8px;}
-.recite-score-detail{font-size:12px;color:var(--ink-mid);margin-top:6px;}
-.recite-score-transcript{font-size:13px;color:var(--ink-soft);margin-top:8px;padding:8px;background:var(--surface);border-radius:10px;}
-
-.avatar-picker-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
-.avatar-picker-item{aspect-ratio:1;border-radius:14px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .15s;}
-.avatar-picker-item:active{transform:scale(.9);}
-.avatar-picker-item.selected{border-color:var(--sky-deep);box-shadow:0 0 0 2px var(--sky-light);}
-.avatar-color-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-.avatar-color-item{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .15s;}
-.avatar-color-item:active{transform:scale(.85);}
-.avatar-color-item.selected{border-color:var(--sky-deep);box-shadow:0 0 0 2px var(--sky-light);}
-.name-edit-input{width:100%;padding:11px 14px;border:2px solid var(--sky-deep);border-radius:14px;font-size:16px;font-family:inherit;outline:none;color:var(--ink);background:var(--white);margin-bottom:16px;}
-.import-warning{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:14px;font-size:13px;color:#92400e;margin-bottom:16px;line-height:1.6;}
-.import-preview{background:var(--surface);border-radius:12px;padding:12px;font-size:13px;color:var(--ink-mid);margin-bottom:16px;max-height:120px;overflow-y:auto;}
-
-/* ── Learning Path ── */
-.learning-steps{display:flex;align-items:center;justify-content:center;gap:0;margin:8px 0 12px;}
-.learning-step{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);}
-.learning-step.active{color:var(--sky-deep);}
-.learning-step.done{color:var(--green);}
-.learning-step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--surface);color:var(--ink-soft);flex-shrink:0;}
-.learning-step.active .learning-step-num{background:var(--sky-deep);color:#fff;}
-.learning-step.done .learning-step-num{background:var(--green);color:#fff;}
-.learning-step-line{width:32px;height:2px;background:var(--border);margin:0 6px;}
-.learning-step-line.done{background:var(--green);}
-.completion-banner{text-align:center;padding:32px 16px 24px;}
-.completion-icon{font-size:64px;margin-bottom:16px;animation:celebrate .6s ease;}
-.completion-title{font-size:24px;font-weight:900;color:var(--ink);margin-bottom:6px;}
-.completion-sub{font-size:14px;color:var(--ink-soft);margin-bottom:24px;}
-.completion-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
-.completion-stat{background:var(--white);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--cs);}
-.completion-stat-val{font-size:28px;font-weight:900;color:var(--sky-deep);}
-.completion-stat-label{font-size:12px;color:var(--ink-soft);margin-top:4px;}
-.completion-actions{display:flex;flex-direction:column;gap:10px;padding:0 16px 24px;}
-.review-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;padding:10px 14px;margin:0 0 10px;font-size:13px;font-weight:600;color:#92400e;display:flex;align-items:center;gap:8px;}
-.auth-input:focus{outline:none;border-color:var(--sky-deep)!important;}
-.dark .auth-input{background:var(--surface);border-color:var(--border);color:var(--ink);}
-
-</style>
-</head>
-<body>
-<div class="phone">
-  <div class="screen">
-
-  <!-- HOME -->
-  <div id="page-home" class="page active">
-    <div class="home-header">
-      <div class="home-top">
-        <div class="user-row">
-          <div class="avatar" onclick="avatarClick()" style="cursor:pointer;">👤</div>
-          <div><div class="user-greeting" id="greeting">早上好 ☀️</div><div class="user-name" id="userName">自牧</div></div>
-        </div>
-        <div class="header-actions">
-          <button class="icon-btn" onclick="openSearch()" style="display:flex;align-items:center;gap:4px;padding:0 12px;width:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span style="font-size:12px;font-weight:600;color:var(--ink-mid);">查单词</span></button>
-          <button class="icon-btn" onclick="openSettings()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-        </div>
-      </div>
-      <!-- Mission Ring -->
-      <div class="mission-card">
-        <div class="ring-wrap">
-          <svg class="ring-svg" viewBox="0 0 80 80">
-            <circle class="ring-bg" cx="40" cy="40" r="32"/>
-            <circle class="ring-fill" id="ringFill" cx="40" cy="40" r="32"/>
-          </svg>
-          <div class="ring-label"><div class="ring-pct" id="missionPct">0%</div><div class="ring-sub">完成</div></div>
-        </div>
-        <div class="mission-info">
-          <div class="mission-title" style="display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> 今日任务</div>
-          <div class="mission-tasks">
-            <div class="mission-task"><div class="mission-task-dot" id="dot1"></div><span id="task1">新学 0/5 个单词</span></div>
-            <div class="mission-task"><div class="mission-task-dot" id="dot2"></div><span id="task2">复习 0/3 个单词</span></div>
-            <div class="mission-task"><div class="mission-task-dot" id="dot3"></div><span id="task3">完成 1 次测验</span></div>
-          </div>
-          <button class="mission-btn" onclick="startTodayLearning()">开始今日学习 →</button>
-        </div>
-      </div>
-    </div>
-    <div class="scroll-area">
-      <!-- Book + progress -->
-      <div class="card">
-        <div class="book-card">
-          <div class="book-thumb" id="bookThumb">新概念英语<br/>第一册</div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div class="book-title" id="bookTitle">新概念英语第一册</div>
-              <span class="book-switch" onclick="openBankSelector()">切换教材 ›</span>
-            </div>
-            <div style="text-align:left;margin-top:10px;">
-              <button class="btn btn-primary" onclick="switchPage('learning')" style="padding:10px 36px;font-size:15px;">进入学习</button>
-            </div>
-          </div>
-        </div>
-        <div class="curve-box">
-          <div class="curve-top"><span class="curve-title" style="display:flex;align-items:center;gap:4px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> 记忆进度</span><span class="curve-edit" onclick="showToast('编辑功能开发中')">编辑 ›</span></div>
-          <div class="progress-track"><div class="progress-fill" id="memoryCurve" style="width:65%;"></div></div>
-          <div class="curve-meta">已学 <span id="learnedWords">0</span>/<span id="totalWordsSpan">493</span> · 连续 <span id="consecutiveDays">12</span> 天</div>
-        </div>
-      </div>
-      <!-- Training -->
-      <div style="display:flex;gap:10px;margin-bottom:14px;">
-        <div onclick="startTraining('phonetic')" style="flex:1;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:20px;padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;box-shadow:var(--cs);">
-          <div style="font-size:28px;line-height:1;">🔤</div>
-          <div style="font-size:17px;font-weight:700;color:#6d28d9;line-height:1.2;">音标</div>
-          <div style="font-size:11px;color:#8b5cf6;line-height:1.2;">48个国际音标</div>
-          <button style="margin-top:6px;background:#8b5cf6;border:none;border-radius:100px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;">开始 →</button>
-        </div>
-        <div onclick="startTraining('phonics')" style="flex:1;background:linear-gradient(135deg,#ecfeff,#cffafe);border:1.5px solid #67e8f9;border-radius:20px;padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;box-shadow:var(--cs);">
-          <div style="font-size:28px;line-height:1;">🧩</div>
-          <div style="font-size:17px;font-weight:700;color:#0e7490;line-height:1.2;">自然拼读</div>
-          <div style="font-size:11px;color:#0891b2;line-height:1.2;">见词能读，听音能写</div>
-          <button style="margin-top:6px;background:#06b6d4;border:none;border-radius:100px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;">开始 →</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="plan-header"><div class="section-title">专项训练</div></div>
-        <div class="training-grid">
-          <div class="training-item" onclick="startTraining('listening')"><div class="training-icon" style="background:#fdf2f8;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6 6 0 0 1 12 0c0 5-3 9-6 9a3 3 0 0 1-3-3"/><path d="M12 12a3 3 0 0 0 0-6"/></svg></div><div class="training-label">随身听</div></div>
-          <div class="training-item" onclick="startTraining('spelling')"><div class="training-icon" style="background:#eff6ff;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="training-label">拼写</div></div>
-          <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">AI 对话 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div class="training-label">消消乐</div></div>
-          <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">语法 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg></div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LEARNING -->
-  <div id="page-learning" class="page">
-    <div class="page-nav">
-      <button class="nav-back" id="learningBackBtn" onclick="onLearningBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
-      <span class="page-nav-title" id="learningTitle">单元学习</span>
-      <div style="display:flex;gap:6px;">
-        <button class="icon-btn" onclick="openSearch()" style="width:36px;height:36px;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
-        <button class="icon-btn" onclick="openSettings()" style="width:36px;height:36px;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-      </div>
-    </div>
-    <div class="unit-tabs" id="unitTabs"></div>
-    <div class="scroll-area" id="learningScrollArea">
-      <div id="wordList"></div>
-    </div>
-    <div class="word-filter" id="wordFilterBar">
-      <div class="word-filter-row">
-        <span class="filter-item active" data-filter="all" onclick="setWordFilter('all')">全部</span>
-        <span class="filter-item" data-filter="new" onclick="setWordFilter('new')">🆕 生词</span>
-        <span class="filter-item" data-filter="familiar" onclick="setWordFilter('familiar')">🔁 熟词</span>
-        <span class="filter-item" data-filter="mastered" onclick="setWordFilter('mastered')">✅ 掌握</span>
-      </div>
-      <div class="word-filter-row" style="margin-top:8px;">
-        <span class="filter-item mode-item" data-mode="browse" onclick="setWordMode('browse')">📖 学习</span>
-        <span class="filter-item mode-item" data-mode="practice" onclick="setWordMode('practice')">✍️ 学+练</span>
-        <span class="filter-item mode-item" data-mode="dictation" onclick="setWordMode('dictation')">🎧 听写</span>
-      </div>
-    </div>
-    <div id="phonicsView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 90px;background:var(--cream);">
-      <div id="phonicsContent"></div>
-    </div>
-    <div id="practiceView" class="hidden" style="flex:1;overflow-y:auto;background:var(--cream);">
-      <div id="practiceContent" class="prac-body"></div>
-    </div>
-    <div id="dictationView" class="hidden" style="flex:1;display:flex;flex-direction:column;background:#e0edf9;padding:0 0 8px;overflow:hidden;">
-      <div id="dictationContent" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;"></div>
-    </div>
-    <div id="textPageView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 24px;background:var(--cream);">
-      <div id="textListMode">
-        <div style="margin:14px 0 12px;">
-          <span style="font-size:16px;font-weight:700;" id="textListHeader">📖 课文合集</span>
-        </div>
-        <div id="textListContent"></div>
-      </div>
-      <div id="textDetailMode" class="hidden">
-        <div style="display:flex;align-items:center;gap:8px;margin:12px 0 14px;">
-          <button class="nav-back" onclick="backToTextList()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
-          <span style="font-size:16px;font-weight:700;flex:1;" id="textDetailTitle">课文</span>
-          <button class="recite-record-btn recite-record-start" id="playAllBtn" onclick="playAllSentences()" style="padding:4px 10px;font-size:12px;">🔊 朗读全文</button>
-        </div>
-        <div id="lessonSentenceList"></div>
-        <div class="recite-record-bar" id="lessonRecordBar" style="margin-top:10px;">
-          <div class="recite-record-label">👇 点击句子选择，然后录音跟读</div>
-          <div class="recite-record-current" id="lessonRecordCurrent">选择一句课文开始朗诵</div>
-          <div class="recite-record-row">
-            <button class="recite-record-btn recite-record-start" id="lessonRecordBtn" onclick="toggleReciteRecord()">🎤 开始录音</button>
-            <button class="recite-record-btn" id="reciteLoopBtn" onclick="toggleReciteLoop()" style="background:var(--green);color:#fff;padding:12px 18px;font-size:13px;">🔄 连读模式</button>
-          </div>
-          <div id="lessonRecordResult" style="display:none;"></div>
-        </div>
-      </div>
-      <!-- cardMode -->
-      <div id="cardMode" class="hidden" style="display:flex;flex-direction:column;height:100%;padding:0 16px;">
-        <div style="display:flex;align-items:center;gap:8px;margin:12px 0 4px;">
-          <button class="nav-back" id="cardBackBtn" onclick="exitCardMode()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
-          <span style="font-size:16px;font-weight:700;flex:1;" id="cardUnitTitle">Unit 1</span>
-          <button onclick="showTextList()" style="background:var(--sky-light);color:var(--sky-deep);border:none;border-radius:100px;padding:5px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">📖 课文</button>
-        </div>
-        <div class="learning-steps" id="learningSteps">
-          <div class="learning-step active" id="step1"><div class="learning-step-num">1</div><span>浏览</span></div>
-          <div class="learning-step-line" id="stepLine1"></div>
-          <div class="learning-step" id="step2"><div class="learning-step-num">2</div><span>测验</span></div>
-          <div class="learning-step-line" id="stepLine2"></div>
-          <div class="learning-step" id="step3"><div class="learning-step-num">3</div><span>完成</span></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <span style="font-size:13px;font-weight:700;color:var(--ink-mid);" id="wordCounter"><span id="learnedCount">0</span>/<span id="totalCount">20</span></span>
-          <div class="progress-track" style="flex:1;margin:0;"><div class="progress-fill" id="learningProgress" style="width:0%;"></div></div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 0 12px;">
-          <div id="flipCardWrap" style="width:100%;perspective:1200px;cursor:pointer;user-select:none;touch-action:pan-y;">
-            <div class="flip-card-inner" id="flipCardInner" onclick="flipCard()" style="width:100%;aspect-ratio:3/2;margin:0 auto;border-radius:24px;background:var(--white);box-shadow:var(--cs);transition:transform .5s cubic-bezier(.4,0,.2,1),box-shadow .3s;">
-              <div id="cardFace" style="position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;border-radius:24px;">
-                <div id="cardText" style="font-size:36px;font-weight:900;color:var(--ink);text-align:center;line-height:1.2;">hello</div>
-                <div id="cardPhonetic" style="font-size:16px;color:var(--ink-soft);margin-top:12px;text-align:center;">/həˈloʊ/</div>
-              </div>
-              <div id="cardBack" style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;border-radius:24px;background:linear-gradient(135deg,var(--sky-light),#fff);">
-                <div id="cardTranslation" style="font-size:24px;font-weight:700;color:var(--ink);text-align:center;line-height:1.3;">你好</div>
-                <div id="cardExample" style="font-size:14px;color:var(--ink-soft);margin-top:12px;text-align:center;line-height:1.6;padding:0 8px;">Hello, how are you?</div>
-              </div>
-            </div>
-          </div>
-          <div id="masteryBadgeWrap" style="margin-top:10px;"></div>
-        </div>
-        <div id="normalFeedback" style="display:flex;gap:10px;padding:8px 0 16px;justify-content:center;">
-          <button class="btn-hover-surface" onclick="speakCurrent()" style="width:48px;height:48px;border-radius:50%;border:none;background:var(--surface);font-size:20px;cursor:pointer;transition:all .18s;">🔊</button>
-          <button class="btn-hover-green" onclick="recordFeedback('easy')" id="fbEasy" style="width:48px;height:48px;border-radius:50%;border:none;background:#f0fdf4;font-size:20px;cursor:pointer;transition:all .18s;">😊</button>
-          <button class="btn-hover-amber" onclick="recordFeedback('hard')" id="fbHard" style="width:48px;height:48px;border-radius:50%;border:none;background:#fffbeb;font-size:20px;cursor:pointer;transition:all .18s;">🤔</button>
-          <button class="btn-hover-red" onclick="recordFeedback('forgot')" id="fbForgot" style="width:48px;height:48px;border-radius:50%;border:none;background:#fef2f2;font-size:20px;cursor:pointer;transition:all .18s;">🔁</button>
-        </div>
-        <div id="wrongWordFeedback" style="display:none;gap:10px;padding:8px 0 16px;justify-content:center;flex-wrap:wrap;">
-          <button class="btn-hover-red" onclick="wrongWordFeedback(false)" style="flex:1;max-width:160px;border:none;border-radius:16px;padding:14px 6px;font-family:inherit;font-size:14px;font-weight:700;background:#fef2f2;color:#ef4444;cursor:pointer;transition:all .2s;">✕ 还不会</button>
-          <button class="btn-hover-green" onclick="wrongWordFeedback(true)" style="flex:1;max-width:160px;border:none;border-radius:16px;padding:14px 6px;font-family:inherit;font-size:14px;font-weight:700;background:#f0fdf4;color:#16a34a;cursor:pointer;transition:all .2s;">✓ 掌握了</button>
-        </div>
-      </div><!-- cardMode -->
-    </div>
-    <div id="completionView" class="hidden">
-      <div class="completion-banner">
-        <div class="completion-icon">🎉</div>
-        <div class="completion-title" id="compTitle">学习完成！</div>
-        <div class="completion-sub" id="compSub">太棒了，继续加油！</div>
-      </div>
-      <div class="completion-stats-grid">
-        <div class="completion-stat"><div class="completion-stat-val" id="compWords">0</div><div class="completion-stat-label">浏览词汇</div></div>
-        <div class="completion-stat"><div class="completion-stat-val" id="compQuizScore">0</div><div class="completion-stat-label">测验得分</div></div>
-        <div class="completion-stat"><div class="completion-stat-val" id="compMastered">0</div><div class="completion-stat-label">新掌握</div></div>
-        <div class="completion-stat"><div class="completion-stat-val" id="compPoints">0</div><div class="completion-stat-label">获得积分</div></div>
-      </div>
-      <div class="completion-actions">
-        <button class="btn btn-primary" style="width:100%;" onclick="exitLearningPath()">🎊 完成学习</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUIZ -->
-  <div id="page-quiz" class="page">
-    <div class="quiz-header">
-      <div class="quiz-progress-row">
-        <span class="quiz-q-num" id="quizQNum">第 1 题 / 10</span>
-        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quizFill" style="width:10%;"></div></div>
-        <button style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;" onclick="endQuiz()">退出</button>
-      </div>
-      <div style="margin-top:10px;"><div class="quiz-score-label">当前得分</div><div class="quiz-score-row"><span id="quizScore">0</span> <span style="font-size:16px;font-weight:400;opacity:.7;">分</span></div></div>
-    </div>
-    <div class="scroll-area" style="padding-top:16px;">
-      <div class="quiz-question-card">
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;">选出正确的英文单词</div>
-        <div class="quiz-zh" id="quizZh">你好</div>
-        <div class="quiz-hint" id="quizHint"></div>
-      </div>
-      <div class="quiz-options" id="quizOptions"></div>
-      <div id="quizResult" class="hidden">
-        <div class="card quiz-result">
-          <div style="font-size:60px;margin-bottom:16px;" id="resultIcon">🎉</div>
-          <div style="font-size:40px;font-weight:900;color:var(--sky-deep);" id="resultScore">80</div>
-          <div style="font-size:14px;color:var(--ink-soft);">分</div>
-          <div style="font-size:28px;letter-spacing:4px;margin:12px 0;" id="resultStars">⭐⭐⭐</div>
-          <div style="font-size:14px;color:var(--ink-soft);margin-bottom:20px;" id="resultLabel">太棒了！</div>
-          <button class="btn btn-primary" style="width:100%;" onclick="startQuiz()">再来一次</button>
-          <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="switchPage('home')">返回首页</button>
-          <button id="quizReviewBtn" class="btn btn-danger" style="width:100%;margin-top:10px;display:none;" onclick="showQuizWrongAnswers()">📋 查看错题</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- READING -->
-  <div id="page-reading" class="page">
-    <div class="read-tabs">
-      <button class="read-tab active" onclick="setTimeout(()=>showToast('阅读'),100)">📖 阅读</button>
-    </div>
-    <div id="reading-toolbar" class="filter-row" style="padding:10px 16px;gap:10px;">
-      <div class="search-bar" style="flex:1;background:var(--bg-muted);border-radius:12px;padding:0 14px;display:flex;align-items:center;gap:8px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="articleSearchInput" placeholder="搜索文章标题..." style="border:none;background:transparent;outline:none;font-size:13px;font-family:inherit;color:var(--ink);width:100%;" oninput="filterArticles(this.value)">
-      </div>
-      <button class="filter-pill" style="background:var(--sky-light);color:var(--sky-deep);white-space:nowrap;flex-shrink:0;" onclick="openCalendar()">📅 打卡日历</button>
-    </div>
-    <div class="scroll-area">
-      <div id="reading-content">
-        <div class="cat-grid" id="categoryList"></div>
-        <div class="empty-bird"><div style="font-size:36px;">🐦</div><div style="font-size:8px;font-weight:600;color:var(--orange);">今日暂无阅读计划~</div></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div class="section-title">最新时文</div></div>
-        <div id="articlesList"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROFILE -->
-  <div id="page-me" class="page">
-    <div class="profile-hero">
-      <div class="profile-top">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div class="profile-avatar" id="profileAvatar" onclick="editAvatar()" style="cursor:pointer;">👤</div>
-          <div><div class="profile-name" id="profileName" onclick="editName()" style="cursor:pointer;">自牧</div><div class="profile-id"><span id="profileId">ID: ZM123456</span><button class="copy-btn" onclick="copyUserId()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div>
-        </div>
-        <button class="scanner-btn" onclick="openScanner()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></button>
-      </div>
-    </div>
-    <div class="stats-strip">
-      <div class="stat-block"><div class="stat-val" id="userLevel">5</div><div class="stat-lbl">等级</div></div>
-      <div class="stat-block"><div class="stat-val" id="userPoints">2480</div><div class="stat-lbl">积分</div></div>
-      <div class="stat-block"><div class="stat-val" id="userReading">42</div><div class="stat-lbl">阅读</div></div>
-      <div class="stat-block"><div class="stat-val" id="userDays">12</div><div class="stat-lbl">连续天</div></div>
-    </div>
-    <div class="scroll-area" style="padding-top:16px;">
-      <div class="vip-card" id="vipCard"></div>
-      <div class="menu-card">
-        <button class="menu-row" onclick="showStats()"><div class="menu-row-left"><div class="menu-ico" style="background:#eff6ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>学习统计</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showCollections()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff1f2;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>我的收藏</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showGoals()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>学习目标</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAchievements()"><div class="menu-row-left"><div class="menu-ico" style="background:#fffbeb;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22v-4"/><path d="M14 22v-4"/><path d="M6 4h12v10a6 6 0 0 1-12 0V4z"/></svg></div>成就勋章</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showPlans()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>学习计划</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showVocabBook()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>我的词汇</div><span class="menu-chev">›</span></button>
-      </div>
-      <div class="menu-card">
-        <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>设置</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>关于我们</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>意见反馈</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>导出数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="if(!isPro()){showProUpgrade('import');return;}document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>导入数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
-        <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
-      </div>
-      <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
-      <div style="height:8px;"></div>
-    </div>
-  </div>
-
-  <div class="tab-bar" id="tabBar">
-    <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><div class="tab-label">首页</div></button>
-    <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="tab-label">阅读</div></button>
-    <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="tab-label">我的</div></button>
-  </div>
-
-  </div><!-- /screen -->
-</div>
-
-<div class="modal-overlay" id="modal" onclick="closeModalOnBg(event)">
-  <div class="modal-sheet"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div>
-</div>
-
-<script src="data/content.js"></script>
+</script>
 <script>
 const EXAM_BANKS = [
   {id:'nce1', name:'新概念英语第一册', short:'NCE1', desc:'初中基础 · 约500词'},
@@ -4042,74 +3389,3 @@ function processPronRecording(){
       if(final.trim()){const score=calcReciteScore(w.en,final.trim());s.score=score;showPronCompare(final.trim(),score);}
       else showPronCompare('',{accuracy:0,matchWords:0,totalWords:w.en.split(/\s+/).length});
     };
-    recognition.onerror=()=>showPronCompare('',{accuracy:0,matchWords:0,totalWords:w.en.split(/\s+/).length});
-    recognition.start();
-  }else showPronCompare('',{accuracy:0,matchWords:0,totalWords:w.en.split(/\s+/).length});
-}
-function showPronCompare(recognized,score){
-  const s=_pronState;if(!s)return;
-  const w=s.words[s.index];
-  const resultDiv=document.getElementById('pronResult');
-  const compareRow=document.getElementById('pronCompareRow');
-  if(!resultDiv||!compareRow)return;
-  compareRow.style.display='';
-  const stars=score.accuracy>=90?'⭐⭐⭐':score.accuracy>=70?'⭐⭐':score.accuracy>=50?'⭐':'💪';
-  const expectedWords=w.en.split(/\s+/);
-  const spokenWords=recognized?recognized.toLowerCase().split(/\s+/):[];
-  let wordCompare='';
-  expectedWords.forEach((ew,i)=>{
-    const match=i<spokenWords.length&&(spokenWords[i]===ew.toLowerCase()||spokenWords[i].startsWith(ew.toLowerCase())||ew.toLowerCase().startsWith(spokenWords[i]));
-    wordCompare+=`<span style="padding:4px 10px;border-radius:8px;background:${match?'#f0fdf4':'#fef2f2'};color:${match?'#16a34a':'#ef4444'};font-size:15px;font-weight:600;margin:0 3px;display:inline-block;margin-bottom:4px;">${ew}</span>`;
-  });
-  resultDiv.style.display='';
-  resultDiv.innerHTML=`
-    <div style="background:var(--surface);border-radius:16px;padding:16px;text-align:center;margin-bottom:12px;">
-      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:4px;">发音准确度</div>
-      <div style="font-size:36px;font-weight:900;color:${score.accuracy>=70?'var(--green)':'var(--orange)'};">${score.accuracy}%</div>
-      <div style="font-size:22px;margin:4px 0 8px;">${stars}</div>
-      <div style="font-size:12px;color:var(--ink-soft);">匹配 ${score.matchWords}/${score.totalWords} 个单词</div>
-    </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:12px;font-weight:600;color:var(--ink-mid);margin-bottom:8px;">📝 单词对比例</div>
-      <div style="text-align:center;">${wordCompare}</div>
-    </div>
-    ${recognized?`<div style="background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;"><div style="font-size:11px;color:var(--ink-soft);margin-bottom:4px;">🎤 你读的是：</div><div style="font-size:14px;color:var(--ink);">${recognized}</div></div>`:''}
-    <div style="background:var(--sky-light);border-radius:12px;padding:12px;">
-      <div style="font-size:11px;color:var(--ink-soft);margin-bottom:4px;">💡 发音提示</div>
-      <div style="font-size:13px;color:var(--ink-mid);">${score.accuracy>=90?'发音非常准确！继续保持！':score.accuracy>=70?'大部分发音正确，注意个别单词的发音细节。':score.accuracy>=50?'可以多听几遍原声，注意模仿语音语调。':'建议先仔细听原声，再尝试跟读，关注每个单词的发音。'}</div>
-    </div>`;
-}
-function playPronUser(){
-  const s=_pronState;if(!s||!s.userUrl)return;
-  const btn=document.getElementById('pronUserPlayBtn');
-  if(btn)btn.textContent='🔊 播放中...';
-  const audio=new Audio(s.userUrl);
-  audio.onended=()=>{if(btn)btn.textContent='🎤 我的录音';};
-  audio.play();
-}
-function closePronCompare(){
-  const s=_pronState;
-  if(s&&s.userUrl)URL.revokeObjectURL(s.userUrl);
-  _pronState=null;closeModal();
-}
-function nextPronWord(){
-  const s=_pronState;if(!s)return;
-  if(s.userUrl)URL.revokeObjectURL(s.userUrl);
-  s.index++;showPronWord();
-}
-
-async function init(){
-  await load();if(D.user.darkMode)document.querySelector('.phone').classList.add('dark');
-  D.user.consecutiveDays=calcStreak();D.user.totalWords=getCurrentBankTotalWords();updateBookCard();updateStats();setGreeting();
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
-  setTimeout(()=>updateMission(),500);
-  setInterval(()=>checkReminder(),30000);
-  updateUserUI();
-}
-  window.onerror=function(m){showToast('出错：'+m);};
-  DB.open().then(()=>init()).catch(e=>{setTimeout(function(){throw e;},0);});
-</script>
-<script>if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}</script>
-</body>
-</html>

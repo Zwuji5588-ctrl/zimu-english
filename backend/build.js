@@ -16,8 +16,19 @@ if (existsSync(distDir)) {
 }
 mkdirSync(distDir, { recursive: true });
 
-// Read index.html (already has all JS inline)
+// Read index.html with external data references
 let html = readFileSync(join(srcDir, 'index.html'), 'utf-8');
+
+// Inline data/content.js
+const contentJsPath = join(srcDir, 'data', 'content.js');
+if (existsSync(contentJsPath)) {
+  const contentJs = readFileSync(contentJsPath, 'utf-8');
+  const dataDate = new Date().toISOString().slice(0, 10);
+  html = html.replace(
+    '<script src="data/content.js"></script>',
+    `<script>\n// content.js - generated ${dataDate}\n${contentJs}\n</script>`
+  );
+}
 
 // Version & cache injection
 const version = process.env.npm_package_version || '1.0.0';
