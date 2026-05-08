@@ -358,7 +358,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
           <div class="ring-label"><div class="ring-pct" id="missionPct">0%</div><div class="ring-sub">完成</div></div>
         </div>
         <div class="mission-info">
-          <div class="mission-title">📋 今日任务</div>
+          <div class="mission-title" style="display:flex;align-items:center;gap:6px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> 今日任务</div>
           <div class="mission-tasks">
             <div class="mission-task"><div class="mission-task-dot" id="dot1"></div><span id="task1">新学 0/5 个单词</span></div>
             <div class="mission-task"><div class="mission-task-dot" id="dot2"></div><span id="task2">复习 0/3 个单词</span></div>
@@ -376,7 +376,7 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
           <div style="flex:1;"><div class="book-title" id="bookTitle">新概念英语第一册</div><div class="book-switch" onclick="openBankSelector()">切换教材 ›</div><button class="btn btn-primary btn-sm" onclick="switchPage('learning')">进入学习</button></div>
         </div>
         <div class="curve-box">
-          <div class="curve-top"><span class="curve-title">📈 记忆进度</span><span class="curve-edit" onclick="showToast('编辑功能开发中')">编辑 ›</span></div>
+          <div class="curve-top"><span class="curve-title" style="display:flex;align-items:center;gap:4px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> 记忆进度</span><span class="curve-edit" onclick="showToast('编辑功能开发中')">编辑 ›</span></div>
           <div class="progress-track"><div class="progress-fill" id="memoryCurve" style="width:65%;"></div></div>
           <div class="curve-meta">已学 <span id="learnedWords">0</span>/<span id="totalWordsSpan">493</span> · 连续 <span id="consecutiveDays">12</span> 天</div>
         </div>
@@ -399,12 +399,12 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
       <div class="card">
         <div class="plan-header"><div class="section-title">专项训练</div></div>
         <div class="training-grid">
-          <div class="training-item" onclick="startTraining('listening')"><div class="training-icon" style="background:#fdf2f8;">👂</div><div class="training-label">随身听</div></div>
-          <div class="training-item" onclick="startTraining('spelling')"><div class="training-icon" style="background:#eff6ff;">✏️</div><div class="training-label">拼写</div></div>
-          <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;">💬</div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">AI 对话 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;">💎</div><div class="training-label">消消乐</div></div>
-          <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;">📖</div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">语法 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
-          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;">❌</div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
+          <div class="training-item" onclick="startTraining('listening')"><div class="training-icon" style="background:#fdf2f8;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6 6 0 0 1 12 0c0 5-3 9-6 9a3 3 0 0 1-3-3"/><path d="M12 12a3 3 0 0 0 0-6"/></svg></div><div class="training-label">随身听</div></div>
+          <div class="training-item" onclick="startTraining('spelling')"><div class="training-icon" style="background:#eff6ff;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="training-label">拼写</div></div>
+          <div class="training-item" onclick="startTraining('sentence')"><div class="training-icon" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">AI 对话 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
+          <div class="training-item" onclick="startTraining('pronunciation')"><div class="training-icon" style="background:#fff7ed;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div class="training-label">消消乐</div></div>
+          <div class="training-item" onclick="startTraining('grammar')"><div class="training-icon" style="background:#f5f3ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="training-label" style="display:flex;flex-direction:column;align-items:center;gap:2px;">语法 <span class="pro-badge" style="vertical-align:baseline;margin-left:0;">Pro</span></div></div>
+          <div class="training-item" onclick="enterWrongWordsMode()"><div class="training-icon" style="background:#fef2f2;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg></div><div class="training-label" style="color:#ef4444;">错词本 <span id="wrongWordBadge" style="background:#ef4444;color:#fff;border-radius:100px;padding:1px 5px;font-size:9px;display:none;">0</span></div></div>
         </div>
       </div>
     </div>
@@ -581,19 +581,19 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     <div class="scroll-area" style="padding-top:16px;">
       <div class="vip-card" id="vipCard"></div>
       <div class="menu-card">
-        <button class="menu-row" onclick="showStats()"><div class="menu-row-left"><div class="menu-ico" style="background:#eff6ff;">📊</div>学习统计</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showCollections()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff1f2;">❤️</div>我的收藏</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showGoals()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">🎯</div>学习目标</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAchievements()"><div class="menu-row-left"><div class="menu-ico" style="background:#fffbeb;">🏆</div>成就勋章</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showPlans()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📅</div>学习计划</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showVocabBook()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📒</div>我的词汇</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showStats()"><div class="menu-row-left"><div class="menu-ico" style="background:#eff6ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>学习统计</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showCollections()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff1f2;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>我的收藏</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showGoals()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>学习目标</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showAchievements()"><div class="menu-row-left"><div class="menu-ico" style="background:#fffbeb;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22v-4"/><path d="M14 22v-4"/><path d="M6 4h12v10a6 6 0 0 1-12 0V4z"/></svg></div>成就勋章</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showPlans()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>学习计划</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showVocabBook()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>我的词汇</div><span class="menu-chev">›</span></button>
       </div>
       <div class="menu-card">
-        <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;">⚙️</div>设置</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">ℹ️</div>关于我们</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;">💬</div>意见反馈</div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;">📤</div>导出数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
-        <button class="menu-row" onclick="if(!isPro()){showProUpgrade('import');return;}document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;">📥</div>导入数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="openSettings()"><div class="menu-row-left"><div class="menu-ico" style="background:#f8fafc;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>设置</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showAbout()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>关于我们</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="showFeedback()"><div class="menu-row-left"><div class="menu-ico" style="background:#fdf4ff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>意见反馈</div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="exportData()"><div class="menu-row-left"><div class="menu-ico" style="background:#f0fdf4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>导出数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
+        <button class="menu-row" onclick="if(!isPro()){showProUpgrade('import');return;}document.getElementById('importInput').click()"><div class="menu-row-left"><div class="menu-ico" style="background:#fff7ed;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>导入数据 <span class="pro-badge">Pro</span></div><span class="menu-chev">›</span></button>
         <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       </div>
       <button class="btn btn-primary" style="width:100%;border-radius:16px;" id="logoutBtn" onclick="if(API.token){logout()}else{showAuthModal()}">登录 / 注册</button>
@@ -602,9 +602,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
   </div>
 
   <div class="tab-bar">
-    <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon">🏠</div><div class="tab-label">首页</div></button>
-    <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon">📚</div><div class="tab-label">阅读</div></button>
-    <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon">👤</div><div class="tab-label">我的</div></button>
+    <button class="tab-item active" onclick="switchPage('home')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><div class="tab-label">首页</div></button>
+    <button class="tab-item" onclick="switchPage('reading')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="tab-label">阅读</div></button>
+    <button class="tab-item" onclick="switchPage('me')"><div class="tab-dot"></div><div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="tab-label">我的</div></button>
   </div>
 
   </div><!-- /screen -->
@@ -873,7 +873,7 @@ function getCurrentBank(){return EXAM_BANKS.find(b=>b.id===D.user.targetExam)||E
 function getCurrentBankUnits(){const bank=D.user.targetExam||'nce1';return CONTENT.units.filter(u=>!u.bankId||u.bankId===bank);}
 function getCurrentBankTotalWords(){return getCurrentBankUnits().reduce((s,u)=>s+u.words.length,0);}
 function openBankSelector(){
-  showModal(`<div class="modal-title">📚 选择教材</div>
+  showModal(`<div class="modal-title">选择教材</div>
     <div style="display:flex;flex-direction:column;gap:10px;">${EXAM_BANKS.map(b=>{
       const active=D.user.targetExam===b.id;
       return `<div onclick="switchBank('${b.id}')" style="padding:14px;border-radius:16px;cursor:pointer;display:flex;align-items:center;gap:12px;${active?'background:var(--sky-light);border:2px solid var(--sky-deep);':'background:var(--surface);border:2px solid transparent;'}"><div style="width:44px;height:44px;border-radius:10px;background:${active?'var(--sky-deep)':'var(--bg-muted)'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${active?'#fff':'var(--ink-soft)'};flex-shrink:0;">${b.short.replace('-','')}</div><div style="flex:1;"><div style="font-weight:700;font-size:14px;color:var(--ink);">${b.name}</div><div style="font-size:11px;color:var(--ink-soft);margin-top:2px;">${b.desc} · ${CONTENT.units.filter(u=>!u.bankId||u.bankId===b.id).length} 单元</div></div>${active?'<span style="font-size:16px;">✓</span>':''}</div>`;
@@ -1017,7 +1017,7 @@ function isPro(){
   return false;
 }
 function showProUpgrade(source){
-  showModal(`<div class="modal-title">👑 升级 Pro 会员</div>
+  showModal(`<div class="modal-title" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19h20M4 19 2 7l5 4 5-6 5 6 5-4-2 12H4z"/></svg>升级 Pro 会员</div>
     <div style="padding:4px 0;">
       <div style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;">解锁全部功能，让学习更高效</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
@@ -1026,21 +1026,46 @@ function showProUpgrade(source){
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border-radius:12px;"><span style="font-size:18px;">📤</span><span style="font-size:13px;color:var(--ink);">数据导入 / 导出</span></div>
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border-radius:12px;"><span style="font-size:18px;">♾️</span><span style="font-size:13px;color:var(--ink);">每日测验 & SRS 复习不限量</span></div>
       </div>
-      <div style="padding:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;margin-bottom:14px;">
-        <div style="font-weight:700;font-size:15px;color:#92400e;">Pro 会员</div>
-        <div style="font-size:22px;font-weight:700;color:#d97706;margin:6px 0;">¥19.99/月 · ¥99.99/年</div>
-        <div style="font-size:12px;color:#a16207;">随时取消 · 永久回看</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div id="planMonthly" onclick="selectPlan(\'monthly\')" style="flex:1;padding:14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;cursor:pointer;border:2px solid #d97706;transition:border .2s;">
+          <div style="font-size:12px;font-weight:700;color:#92400e;">月付</div>
+          <div style="font-size:20px;font-weight:900;color:#d97706;margin:4px 0;">¥19.99</div>
+          <div style="font-size:11px;color:#a16207;">随时取消</div>
+        </div>
+        <div id="planYearly" onclick="selectPlan(\'yearly\')" style="flex:1;padding:14px;background:var(--surface);border-radius:16px;cursor:pointer;border:2px solid transparent;transition:border .2s;position:relative;">
+          <div style="position:absolute;top:-8px;right:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">省58%</div>
+          <div style="font-size:12px;font-weight:700;color:#92400e;">年付</div>
+          <div style="font-size:20px;font-weight:900;color:#d97706;margin:4px 0;">¥99.99</div>
+          <div style="font-size:11px;color:#a16207;">≈¥8.3/月</div>
+        </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="closeModal();activatePro()">立即开通 Pro</button>
+      <button class="btn btn-primary" style="width:100%;" id="proConfirmBtn" onclick="doActivatePro()">立即开通 Pro · 月付 ¥19.99</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeModal()">稍后再说</button>
     </div>`);
 }
+let _selectedPlan='monthly';
+const PLAN_PRICE={'monthly':'¥19.99','yearly':'¥99.99'};
+const PLAN_LABEL={'monthly':'月付 ¥19.99','yearly':'年付 ¥99.99'};
+function selectPlan(type){
+  _selectedPlan=type;
+  const btnM=document.getElementById('planMonthly');
+  const btnY=document.getElementById('planYearly');
+  const confirm=document.getElementById('proConfirmBtn');
+  if(btnM&&btnY){
+    btnM.style.border=type==='monthly'?'2px solid #d97706':'2px solid transparent';
+    btnM.style.background=type==='monthly'?'linear-gradient(135deg,#fef3c7,#fde68a)':'var(--surface)';
+    btnY.style.border=type==='yearly'?'2px solid #d97706':'2px solid transparent';
+    btnY.style.background=type==='yearly'?'linear-gradient(135deg,#fef3c7,#fde68a)':'var(--surface)';
+  }
+  if(confirm)confirm.textContent='立即开通 Pro · '+PLAN_LABEL[type];
+}
+function doActivatePro(){ activatePro(_selectedPlan); }
 async function activatePro(type){
+  type=type||'monthly';
   if(API.token){
     try {
-      const r = await API.request('POST', '/payment/create-checkout', type ? { type } : {});
+      const r = await API.request('POST', '/payment/create-checkout', { type });
       if(r.simulated){
-        // Dev mode: instant activation
         D.user.tier='pro'; D.user.proExpiry=0;
         if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
         save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
@@ -1048,25 +1073,23 @@ async function activatePro(type){
         return;
       }
       if(r.qrcode){
-        // PayJS mode: show QR code for scanning
         closeModal();
-        showQRPayment(r.qrcode, r.orderId);
+        showQRPayment(r.qrcode, r.orderId, type);
         return;
       }
     } catch(e) { showToast('支付失败：'+e.message); return; }
   }
-  // Fallback: local activation (offline / no backend)
   D.user.tier='pro'; D.user.proExpiry=0;
   if(D.user.points<2480)D.user.points=Math.max(D.user.points,2480);
   save(); closeModal(); showToast('🎉 已成功升级 Pro 会员！');
   updateProfileStats(); if(document.getElementById('vipCard'))updateVIPCard();
 }
-function showQRPayment(qrcode, orderId){
-  showModal(`<div class="modal-title">📱 扫码支付</div>
+function showQRPayment(qrcode, orderId, type){
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> 扫码支付</span></div>
     <div style="text-align:center;padding:8px 0;">
       <img src="${qrcode}" style="width:220px;height:220px;border-radius:12px;background:#fff;padding:8px;" alt="支付二维码"/>
       <div style="font-size:13px;color:var(--ink-soft);margin-top:12px;">请使用微信/支付宝扫码支付</div>
-      <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">金额：¥19.99</div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">金额：${PLAN_PRICE[type]||'¥19.99'}</div>
       <div id="paymentStatus" style="font-size:13px;color:var(--ink-soft);margin-top:8px;">等待支付中...</div>
       <button class="btn btn-ghost" style="width:100%;margin-top:12px;" onclick="closeModal()">取消</button>
     </div>`);
@@ -1091,9 +1114,9 @@ function showQRPayment(qrcode, orderId){
 function updateVIPCard(){
   const card=document.getElementById('vipCard');if(!card)return;
   if(isPro()){
-    card.innerHTML='<div><div class="vip-crown">👑</div><div class="vip-title">Pro 会员已激活</div><div class="vip-desc">已激活 ✓ · 享受全部 Pro 功能</div></div><button class="vip-btn" style="background:#10b981;box-shadow:0 4px 10px rgba(16,185,129,.35);" onclick="showToast(\'已是 Pro 会员 ✓\')">已激活 ✓</button>';
+    card.innerHTML='<div><div class="vip-crown" style="display:flex;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19h20M4 19 2 7l5 4 5-6 5 6 5-4-2 12H4z"/></svg></div><div class="vip-title">Pro 会员已激活</div><div class="vip-desc">已激活 ✓ · 享受全部 Pro 功能</div></div><button class="vip-btn" style="background:#10b981;box-shadow:0 4px 10px rgba(16,185,129,.35);" onclick="showToast(\'已是 Pro 会员 ✓\')">已激活 ✓</button>';
   }else{
-    card.innerHTML='<div><div class="vip-crown">👑</div><div class="vip-title">升级 Pro 会员</div><div class="vip-desc">解锁全部课程与专属功能</div></div><button class="vip-btn" onclick="upgradeVIP()">立即升级</button>';
+    card.innerHTML='<div><div class="vip-crown" style="display:flex;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19h20M4 19 2 7l5 4 5-6 5 6 5-4-2 12H4z"/></svg></div><div class="vip-title">升级 Pro 会员</div><div class="vip-desc">解锁全部课程与专属功能</div></div><button class="vip-btn" onclick="upgradeVIP()">立即升级</button>';
   }
 }
 
@@ -1524,7 +1547,7 @@ function showQuizWrongAnswers(){
     <div><div style="font-size:16px;font-weight:600;color:var(--ink);">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">${w.zh} → ${w.correctEn}</div></div>
     <button class="btn btn-sm" style="background:var(--sky-light);color:var(--sky-deep);" onclick="speak('${w.correctEn.replace(/'/g,"\\'")}')">🔊</button>
   </div>`).join('');
-  showModal(`<div class="modal-title">📋 错题本</div>
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> 错题本</span></div>
     <div style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">共 ${list.length} 道错题，点击单词可听发音</div>
     ${list}
     <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="closeModal();startQuiz()">🔄 重新测验</button>`, 'top');
@@ -1638,7 +1661,7 @@ function showScoreSentence(){
   const a=CONTENT.articles.find(x=>x.id===s.articleId);if(!a)return;
   const p=c.paragraphs[s.currentIdx];const total=c.paragraphs.length;
   const hasScore=s.scores[s.currentIdx]!==undefined;const pct=hasScore?s.scores[s.currentIdx]:null;
-  let html=`<div class="modal-title" style="margin-bottom:2px;font-size:17px;">🎤 朗读评分</div>
+  let html=`<div class="modal-title" style="margin-bottom:2px;font-size:17px;"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg> 朗读评分</span></div>
     <div style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <span>${a.title}</span><span style="color:var(--sky-deep);font-weight:600;">第 ${s.currentIdx+1}/${total} 段</span>
     </div>
@@ -1743,7 +1766,7 @@ function finishScoreSession(){
   scores.forEach((sc,i)=>{
     detail+=`<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surface);border-radius:8px;margin-bottom:4px;"><span style="color:var(--ink-soft);font-size:12px;">第 ${i+1} 段</span><span style="font-weight:600;color:${sc>=70?'var(--green)':'var(--orange)'};font-size:13px;">${sc}分</span></div>`;
   });
-  showModal(`<div class="modal-title">🎤 朗读评分完成</div>
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg> 朗读评分完成</span></div>
     <div style="text-align:center;padding:16px 0;">
       <div style="font-size:14px;color:var(--ink-soft);margin-bottom:4px;">综合评分</div>
       <div style="font-size:48px;font-weight:900;color:var(--green);">${avg}%</div>
@@ -1799,7 +1822,7 @@ function wordCollectBtn(articleId,btn){
 function showVocabBook(){
   const col=D.user.wordCollection;
   if(!col.length){
-    showModal(`<div class="modal-title">📒 我的词汇本</div><div style="text-align:center;padding:32px 0;"><div style="font-size:48px;margin-bottom:12px;">📒</div><p style="color:var(--ink-soft);">还没有收藏词汇<br/>阅读文章时点击关键词即可收藏</p><button class="btn btn-primary" style="margin-top:16px;" onclick="closeModal();switchPage('reading')">去阅读 →</button></div>`);
+    showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> 我的词汇本</span></div><div style="text-align:center;padding:32px 0;"><div style="font-size:48px;margin-bottom:12px;">📒</div><p style="color:var(--ink-soft);">还没有收藏词汇<br/>阅读文章时点击关键词即可收藏</p><button class="btn btn-primary" style="margin-top:16px;" onclick="closeModal();switchPage('reading')">去阅读 →</button></div>`);
     return;
   }
   // group by article
@@ -1858,11 +1881,11 @@ function updateStats(){
   updateMission();
 }
 
-function showModal(html,align='bottom'){const m=document.getElementById('modal');m.style.alignItems=align==='top'?'flex-start':'flex-end';m.style.paddingTop=align==='top'?'60px':'';document.getElementById('modalBody').innerHTML=html;m.classList.add('active');}
-function closeModal(){stopScanner();if(readingAloud){window.speechSynthesis.cancel();readingAloud=false;}const m=document.getElementById('modal');m.style.alignItems='';m.style.paddingTop='';m.classList.remove('active');}
+function showModal(html,align='bottom'){const m=document.getElementById('modal');m.style.alignItems=align==='top'?'flex-start':'flex-end';m.style.paddingTop=align==='top'?'60px':'';document.getElementById('modalBody').innerHTML=html;m.classList.add('active');document.querySelector('.page.active .scroll-area')?.style.setProperty('overflow','hidden');}
+function closeModal(){stopScanner();if(readingAloud){window.speechSynthesis.cancel();readingAloud=false;}const m=document.getElementById('modal');m.style.alignItems='';m.style.paddingTop='';m.classList.remove('active');document.querySelector('.page.active .scroll-area')?.style.setProperty('overflow','');}
 function closeModalOnBg(e){if(e.target===document.getElementById('modal'))closeModal();}
 function openSearch(word){
-  showModal(`<div class="modal-title" style="margin-bottom:14px;">🔍 查单词</div>
+  showModal(`<div class="modal-title" style="margin-bottom:14px;">查单词</div>
     <input type="text" placeholder="输入英文单词..." value="${word||''}" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;background:var(--white);color:var(--ink);" oninput="searchWords(this.value)" id="searchInput" autocomplete="off">
     <div id="searchResults" style="margin-top:12px;min-height:40px;"></div>`, 'top');
   const inp=document.getElementById('searchInput');
@@ -1872,91 +1895,36 @@ function openSearch(word){
 let _searchTimer=null;
 function searchWords(q){
   if(!q){document.getElementById('searchResults').innerHTML='';return;}
+  // local search
   const all=CONTENT.units.flatMap(u=>u.words);
   const res=all.filter(w=>w.en.toLowerCase().includes(q.toLowerCase())||w.zh.includes(q));
   let html='';
   if(res.length){
-    html+=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">📖 本地词库 <span style="font-weight:400;">${res.length}个匹配</span></div>`;
-    html+=res.slice(0,10).map(w=>{
-      const enSafe=w.en.replace(/'/g,"\\'");
-      const zhSafe=(w.zh||'').replace(/'/g,"\\'");
-      const phSafe=(w.ph||'').replace(/'/g,"\\'");
-      return `<div style="padding:10px 12px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showWordDetail('${enSafe}')">
-        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.ph||''} · ${w.zh}</div></div>
-        <div style="display:flex;gap:6px;flex-shrink:0;">
-          <button style="background:var(--white);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);" onclick="event.stopPropagation();speak('${enSafe}')">🔊</button>
-          <button style="background:var(--white);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);" onclick="event.stopPropagation();quickCollect('${enSafe}','${zhSafe}','${phSafe}',this)">➕</button>
-        </div>
-      </div>`;
-    }).join('');
-  } else {
-    html+=`<div style="text-align:center;padding:20px;font-size:13px;color:var(--ink-soft);">未找到匹配的单词</div>`;
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">📖 本地词库</div>`;
+    html+=res.slice(0,6).map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;" onclick="speak('${w.en.replace(/'/g,"\\'")}')"><div><div style="font-weight:700;font-size:14px;">${w.en}</div><div style="font-size:12px;color:var(--ink-soft);">${w.ph||''} · ${w.zh}</div></div><button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}')">🔊</button></div>`).join('');
   }
+  // online section placeholder
+  html+=`<div id="onlineLookup" style="margin-top:8px;"><div style="text-align:center;padding:16px;"><div style="font-size:14px;color:var(--ink-soft);">🌐 查询网络释义中...</div></div></div>`;
   document.getElementById('searchResults').innerHTML=html;
-}
-function showWordDetail(en){
-  const all=CONTENT.units.flatMap(u=>u.words);
-  const w=all.find(x=>x.en.toLowerCase()===en.toLowerCase());
-  if(!w){showToast('未找到单词');return;}
-  const enSafe=w.en.replace(/'/g,"\\'");
-  const zhSafe=(w.zh||'').replace(/'/g,"\\'");
-  const phSafe=(w.ph||'').replace(/'/g,"\\'");
-  const already=D.user.wordCollection.some(x=>x.en===w.en);
-  showModal(`<div style="text-align:center;padding:4px 0 16px;">
-    <div style="font-size:28px;font-weight:800;color:var(--sky-deep);font-family:'DM Serif Display',serif;margin-bottom:2px;">${w.en}</div>
-    <div style="font-size:14px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;">
-      ${w.ph||''}
-      <button style="background:transparent;border:none;font-size:16px;cursor:pointer;padding:4px;" onclick="speak('${enSafe}')">🔊</button>
-    </div>
-    <div style="font-size:20px;color:var(--ink);font-weight:600;margin-bottom:16px;">${w.zh}</div>
-    <button class="btn ${already?'btn-ghost':'btn-primary'}" onclick="collectSearchWord('${enSafe}','${zhSafe}','${phSafe}',this)" style="width:100%;">${already?'✅ 已收藏':'➕ 加入词汇本'}</button>
-    <div id="detailOnline" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-      <div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">🌐 加载网络释义中...</div>
-    </div>
-  </div>`,'bottom');
-  // Fetch network definitions silently — appends when loaded
-  fetch(API.base+'/dict/lookup?q='+encodeURIComponent(w.en)).then(r=>r.json()).then(data=>{
-    const el=document.getElementById('detailOnline');if(!el)return;
-    if(data.error||!data.word){
-      el.innerHTML=`<div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">${data.fallback?'🌐 联网查词暂不可用':'未找到网络释义'}</div>`;return;
-    }
-    let r=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div>`;
-    if(!w.ph&&(data.ukPhonetic||data.usPhonetic)){
-      r+=`<div style="font-size:13px;color:var(--ink-soft);margin-bottom:8px;">${data.ukPhonetic||data.usPhonetic}</div>`;
-    }
-    data.meanings.forEach(m=>{
-      r+=`<div style="margin-top:10px;">`;
-      if(m.partOfSpeech) r+=`<span style="font-size:11px;font-weight:600;color:var(--sky-deep);background:var(--sky-light);padding:2px 8px;border-radius:6px;">${m.partOfSpeech}</span>`;
-      m.definitions.slice(0,5).forEach(d=>{
-        r+=`<div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>`;
-        if(d.example) r+=`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`;
-      });
+  // debounce API call via backend
+  clearTimeout(_searchTimer);
+  _searchTimer=setTimeout(()=>{
+    fetch(API.base+'/dict/lookup?q='+encodeURIComponent(q)).then(r=>r.json()).then(data=>{
+      const el=document.getElementById('onlineLookup');
+      if(!el)return;
+      if(data.error||!data.word){
+        el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">${data.fallback?'🌐 联网查词暂不可用':'未找到网络释义'}</div>`;return;
+      }
+      let r=`<div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">🌐 网络释义</div><div style="padding:14px;background:var(--white);border-radius:14px;box-shadow:var(--cs);margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--ink);">${data.word}</span>${data.ukPhonetic||data.usPhonetic?`<span style="font-size:13px;color:var(--ink-soft);">${data.ukPhonetic||data.usPhonetic}</span>`:''}${data.audio?`<button style="background:transparent;border:none;font-size:16px;cursor:pointer;" onclick="event.stopPropagation();new Audio('${data.audio}').play()">🔊</button>`:''}</div>`;
+      data.meanings.forEach(m=>{r+=`<div style="margin-top:10px;">`;m.definitions.slice(0,5).forEach(d=>{r+=`<div style="margin-top:6px;font-size:14px;color:var(--ink-mid);line-height:1.6;">• ${d.definition}</div>`;if(d.example)r+=`<div style="font-size:13px;color:var(--ink-soft);margin:2px 0 0 16px;border-left:2px solid var(--border);padding-left:8px;">“${d.example}”</div>`;});r+=`</div>`;});
+      if(data.web){r+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-soft);">参考</div>`;data.web.slice(0,3).forEach(w=>{r+=`<div style="margin-top:4px;font-size:13px;color:var(--ink-mid);"><span style="color:var(--sky-deep);">${w.key}</span> ${w.values.join('、')}</div>`;});}
       r+=`</div>`;
+      el.innerHTML=r;
+    }).catch(()=>{
+      const el=document.getElementById('onlineLookup');
+      if(el)el.innerHTML=`<div style="text-align:center;padding:12px;font-size:13px;color:var(--ink-soft);">网络请求失败</div>`;
     });
-    if(data.web){
-      r+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-soft);">参考</div>`;
-      data.web.slice(0,3).forEach(w=>{r+=`<div style="margin-top:4px;font-size:13px;color:var(--ink-mid);"><span style="color:var(--sky-deep);">${w.key}</span> ${w.values.join('、')}</div>`;});
-    }
-    el.innerHTML=r;
-  }).catch(()=>{
-    const el=document.getElementById('detailOnline');
-    if(el)el.innerHTML=`<div style="text-align:center;padding:8px;font-size:13px;color:var(--ink-soft);">网络请求失败</div>`;
-  });
-}
-function collectSearchWord(en,zh,ph,btn){
-  if(D.user.wordCollection.some(x=>x.en===en)){showToast('已在词汇本中 📒');return;}
-  D.user.wordCollection.push({en,zh,ph,articleId:'',addedAt:new Date().toISOString().slice(0,10)});
-  D.user.points+=3;save();updateStats();
-  showToast('✅ 已收藏 +3积分');
-  btn.className='btn btn-ghost';
-  btn.textContent='✅ 已收藏';
-}
-function quickCollect(en,zh,ph,btn){
-  if(D.user.wordCollection.some(x=>x.en===en)){showToast('已在词汇本中 📒');btn.textContent='✅';return;}
-  D.user.wordCollection.push({en,zh,ph,articleId:'',addedAt:new Date().toISOString().slice(0,10)});
-  D.user.points+=3;save();updateStats();
-  showToast('✅ 已收藏 +3积分');
-  btn.textContent='✅';
+  },600);
 }
 function openSearchReading(){const m=document.getElementById('modal');m.style.position='absolute';m.style.alignItems='flex-start';m.style.paddingTop='36px';showModal(`<div class="modal-title">搜索文章</div><input type="text" placeholder="搜索文章标题..." style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-family:inherit;background:var(--white);color:var(--ink);" oninput="searchArticles(this.value)"><div id="artResults" style="margin-top:14px;"></div>`);}
 function searchArticles(q){if(!q){document.getElementById('artResults').innerHTML='';return;}const res=CONTENT.articles.filter(a=>a.title.toLowerCase().includes(q.toLowerCase())||a.titleZh.includes(q));document.getElementById('artResults').innerHTML=res.map(a=>`<div style="padding:12px;background:var(--surface);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="readArticle(${a.id});closeModal()"><div style="font-weight:700;">${a.title}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">${a.titleZh}</div></div>`).join('')||`<p style="color:var(--ink-soft);text-align:center;padding:20px;">未找到文章</p>`;}
@@ -1993,7 +1961,7 @@ function openCalendar(){
     <span style="${reviewDone?'color:var(--green)':''}">🔄 复习 ${reviewDone?'✅':'0/3'}</span>
     <span style="${quizDone?'color:var(--green)':''}">📝 测验 ${quizDone?'✅':'未完成'}</span>
   </div>`;
-  showModal(`<div class="modal-title">📅 打卡日历</div>
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 打卡日历</span></div>
     <div class="cal-header"><span class="month">${year}年${month+1}月</span><span style="font-size:13px;color:var(--ink-soft);">${monthChecks.length}天</span></div>
     <div class="cal-streak"><div class="cal-streak-item"><div class="cal-streak-num">${streak}</div><div class="cal-streak-label">连续天数</div></div><div class="cal-streak-item"><div class="cal-streak-num">${monthChecks.length}</div><div class="cal-streak-label">本月打卡</div></div><div class="cal-streak-item"><div class="cal-streak-num">${D.user.points}</div><div class="cal-streak-label">总积分</div></div></div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${wkHtml}${cells}</div>
@@ -2026,7 +1994,7 @@ function avatarClick(){
   _avatarClickTimer=setTimeout(()=>{_avatarClickCount=0;},1500);
   if(_avatarClickCount>=5){
     _avatarClickCount=0;
-    showModal(`<div class="modal-title" style="color:var(--rose);">🛠 诊断面板</div>
+    showModal(`<div class="modal-title" style="color:var(--rose);"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> 诊断面板</span></div>
       <div style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;">自牧英语 · 数据与诊断</div>
       <button class="btn btn-danger" style="width:100%;margin-bottom:8px;" onclick="closeModal();resetAllData()">🗑 重置所有学习数据</button>
       <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;" onclick="closeModal();showToast('缓存已清除');caches.keys().then(ks=>ks.forEach(k=>caches.delete(k)))">🧹 清除 Service Worker 缓存</button>
@@ -2043,7 +2011,7 @@ function exportUserData(){
   showToast('📤 数据已导出');
 }
 function openScanner(){
-  showModal(`<div class="modal-title">📱 扫码</div>
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg> 扫码</span></div>
     <div style="text-align:center;padding:8px 0;">
       <video id="scannerVideo" autoplay playsinline style="width:100%;max-width:280px;border-radius:16px;background:#000;"></video>
       <div id="scannerStatus" style="font-size:13px;color:var(--ink-soft);margin-top:10px;">正在打开摄像头...</div>
@@ -2562,12 +2530,12 @@ function showStats(){
   const totalMastered=Object.keys(D.mastery).filter(k=>D.mastery[k]>=2).length;
   const recited=Object.keys(D.reciteProgress).filter(k=>D.reciteProgress[k]>=2).length;
   const totalRecite=Object.values(CONTENT.reciteTexts).reduce((s,t)=>s+t.sentences.length,0);
-  showModal(`<div class="modal-title">📊 学习统计 <span style="font-size:13px;font-weight:400;color:var(--ink-soft);">${getCurrentBank().short}</span></div>
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 学习统计 <span style="font-size:13px;font-weight:400;color:var(--ink-soft);">${getCurrentBank().short}</span></div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">${[['掌握单词',D.user.learnedWords,'#0ea5e9'],['熟练课文',recited+'/'+totalRecite,'#10b981'],['完成单元',doneUnits+'/'+totalUnits,'#f59e0b'],['阅读文章',D.user.reading,'#8b5cf6'],['连续天数',D.user.consecutiveDays+'天','#f43f5e'],['总积分',D.user.points,'#f97316']].map(([l,v,c])=>`<div style="background:${c}15;border-radius:16px;padding:14px;text-align:center;"><div style="font-size:26px;font-weight:700;color:${c};">${v}</div><div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">${l}</div></div>`).join('')}</div>
     <div style="margin-top:14px;padding:12px;background:var(--surface);border-radius:14px;"><div style="font-size:12px;font-weight:600;margin-bottom:8px;">📈 各单元进度</div>${bankUnits.map(u=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:11px;width:60px;flex-shrink:0;color:var(--ink-mid);">Unit ${u.id}</span><div class="progress-track" style="flex:1;height:6px;background:var(--bg-muted);"><div class="progress-fill" style="width:${u.progress}%;height:6px;"></div></div><span style="font-size:10px;color:var(--ink-soft);width:30px;text-align:right;">${u.progress}%</span></div>`).join('')}</div>`);
 }
-function showCollections(){const col=CONTENT.articles.filter(a=>a.collected);showModal(`<div class="modal-title">❤️ 我的收藏</div>${col.length?col.map(a=>`<div style="padding:12px;background:var(--surface);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="readArticle(${a.id});closeModal()"><div style="font-weight:700;">${a.title}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">${a.titleZh}</div></div>`).join(''):'<p style="text-align:center;color:var(--ink-soft);padding:24px;">暂无收藏</p>'}`);}
-function showGoals(){showModal(`<div class="modal-title">🎯 学习目标</div><div style="display:flex;flex-direction:column;gap:12px;">${[['每日新学单词','10 个',Math.round(Math.min(D.mission.newDone/5*100,100))],['每周阅读文章','5 篇',Math.round(Math.min(Math.min(D.user.reading,5)/5*100,100))],['学习积分','100 分',Math.round(Math.min(D.user.points/100,100))]].map(([t,v,p])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:600;">${t}</span><span style="color:var(--sky-deep);font-weight:700;">${v}</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div></div>`).join('')}<button class="btn btn-primary" style="width:100%;" onclick="showToast('目标已更新 ✓');closeModal();">更新目标</button></div>`);}
+function showCollections(){const col=CONTENT.articles.filter(a=>a.collected);showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 我的收藏</span></div>${col.length?col.map(a=>`<div style="padding:12px;background:var(--surface);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="readArticle(${a.id});closeModal()"><div style="font-weight:700;">${a.title}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">${a.titleZh}</div></div>`).join(''):'<p style="text-align:center;color:var(--ink-soft);padding:24px;">暂无收藏</p>'}`);}
+function showGoals(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> 学习目标</span></div><div style="display:flex;flex-direction:column;gap:12px;">${[['每日新学单词','10 个',Math.round(Math.min(D.mission.newDone/5*100,100))],['每周阅读文章','5 篇',Math.round(Math.min(Math.min(D.user.reading,5)/5*100,100))],['学习积分','100 分',Math.round(Math.min(D.user.points/100,100))]].map(([t,v,p])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:600;">${t}</span><span style="color:var(--sky-deep);font-weight:700;">${v}</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div></div>`).join('')}<button class="btn btn-primary" style="width:100%;" onclick="showToast('目标已更新 ✓');closeModal();">更新目标</button></div>`);}
 function showAchievements(){
   const list=[
     {name:'初学者',icon:'🌱',check:()=>true},
@@ -2580,15 +2548,15 @@ function showAchievements(){
     {name:'收藏家',icon:'💝',check:()=>CONTENT.articles.filter(a=>a.collected).length>=3},
     {name:'万事通',icon:'🏅',check:()=>D.user.points>=500},
   ].map(a=>({...a,unlocked:a.check()}));
-  showModal(`<div class="modal-title">🏆 成就勋章</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;opacity:${a.unlocked?1:.5};"><div style="font-size:28px;margin-bottom:6px;">${a.icon}</div><div style="font-size:12px;font-weight:600;">${a.name}</div><div style="font-size:10px;color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:3px;">${a.unlocked?'已解锁':'未解锁'}</div></div>`).join('')}</div><div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">已解锁 ${list.filter(a=>a.unlocked).length}/${list.length}</div>`);
+  showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22v-4"/><path d="M14 22v-4"/><path d="M6 4h12v10a6 6 0 0 1-12 0V4z"/></svg> 成就勋章</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${list.map(a=>`<div style="padding:14px;background:${a.unlocked?'var(--sky-light)':'var(--surface)'};border-radius:16px;text-align:center;opacity:${a.unlocked?1:.5};"><div style="font-size:28px;margin-bottom:6px;">${a.icon}</div><div style="font-size:12px;font-weight:600;">${a.name}</div><div style="font-size:10px;color:${a.unlocked?'var(--sky-deep)':'var(--ink-soft)'};margin-top:3px;">${a.unlocked?'已解锁':'未解锁'}</div></div>`).join('')}</div><div style="margin-top:12px;text-align:center;font-size:11px;color:var(--ink-soft);">已解锁 ${list.filter(a=>a.unlocked).length}/${list.length}</div>`);
 }
-function showPlans(){showModal(`<div class="modal-title">📅 学习计划</div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['📖','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
-function openSettings(){showModal(`<div class="modal-title">⚙️ 设置</div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()"><span style="font-size:15px;">🗑️ 清零学习数据</span><span style="color:var(--rose,#ef4444);font-size:12px;font-weight:600;">点击重置</span></div><button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
+function showPlans(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 学习计划</span></div><div style="display:flex;flex-direction:column;gap:10px;">${[['📚','基础词汇','30天'],['📖','阅读提升','60天'],['🎤','口语训练','90天']].map(([i,t,d])=>`<div style="padding:14px;background:var(--surface);border-radius:16px;display:flex;align-items:center;gap:12px;"><div style="font-size:24px;">${i}</div><div><div style="font-weight:600;">${t}</div><div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">预计 ${d} 完成</div></div></div>`).join('')}</div>`);}
+function openSettings(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 设置</span></div><div>${[['🔔','通知提醒','notifications'],['⏰','学习提醒 '+D.user.reminderTime,function(){closeModal();setTimeout(openReminderSettings,200);}],['🌙','深色模式','darkMode'],['🔊','自动播音','autoPlay'],['🇺🇸',D.user.accent==='uk'?'英音 (🇬🇧)':'美音 (🇺🇸)',function(){closeModal();D.user.accent=D.user.accent==='uk'?'us':'uk';save();showToast('已切换为'+(D.user.accent==='uk'?'英音 🇬🇧':'美音 🇺🇸'));}]].map(([i,l,k])=>typeof k==='string'?`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;"><span style="font-size:15px;">${i} ${l}</span><div class="toggle ${D.user[k]?'on':''}" onclick="toggleSetting('${k}',this)"></div></div>`:`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="(${k.toString()})()"><span style="font-size:15px;">${i} ${l}</span><span style="color:var(--sky-deep);font-size:13px;font-weight:600;">切换 ›</span></div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="closeModal();resetAllData()"><span style="font-size:15px;">🗑️ 清零学习数据</span><span style="color:var(--rose,#ef4444);font-size:12px;font-weight:600;">点击重置</span></div><button style="margin-top:14px;width:100%;" class="btn btn-ghost" onclick="closeModal();showToast('缓存已清除 🗑️')">🗑️ 清除缓存</button></div>`);}
 function toggleSetting(key,el){D.user[key]=!D.user[key];el.classList.toggle('on');if(key==='darkMode')document.querySelector('.phone').classList.toggle('dark',D.user.darkMode);save();}
 function showAbout(){showModal(`<div style="text-align:center;padding:16px 0;"><div style="font-size:52px;margin-bottom:14px;">📚</div><div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;">自牧英语</div><div style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">Version 2.0.0</div><p style="font-size:14px;line-height:1.8;color:var(--ink-mid);">自牧英语致力于提供高质量、沉浸式英语学习体验。</p><div style="margin-top:16px;display:flex;justify-content:center;gap:16px;font-size:13px;"><a href="#" onclick="showPrivacy();return false;" style="color:var(--sky-deep);text-decoration:none;">隐私政策</a><a href="#" onclick="showTerms();return false;" style="color:var(--sky-deep);text-decoration:none;">用户协议</a></div></div>`);}
-function showPrivacy(){showModal(`<div class="modal-title">🔒 隐私政策</div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>自牧英语尊重并保护您的隐私。本应用仅在本地存储您的学习数据（IndexedDB）。当您注册账号后，您的学习数据将被加密传输至服务器用于云同步。我们不会将您的个人信息分享给第三方。</p><br><p><strong>数据收集</strong>：邮箱地址（仅用于账号识别）、学习进度数据。</p><br><p><strong>数据存储</strong>：本地数据存储在您的设备上；云端数据存储在我们的服务器（SQLite），采用行业标准加密。</p><br><p><strong>第三方服务</strong>：本应用可能使用 ElevenLabs 或 Azure 语音服务处理语音合成请求。</p></div>`);}
-function showTerms(){showModal(`<div class="modal-title">📋 用户协议</div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>使用自牧英语即表示您同意以下条款。</p><br><p><strong>使用许可</strong>：本应用仅供个人学习使用，禁止商业用途或再分发。</p><br><p><strong>Pro 会员</strong>：付费会员为订阅制，可随时取消。取消后不会退款，但会员权益将持续到当前计费周期结束。</p><br><p><strong>免责声明</strong>：本应用按"现状"提供，不保证完全无错误或持续可用。</p></div>`);}
-function showFeedback(){showModal(`<div class="modal-title">💬 意见反馈</div><textarea style="width:100%;height:110px;padding:12px;border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:inherit;resize:none;outline:none;background:var(--white);color:var(--ink);" placeholder="请输入您的建议或意见..."></textarea><button style="margin-top:12px;width:100%;" class="btn btn-primary" onclick="closeModal();showToast('反馈已提交，感谢您 🙏')">提交反馈</button>`);}
+function showPrivacy(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 隐私政策</span></div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>自牧英语尊重并保护您的隐私。本应用仅在本地存储您的学习数据（IndexedDB）。当您注册账号后，您的学习数据将被加密传输至服务器用于云同步。我们不会将您的个人信息分享给第三方。</p><br><p><strong>数据收集</strong>：邮箱地址（仅用于账号识别）、学习进度数据。</p><br><p><strong>数据存储</strong>：本地数据存储在您的设备上；云端数据存储在我们的服务器（SQLite），采用行业标准加密。</p><br><p><strong>第三方服务</strong>：本应用可能使用 ElevenLabs 或 Azure 语音服务处理语音合成请求。</p></div>`);}
+function showTerms(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> 用户协议</span></div><div style="max-height:400px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--ink-mid);padding:4px 0;"><p>使用自牧英语即表示您同意以下条款。</p><br><p><strong>使用许可</strong>：本应用仅供个人学习使用，禁止商业用途或再分发。</p><br><p><strong>Pro 会员</strong>：付费会员为订阅制，可随时取消。取消后不会退款，但会员权益将持续到当前计费周期结束。</p><br><p><strong>免责声明</strong>：本应用按"现状"提供，不保证完全无错误或持续可用。</p></div>`);}
+function showFeedback(){showModal(`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 意见反馈</span></div><textarea style="width:100%;height:110px;padding:12px;border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-family:inherit;resize:none;outline:none;background:var(--white);color:var(--ink);" placeholder="请输入您的建议或意见..."></textarea><button style="margin-top:12px;width:100%;" class="btn btn-primary" onclick="closeModal();showToast('反馈已提交，感谢您 🙏')">提交反馈</button>`);}
 function filterLevel(l){showToast('筛选：'+l);}
 function filterSort(s){showToast('排序：'+s);}
 function logout(){
@@ -2600,7 +2568,7 @@ function logout(){
   }
 }
 function showAuthModal(){
-  showModal(`<div class="modal-title">📚 自牧英语账号</div>
+  showModal(`<div class="modal-title">自牧英语账号</div>
     <div style="padding:8px 0;">
       <div id="authTabLogin" style="display:flex;gap:0;margin-bottom:18px;background:var(--surface);border-radius:10px;overflow:hidden;">
         <button class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;background:var(--sky-deep);color:#fff;">登录</button>
@@ -2765,7 +2733,7 @@ function openGrammar(){
       <div style="font-size:10px;color:var(--sky-deep);margin-top:6px;opacity:.7;" onclick="event.stopPropagation();showGrammarReference('${tid}')">📖 参考</div>
     </div>`;
   }).join('');
-  showModal(`<div class="modal-title">📖 语法练习</div>
+  showModal(`<div class="modal-title">语法练习</div>
     <div style="font-size:11px;color:var(--ink-soft);margin-bottom:10px;">选择主题开始练习，或进行综合测试</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">${topicCards}</div>
     <button class="btn btn-primary" style="width:100%;" onclick="startGrammar('mixed')">📝 综合练习（全部 ${GRAMMAR_QUESTIONS.length} 题）</button>
@@ -2802,7 +2770,7 @@ function showGrammarQuestion(){
   const q=s.questions[s.current];
   const pct=(s.current/s.total*100);
   const t=GRAMMAR_TOPICS[q.topic];
-  showModal(`<div class="modal-title">📖 语法练习</div>
+  showModal(`<div class="modal-title">语法练习</div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <span style="font-size:12px;color:var(--ink-soft);">第 ${s.current+1}/${s.total} 题${t?` · ${t.icon}${t.label}`:''}</span>
       <span style="font-size:12px;color:var(--sky-deep);font-weight:600;">✓ ${s.score}</span>
@@ -2868,7 +2836,7 @@ function showGrammarResult(){
     wrongHtml=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:12px;"><div style="font-size:13px;font-weight:700;color:var(--rose,#ef4444);margin-bottom:8px;">❌ 错题回顾 (${s.wrongs.length}题)</div>
       ${s.wrongs.map(w=>`<div style="padding:10px;background:var(--surface);border-radius:12px;margin-bottom:8px;border:1px solid #fee2e2;"><div style="font-size:13px;font-weight:600;margin-bottom:4px;">${w.q}</div><div style="font-size:11px;color:var(--rose,#ef4444);"><s>${w.chosen}</s></div><div style="font-size:11px;color:var(--green);">✓ ${w.correct}</div><div style="font-size:10px;color:var(--ink-soft);margin-top:4px;padding-top:4px;border-top:1px solid #f1f5f9;">💡 ${w.exp}</div></div>`).join('')}</div>`;
   }
-  showModal(`<div class="modal-title">📖 语法练习</div>
+  showModal(`<div class="modal-title">语法练习</div>
     <div style="max-height:380px;overflow-y:auto;padding:0 2px;">
     <div style="text-align:center;padding:16px 0 8px;">
       <div style="font-size:52px;margin-bottom:10px;">${pct>=80?'🎉':pct>=50?'💪':'📚'}</div>
@@ -2986,7 +2954,7 @@ function importData(event){
       if(data.reciteProgress)info.push(`🗣️ 跟读进度: ${Object.keys(data.reciteProgress).length} 条记录`);
       if(data.mission)info.push(`🎯 当前任务: 新学${data.mission.newDone||0}/5 · 复习${data.mission.reviewDone||0}/3`);
 
-      let html=`<div class="modal-title">📥 导入数据</div>`;
+      let html=`<div class="modal-title"><span style="display:flex;align-items:center;gap:8px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 导入数据</span></div>`;
       html+=`<div class="import-warning">⚠️ 导入将合并数据到当前账户，同名数据会被覆盖。此操作不可撤销。</div>`;
       html+=`<div class="import-preview">${info.join('<br>')}</div>`;
       html+=`<div style="display:flex;gap:8px;"><button class="btn btn-primary" style="flex:1;" onclick="confirmImport()">确认导入</button>`;
