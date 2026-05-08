@@ -1214,6 +1214,7 @@ function switchPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  var sc=document.querySelector('.screen');if(sc){var bg={'home':'#faf7f2','reading':'#fff','me':'#7ec8a0','learning':'#fff','quiz':'#faf7f2'};sc.style.background=bg[name]||'#faf7f2';}
   const map={home:0,reading:1,me:2};
   if(map[name]!==undefined)document.querySelectorAll('.tab-item')[map[name]].classList.add('active');
   // Show tab bar only on root pages, hide on sub-pages
