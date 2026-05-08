@@ -1161,7 +1161,9 @@ function switchPage(name){
   const map={home:0,reading:1,me:2};
   if(map[name]!==undefined)document.querySelectorAll('.tab-item')[map[name]].classList.add('active');
   // Show tab bar only on root pages, hide on sub-pages
-  document.getElementById('tabBar').style.display=map[name]!==undefined?'':'none';
+  const isRoot=map[name]!==undefined;
+  document.getElementById('tabBar').style.display=isRoot?'':'none';
+  document.querySelectorAll('.scroll-area').forEach(s=>s.style.paddingBottom=isRoot?'80px':'16px');
   if(name==='learning'){document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
   if(name==='home'){updateMission();}
   if(name==='reading'){renderArticles();renderCategories();}
