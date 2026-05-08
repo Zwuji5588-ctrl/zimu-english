@@ -120,6 +120,39 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
 .prac-btm-action{display:flex;flex-direction:column;align-items:center;color:var(--ink-soft);font-size:12px;cursor:pointer;}
 .prac-btm-icon{font-size:20px;margin-bottom:2px;}
 .word-list-empty{text-align:center;padding:40px 0;font-size:14px;color:var(--ink-soft);}
+/* Dictation mode (听写) */
+.dic-body{background:#e0edf9;flex:1;display:flex;flex-direction:column;padding:0 0 8px;}
+.dic-status-bar{display:flex;justify-content:space-between;padding:10px 16px;font-size:16px;font-weight:500;color:#000;}
+.dic-nav{display:flex;align-items:center;justify-content:center;padding:12px 12px;position:relative;}
+.dic-back{position:absolute;left:16px;font-size:22px;color:var(--ink);cursor:pointer;line-height:1;}
+.dic-title{font-size:20px;font-weight:500;color:var(--ink);}
+.dic-headphone{position:absolute;right:16px;font-size:20px;color:var(--ink-soft);}
+.dic-card{background:var(--white);border-radius:16px;margin:0 12px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.dic-progress{display:flex;align-items:center;padding:20px 16px;gap:10px;}
+.dic-prog-label{font-size:16px;color:var(--ink);font-weight:500;}
+.dic-prog-bar{flex:1;height:6px;background:#e5e7eb;border-radius:4px;overflow:hidden;}
+.dic-prog-fill{height:100%;background:var(--sky-deep);border-radius:4px;transition:width .4s;}
+.dic-prog-text{font-size:16px;color:var(--sky-deep);font-weight:500;}
+.dic-star{font-size:20px;color:#ccc;cursor:pointer;}
+.dic-wave{flex:1;display:flex;align-items:center;justify-content:center;min-height:120px;}
+.dic-waveform{width:70%;height:60px;position:relative;}
+.dic-wave-line{position:absolute;top:50%;left:0;width:100%;height:2px;background:linear-gradient(90deg,#ffcc00,#ffcc00);border-radius:1px;transform:translateY(-50%);}
+.dic-wave-line:nth-child(1){clip-path:polygon(0% 50%,10% 30%,20% 70%,30% 20%,40% 80%,50% 30%,60% 70%,70% 20%,80% 80%,90% 30%,100% 50%);}
+.dic-wave-line:nth-child(2){clip-path:polygon(0% 50%,15% 70%,25% 30%,35% 80%,45% 20%,55% 70%,65% 30%,75% 80%,85% 20%,95% 70%,100% 50%);opacity:.7;}
+.dic-wave-line:nth-child(3){clip-path:polygon(0% 50%,8% 40%,18% 60%,28% 30%,38% 70%,48% 20%,58% 80%,68% 30%,78% 70%,88% 40%,100% 50%);opacity:.5;}
+.dic-tip{text-align:center;padding:24px 0;font-size:16px;color:var(--ink-soft);}
+.dic-controls{background:var(--white);border-radius:24px 24px 0 0;padding:24px 16px 16px;}
+.dic-play{display:flex;align-items:center;justify-content:center;gap:32px;margin-bottom:20px;}
+.dic-cbtn{width:56px;height:56px;border-radius:50%;border:2px solid var(--sky-deep);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sky-deep);cursor:pointer;}
+.dic-cbtn.play{width:72px;height:72px;background:var(--sky-deep);border-color:var(--sky-deep);color:#fff;}
+.dic-options{display:flex;justify-content:space-around;margin-bottom:20px;gap:8px;}
+.dic-opt-btn{padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:var(--white);font-size:15px;color:var(--ink);cursor:pointer;font-family:inherit;}
+.dic-radio{display:flex;justify-content:space-around;margin-bottom:16px;}
+.dic-radio-item{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);cursor:pointer;}
+.dic-radio-item input{width:18px;height:18px;accent-color:var(--sky-deep);}
+.dic-check{display:flex;justify-content:space-around;}
+.dic-check-item{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);cursor:pointer;}
+.dic-check-item input{width:18px;height:18px;accent-color:var(--sky-deep);}
 .read-tabs{transition:background .3s ease;}
 .curve-box{transition:background .3s ease;}
 .search-bar{transition:background .3s ease;}
@@ -545,6 +578,9 @@ body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sa
     </div>
     <div id="practiceView" class="hidden" style="flex:1;overflow-y:auto;background:var(--cream);">
       <div id="practiceContent" class="prac-body"></div>
+    </div>
+    <div id="dictationView" class="hidden" style="flex:1;display:flex;flex-direction:column;background:#e0edf9;padding:0 0 8px;">
+      <div id="dictationContent" style="flex:1;display:flex;flex-direction:column;"></div>
     </div>
     <div id="textPageView" class="hidden" style="flex:1;overflow-y:auto;padding:0 16px 24px;background:var(--cream);">
       <div id="textListMode">
@@ -1257,7 +1293,7 @@ function switchPage(name){
   document.getElementById('tabBar').style.display=isRoot?'':'none';
   const subPad=name==='learning'?'110px':'16px';
   document.querySelectorAll('.scroll-area').forEach(s=>s.style.paddingBottom=isRoot?'80px':subPad);
-  if(name==='learning'){document.getElementById('practiceView').classList.add('hidden');document.getElementById('phonicsView').classList.add('hidden');document.getElementById('phonicsView').classList.remove('active');document.getElementById('wordFilterBar').style.display='';document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===_wordFilter));document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('learningScrollArea').style.display='';document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
+  if(name==='learning'){document.getElementById('dictationView').classList.add('hidden');document.getElementById('practiceView').classList.add('hidden');document.getElementById('phonicsView').classList.add('hidden');document.getElementById('phonicsView').classList.remove('active');document.getElementById('wordFilterBar').style.display='';document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===_wordFilter));document.getElementById('learningScrollArea').classList.remove('hidden');document.getElementById('learningScrollArea').style.display='';document.getElementById('textPageView').classList.add('hidden');document.getElementById('learningTitle').textContent='单元学习';renderUnits();}
   if(name==='home'){updateMission();}
   if(name==='reading'){renderArticles();renderCategories();}
   if(name==='me'){updateProfileStats();updateVIPCard();}
@@ -1289,7 +1325,7 @@ function setWordMode(m){
   _wordMode=m;
   if(m==='browse'){showPhonicsView();}
   else if(m==='practice'){showPracticeView();}
-  else if(m==='dictation')showToast('🎧 听写模式开发中');
+  else if(m==='dictation')showDictationView();
 }
 // ════ Phonics detail view ════
 function showPhonicsView(){
@@ -1520,6 +1556,93 @@ function togglePracticeCollect(en,zh,ph){
   else{D.user.wordCollection.push({en,zh,ph,articleId:'',addedAt:new Date().toISOString().slice(0,10)});D.user.points+=3;save();showToast('✅ 已收藏');}
   renderPracticeWord(CONTENT.units.find(u=>u.id===_currentUnitId).words[D.currentWordIndex],[],D.currentWordIndex,0);
 }
+// ════ Dictation mode (听写) ════
+function showDictationView(){
+  const unit=CONTENT.units.find(u=>u.id===_currentUnitId);
+  const total=unit?unit.words.length:0;
+  if(!total){showToast('没有单词');return;}
+  const idx=Math.min(D.currentWordIndex||0,total-1);
+  D.currentWordIndex=idx;
+  document.getElementById('learningScrollArea').style.display='none';
+  document.getElementById('wordFilterBar').style.display='none';
+  document.getElementById('phonicsView').classList.add('hidden');
+  document.getElementById('practiceView').classList.add('hidden');
+  document.getElementById('dictationView').classList.remove('hidden');
+  renderDictation(idx,total);
+}
+function renderDictation(idx,total){
+  const html=`
+    <div class="dic-body">
+      <div class="dic-status-bar"><span id="dicTimer">00:15</span><span>📶 90</span></div>
+      <div class="dic-nav">
+        <span class="dic-back" onclick="exitDictationView()">&lt;</span>
+        <span class="dic-title">单词听写</span>
+        <span class="dic-headphone">🎧</span>
+      </div>
+      <div class="dic-card">
+        <div class="dic-progress">
+          <span class="dic-prog-label">单词听写</span>
+          <div class="dic-prog-bar"><div class="dic-prog-fill" style="width:${total>0?(idx/total*100).toFixed(0)+'%':'0%'}"></div></div>
+          <span class="dic-prog-text">${idx+1}/${total}</span>
+          <span class="dic-star">☆</span>
+        </div>
+        <div class="dic-wave">
+          <div class="dic-waveform">
+            <div class="dic-wave-line"></div>
+            <div class="dic-wave-line"></div>
+            <div class="dic-wave-line"></div>
+          </div>
+        </div>
+        <div class="dic-tip">点击查看单词详情</div>
+        <div class="dic-controls" style="margin-top:auto;">
+          <div class="dic-play">
+            <button class="dic-cbtn" onclick="prevDictationWord(${total})">⏮</button>
+            <button class="dic-cbtn play" onclick="playCurrentDictation()">⏸</button>
+            <button class="dic-cbtn" onclick="nextDictationWord(${total})">⏭</button>
+          </div>
+          <div class="dic-options">
+            <button class="dic-opt-btn" onclick="showToast('读3遍')">读 3 遍 ▾</button>
+            <button class="dic-opt-btn" onclick="showToast('间隔8s')">间隔 8s ▾</button>
+            <button class="dic-opt-btn" onclick="showToast('单词表')">单词表</button>
+          </div>
+          <div class="dic-radio">
+            <label class="dic-radio-item"><input type="radio" name="dicReport" checked><span>只报英文</span></label>
+            <label class="dic-radio-item"><input type="radio" name="dicReport"><span>只报中文</span></label>
+            <label class="dic-radio-item"><input type="radio" name="dicReport"><span>英文和中文</span></label>
+          </div>
+          <div class="dic-check">
+            <label class="dic-check-item"><input type="checkbox"><span>显示英文</span></label>
+            <label class="dic-check-item"><input type="checkbox"><span>显示音标</span></label>
+            <label class="dic-check-item"><input type="checkbox"><span>显示释义</span></label>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('dictationContent').innerHTML=html;
+  document.getElementById('learningTitle').textContent='单词听写';
+}
+function prevDictationWord(total){
+  D.currentWordIndex=Math.max(0,(D.currentWordIndex||0)-1);
+  renderDictation(D.currentWordIndex,total);
+}
+function nextDictationWord(total){
+  D.currentWordIndex=Math.min(total-1,(D.currentWordIndex||0)+1);
+  renderDictation(D.currentWordIndex,total);
+}
+function playCurrentDictation(){
+  const unit=CONTENT.units.find(u=>u.id===_currentUnitId);
+  if(!unit)return;
+  const w=unit.words[D.currentWordIndex];
+  if(w)speak(w.en);
+}
+function exitDictationView(){
+  document.getElementById('dictationView').classList.add('hidden');
+  document.getElementById('wordFilterBar').style.display='';
+  document.querySelectorAll('.filter-item').forEach(el=>el.classList.toggle('active',el.dataset.filter===_wordFilter));
+  document.getElementById('learningScrollArea').style.display='';
+  document.getElementById('learningTitle').textContent='单元学习';
+  renderUnits();
+}
 function selectUnitTab(id){
   _currentUnitId=id;
   document.querySelectorAll('.unit-tab').forEach(el=>el.classList.toggle('active',parseInt(el.dataset.id)===id));
@@ -1705,6 +1828,7 @@ function onLearningBack(){
   if(!document.getElementById('cardMode').classList.contains('hidden')){exitCardMode();return;}
   if(!document.getElementById('practiceView').classList.contains('hidden')){exitPracticeView();return;}
   if(!document.getElementById('phonicsView').classList.contains('hidden')){exitPhonicsView();return;}
+  if(!document.getElementById('dictationView').classList.contains('hidden')){exitDictationView();return;}
   if(reciteState.unitId!==null){backToTextList();return;}
   if(!document.getElementById('textPageView').classList.contains('hidden')){backToUnits();return;}
   switchPage('home');
