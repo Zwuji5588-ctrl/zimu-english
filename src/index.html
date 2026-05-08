@@ -1889,6 +1889,19 @@ function updateStats(){
   updateMission();
 }
 
+// ════ Swipe-back gesture for sub-pages & modals ════
+let _swX=0,_swY=0;
+document.addEventListener('touchstart',e=>{_swX=e.touches[0].clientX;_swY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-_swX,dy=e.changedTouches[0].clientY-_swY;
+  if(dx<80||Math.abs(dy)>100||_swX>30)return;
+  const m=document.getElementById('modal');
+  if(m.classList.contains('active')){closeModal();return;}
+  const a=document.querySelector('.page.active');
+  if(!a)return;
+  if(a.id==='page-learning'||a.id==='page-quiz')switchPage('home');
+},{passive:true});
+
 function showModal(html,align='bottom'){const m=document.getElementById('modal');m.style.alignItems=align==='top'?'flex-start':'flex-end';m.style.paddingTop=align==='top'?'60px':'';document.getElementById('modalBody').innerHTML=html;m.classList.add('active');document.querySelector('.page.active .scroll-area')?.style.setProperty('overflow','hidden');m.addEventListener('touchmove',preventModalScroll,{passive:false});}
 function closeModal(){stopScanner();if(readingAloud){window.speechSynthesis.cancel();readingAloud=false;}const m=document.getElementById('modal');m.style.alignItems='';m.style.paddingTop='';m.classList.remove('active');document.querySelector('.page.active .scroll-area')?.style.setProperty('overflow','');m.removeEventListener('touchmove',preventModalScroll);}
 function preventModalScroll(e){if(!e.target.closest('.modal-sheet'))e.preventDefault();}
