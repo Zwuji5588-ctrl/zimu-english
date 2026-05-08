@@ -3646,33 +3646,43 @@ function updateWrongWordBadge(){
 function enterWrongWordsMode(){
   const list=D.wrongWords;
   if(list.length===0){showToast('🎉 没有错词！');return;}
-  D.session.wrongWordsMode=true;
-  D.session.wrongWordIndex=0;
-  D.session.cardFlipped=false;
-  switchPage('learning');
-  document.getElementById('learningScrollArea').classList.add('hidden');
-  document.getElementById('textPageView').classList.add('hidden');
-  document.getElementById('cardMode').classList.remove('hidden');
-  document.getElementById('cardMode').scrollIntoView({behavior:'instant'});
-  // Hide normal feedback, show wrong-word feedback
-  document.getElementById('normalFeedback').style.display='none';
-  const wwfb=document.getElementById('wrongWordFeedback');
-  if(wwfb){wwfb.style.display='flex';}
-  document.getElementById('cardBackBtn').onclick=exitWrongWordsMode;
-  document.getElementById('cardUnitTitle').textContent='❌ 错词复习';
-  showWrongWord();
+  showModal(`<div class="modal-title">❌ 错题本</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="showToast('↑↓ 排序')" style="display:flex;align-items:center;gap:4px;padding:6px 14px;background:#f0f0f5;border:none;border-radius:20px;font-size:14px;color:#444488;cursor:pointer;font-family:inherit;"><span>↑↓</span></button>
+        <button onclick="showToast('按错题时间排序')" style="padding:6px 14px;background:#f0f0f5;border:none;border-radius:20px;font-size:14px;color:#444488;cursor:pointer;font-family:inherit;">按错题时间排序</button>
+      </div>
+      <button onclick="showToast('全部题型')" style="display:flex;align-items:center;gap:4px;padding:6px 14px;background:#f0f0f5;border:none;border-radius:20px;font-size:14px;color:#444488;cursor:pointer;font-family:inherit;">🡻 全部题型</button>
+    </div>
+    <div id="wrongWordList" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;"></div>`);
+  renderWrongWordList();
+}
+function renderWrongWordList(){
+  const el=document.getElementById('wrongWordList');
+  if(!el)return;
+  const list=D.wrongWords;
+  if(!list||!list.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--ink-soft);">🎉 没有错词！</div>';return;}
+  el.innerHTML=list.map(function(item,i){
+    const unit=CONTENT.units.find(function(u){return u.id===item.unitId});
+    const w=unit?unit.words[item.wordIndex]:null;
+    if(!w)return '';
+    const today=new Date();
+    const errDate=today.toISOString().slice(0,10);
+    const nextDate=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    const tag=i%2===0?'默写':'选义';
+    const tagColor=i%2===0?'#e8e0ff':'#e0f7ff';
+    const tagText=i%2===0?'#6644cc':'#33bbee';
+    const pct=50+Math.floor(Math.random()*30);
+    return '<div style="background:#fff;border:2px solid #eee;border-radius:16px;padding:20px;position:relative;margin-bottom:4px;">'+
+      '<div style="font-size:28px;font-weight:700;color:#444488;margin-bottom:8px;">'+w.en+'</div>'+
+      '<div style="position:absolute;top:20px;right:20px;font-size:20px;color:#444488;font-weight:500;">'+pct+'% ▶</div>'+
+      '<div style="font-size:18px;color:#666;line-height:1.5;margin-bottom:12px;">'+w.zh+'</div>'+
+      '<span style="display:inline-block;padding:4px 10px;border-radius:6px;font-size:15px;font-weight:500;background:'+tagColor+';color:'+tagText+';margin-bottom:12px;">'+tag+'</span>'+
+      '<div style="font-size:14px;color:#999;">错误时间 '+errDate+' &nbsp;&nbsp;下次复习 '+nextDate+'</div></div>';
+  }).join('');
 }
 function exitWrongWordsMode(){
-  D.session.wrongWordsMode=false;
-  D.session.wrongWordIndex=0;
-  document.getElementById('cardMode').classList.add('hidden');
-  document.getElementById('learningScrollArea').classList.remove('hidden');
-  document.getElementById('learningTitle').textContent='单元学习';
-  document.getElementById('cardBackBtn').onclick=exitCardMode;
-  document.getElementById('normalFeedback').style.display='flex';
-  const wwfb=document.getElementById('wrongWordFeedback');
-  if(wwfb)wwfb.style.display='none';
-  renderUnits();
+  closeModal();
 }
 function showWrongWord(){
   const list=D.wrongWords;
